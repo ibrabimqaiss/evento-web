@@ -17,6 +17,7 @@ export default function LoginPage() {
     setError('')
     setLoading(true)
     const normalizedPhone = phone.startsWith('0') ? '+964' + phone.slice(1) : phone
+    console.log('Sending:', { phone_number: normalizedPhone, password: password })
     try {
       await login(normalizedPhone, password)
       navigate(from, { replace: true })
@@ -68,7 +69,7 @@ export default function LoginPage() {
                 كلمة المرور
               </label>
               <input
-                type="password"
+                type="text"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
