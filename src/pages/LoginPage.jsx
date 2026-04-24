@@ -16,8 +16,9 @@ export default function LoginPage() {
     e.preventDefault()
     setError('')
     setLoading(true)
+    const normalizedPhone = phone.startsWith('0') ? '+964' + phone.slice(1) : phone
     try {
-      await login(phone, password)
+      await login(normalizedPhone, password)
       navigate(from, { replace: true })
     } catch (err) {
       const msg =
