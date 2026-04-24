@@ -36,7 +36,7 @@ export function isAuthenticated() {
 // ─── Auth ─────────────────────────────────────────────────────────────────────
 
 export async function login(phone, password) {
-  const res = await api.post('/auth/login/', { phone, password })
+  const res = await api.post('/auth/login/', { phone_number: phone, password })
   const { access, refresh } = res.data?.data ?? res.data
   localStorage.setItem('access_token', access)
   if (refresh) localStorage.setItem('refresh_token', refresh)
@@ -44,17 +44,18 @@ export async function login(phone, password) {
 }
 
 export async function register(payload) {
-  const res = await api.post('/auth/register/', payload)
+  const { phone, ...rest } = payload
+  const res = await api.post('/auth/register/', { ...rest, phone_number: phone })
   return res.data
 }
 
 export async function sendOtp(phone) {
-  const res = await api.post('/auth/send-otp/', { phone })
+  const res = await api.post('/auth/send-otp/', { phone_number: phone })
   return res.data
 }
 
 export async function verifyOtp(phone, otp) {
-  const res = await api.post('/auth/verify-otp/', { phone, otp })
+  const res = await api.post('/auth/verify-otp/', { phone_number: phone, otp })
   return res.data
 }
 
