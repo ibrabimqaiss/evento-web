@@ -58,6 +58,7 @@ export default function LoginPage() {
                 placeholder="07xxxxxxxxx"
                 required
                 dir="ltr"
+                style={{ textAlign: 'right' }}
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
               />
             </div>
@@ -72,6 +73,8 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
+                dir="ltr"
+                style={{ textAlign: 'left' }}
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-base focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
               />
             </div>
