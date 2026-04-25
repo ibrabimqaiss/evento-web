@@ -24,8 +24,8 @@ export default function LoginPage() {
         navigate(from, { replace: true })
       } else if (user?.role === 'business_owner') {
         navigate('/owner/dashboard', { replace: true })
-      } else if (user?.role === 'admin') {
-        navigate('/admin', { replace: true })
+      } else if (user?.role === 'admin' || user?.role === 'superuser' || user?.is_staff) {
+        navigate('/owner/dashboard', { replace: true })
       } else {
         navigate('/home', { replace: true })
       }

@@ -80,7 +80,7 @@ export function logout() {
 // ─── Venues ───────────────────────────────────────────────────────────────────
 
 export function searchVenues(params = {}) {
-  return api.get('/venues/', { params })
+  return api.get('/venues/search/', { params })
 }
 
 export function getVenueDetail(slug) {
