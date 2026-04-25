@@ -1,9 +1,23 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
+  CalendarDaysIcon,
+  BanknotesIcon,
+  ClockIcon,
+  BuildingOffice2Icon,
+  PlusIcon,
+  ChartBarIcon,
+} from '@heroicons/react/24/outline'
+import {
   getDashboardStats, getOwnerBookings,
-  fmtIQD, fmtDate, BOOKING_STATUS_LABELS, BOOKING_STATUS_CLASS,
+  fmtDate, BOOKING_STATUS_LABELS, BOOKING_STATUS_CLASS,
 } from '../../lib/ownerApi'
+
+function fmtShort(n) {
+  if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + ' م'
+  if (n >= 1_000) return Math.round(n / 1_000) + ' ألف'
+  return n.toLocaleString('ar-IQ')
+}
 
 export default function OwnerDashboard() {
   const [stats, setStats] = useState(null)
@@ -23,11 +37,12 @@ export default function OwnerDashboard() {
 
   if (loading) return <DashboardSkeleton />
 
+  const pendingCount = stats?.pending_count ?? 0
   const cards = [
-    { icon: '📅', label: 'حجوزات اليوم', value: stats?.today_bookings ?? 0, color: 'purple' },
-    { icon: '💰', label: 'إيرادات الشهر', value: fmtIQD(stats?.month_revenue ?? 0), color: 'green', raw: false },
-    { icon: '⏳', label: 'بانتظار الموافقة', value: stats?.pending_count ?? 0, color: 'yellow' },
-    { icon: '🏛️', label: 'إجمالي القاعات', value: stats?.total_venues ?? 0, color: 'blue' },
+    { Icon: CalendarDaysIcon, label: 'حجوزات اليوم', value: stats?.today_bookings ?? 0, color: 'purple' },
+    { Icon: BanknotesIcon, label: 'إيرادات الشهر', value: fmtShort(stats?.month_revenue ?? 0), color: 'green' },
+    { Icon: ClockIcon, label: 'بانتظار الموافقة', value: pendingCount, color: 'yellow', pulse: pendingCount > 0 },
+    { Icon: BuildingOffice2Icon, label: 'إجمالي القاعات', value: stats?.total_venues ?? 0, color: 'blue' },
   ]
 
   return (
@@ -45,8 +60,8 @@ export default function OwnerDashboard() {
       {/* Stat Cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px', marginBottom: '28px' }}>
         {cards.map((c) => (
-          <div key={c.label} className={`glass-card stat-card stat-card-${c.color}`}>
-            <div className="stat-card-icon">{c.icon}</div>
+          <div key={c.label} className={`glass-card stat-card stat-card-${c.color}${c.pulse ? ' pulse-pending' : ''}`}>
+            <div className="stat-card-icon"><c.Icon /></div>
             <div className="stat-card-value">{c.value}</div>
             <div className="stat-card-label">{c.label}</div>
           </div>
@@ -54,15 +69,18 @@ export default function OwnerDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '28px' }}>
+      <div className="quick-actions">
         <Link to="/owner/bookings?status=pending" className="glass-btn glass-btn-primary">
-          ⏳ مراجعة الحجوزات المعلقة
+          <ClockIcon style={{ width: 18, height: 18 }} />
+          مراجعة الحجوزات المعلقة
         </Link>
         <Link to="/owner/venues/new" className="glass-btn">
-          ➕ إضافة قاعة جديدة
+          <PlusIcon style={{ width: 18, height: 18 }} />
+          إضافة قاعة جديدة
         </Link>
         <Link to="/owner/analytics" className="glass-btn">
-          📈 عرض التحليلات
+          <ChartBarIcon style={{ width: 18, height: 18 }} />
+          عرض التحليلات
         </Link>
       </div>
 

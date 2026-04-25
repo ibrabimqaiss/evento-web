@@ -377,10 +377,11 @@
 
 .stat-card-label { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
 
-.stat-card-purple .stat-card-icon { background: rgba(124,58,237,0.2); border: 1px solid rgba(124,58,237,0.3); }
-.stat-card-green .stat-card-icon { background: rgba(52,211,153,0.2); border: 1px solid rgba(52,211,153,0.3); }
-.stat-card-yellow .stat-card-icon { background: rgba(251,191,36,0.2); border: 1px solid rgba(251,191,36,0.3); }
-.stat-card-blue .stat-card-icon { background: rgba(96,165,250,0.2); border: 1px solid rgba(96,165,250,0.3); }
+.stat-card-icon svg { width: 24px; height: 24px; }
+.stat-card-purple .stat-card-icon { background: rgba(124,58,237,0.2); border: 1px solid rgba(124,58,237,0.3); color: #A78BFA; }
+.stat-card-green .stat-card-icon { background: rgba(52,211,153,0.2); border: 1px solid rgba(52,211,153,0.3); color: #34D399; }
+.stat-card-yellow .stat-card-icon { background: rgba(251,191,36,0.2); border: 1px solid rgba(251,191,36,0.3); color: #FBbF24; }
+.stat-card-blue .stat-card-icon { background: rgba(96,165,250,0.2); border: 1px solid rgba(96,165,250,0.3); color: #60A5FA; }
 
 /* ── Form Label ─────────────────────────────────────────────────────────────── */
 .glass-label {
@@ -532,11 +533,46 @@
   pointer-events: none;
 }
 
+/* ── Owner Mobile Nav ───────────────────────────────────────────────────────── */
+.owner-mobile-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(8, 6, 20, 0.82);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding: 4px 8px;
+  padding-bottom: calc(4px + env(safe-area-inset-bottom, 8px));
+  display: none;
+}
+
+/* ── Owner Content Area ─────────────────────────────────────────────────────── */
+.owner-content { padding: 28px 28px 60px; }
+
+/* ── Quick Actions Row ──────────────────────────────────────────────────────── */
+.quick-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+
+/* ── Pending Pulse ──────────────────────────────────────────────────────────── */
+.pulse-pending { animation: pulse-glow 2s ease-in-out infinite; }
+
 /* ── Owner Layout Responsive ────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .owner-sidebar { display: none !important; }
-  .owner-main { margin-right: 0 !important; padding-bottom: 80px !important; }
+  .owner-main { margin-right: 0 !important; }
   .owner-mobile-nav { display: flex !important; }
+  .owner-content { padding: 16px 16px 80px; }
+  .glass-card { border-radius: 16px; }
+  .glass-card-static { border-radius: 16px; }
+  .glass-table-wrap { -webkit-overflow-scrolling: touch; }
+  .quick-actions { flex-direction: column; }
+  .glass-modal-overlay { align-items: flex-end; padding: 0; }
+  .glass-modal-panel { border-radius: 20px 20px 0 0; }
 }
 
 @media (min-width: 769px) {
