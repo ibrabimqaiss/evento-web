@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
-import { login } from '../lib/api'
+import { login, getStoredUser } from '../lib/api'
 
 export default function LoginPage() {
   const navigate = useNavigate()
   const location = useLocation()
-  const from = location.state?.from?.pathname || '/home'
+  const from = location.state?.from?.pathname || null
 
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
@@ -19,7 +19,16 @@ export default function LoginPage() {
     const normalizedPhone = phone.startsWith('0') ? '+964' + phone.slice(1) : phone
     try {
       await login(normalizedPhone, password)
-      navigate(from, { replace: true })
+      const user = getStoredUser()
+      if (from) {
+        navigate(from, { replace: true })
+      } else if (user?.role === 'business_owner') {
+        navigate('/owner/dashboard', { replace: true })
+      } else if (user?.role === 'admin') {
+        navigate('/admin', { replace: true })
+      } else {
+        navigate('/home', { replace: true })
+      }
     } catch (err) {
       const msg =
         err.response?.data?.error?.message ||
@@ -35,7 +44,6 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-sm">
-        {/* Logo */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary text-white text-3xl font-black mb-4">
             إ
@@ -44,13 +52,10 @@ export default function LoginPage() {
           <p className="text-gray-500 text-sm mt-1">سجّل دخولك للمتابعة</p>
         </div>
 
-        {/* Card */}
         <div className="card p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                رقم الهاتف
-              </label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">رقم الهاتف</label>
               <input
                 type="tel"
                 value={phone}
@@ -64,9 +69,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1">
-                كلمة المرور
-              </label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">كلمة المرور</label>
               <input
                 type="password"
                 value={password}

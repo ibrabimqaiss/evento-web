@@ -37,10 +37,20 @@ export function isAuthenticated() {
 
 export async function login(phone, password) {
   const res = await api.post('/auth/login/', { phone_number: phone, password })
-  const { access, refresh } = res.data?.data ?? res.data
+  const data = res.data?.data ?? res.data
+  const { access, refresh } = data.tokens ?? data
   localStorage.setItem('access_token', access)
   if (refresh) localStorage.setItem('refresh_token', refresh)
+  if (data.user) localStorage.setItem('user', JSON.stringify(data.user))
   return res.data
+}
+
+export function getStoredUser() {
+  try {
+    return JSON.parse(localStorage.getItem('user') || 'null')
+  } catch {
+    return null
+  }
 }
 
 export async function register(payload) {
@@ -64,6 +74,7 @@ export function logout() {
   if (refresh) api.post('/auth/logout/', { refresh }).catch(() => {})
   localStorage.removeItem('access_token')
   localStorage.removeItem('refresh_token')
+  localStorage.removeItem('user')
 }
 
 // ─── Venues ───────────────────────────────────────────────────────────────────
