@@ -517,7 +517,7 @@ function ScheduleTab({ allStaff }) {
                                       onClick={() => setAttendance(b.id, st.id, opt.key)}
                                       title={opt.label}
                                       style={{
-                                        padding: '4px 10px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                                        padding: '4px 10px', borderRadius: '8px', cursor: 'pointer',
                                         fontFamily: 'Cairo, sans-serif', fontSize: '12px', fontWeight: 600,
                                         background: isActive ? `${opt.color}22` : 'rgba(255,255,255,0.06)',
                                         color: isActive ? opt.color : 'rgba(255,255,255,0.4)',

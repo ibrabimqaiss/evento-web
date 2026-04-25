@@ -332,7 +332,7 @@ export default function BookingDetail() {
               key={p.key}
               onClick={() => setNotes(n => ({ ...n, priority: p.key }))}
               style={{
-                padding: '4px 12px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                padding: '4px 12px', borderRadius: '8px', cursor: 'pointer',
                 fontFamily: 'Cairo, sans-serif', fontSize: '12px', fontWeight: 600,
                 background: notes.priority === p.key ? `${p.color}22` : 'rgba(255,255,255,0.05)',
                 color: notes.priority === p.key ? p.color : 'rgba(255,255,255,0.4)',
@@ -349,7 +349,7 @@ export default function BookingDetail() {
               key={tag}
               onClick={() => toggleTag(tag)}
               style={{
-                padding: '3px 10px', borderRadius: '8px', border: 'none', cursor: 'pointer',
+                padding: '3px 10px', borderRadius: '8px', cursor: 'pointer',
                 fontFamily: 'Cairo, sans-serif', fontSize: '12px', fontWeight: 600,
                 background: notes.tags.includes(tag) ? 'rgba(167,139,250,0.2)' : 'rgba(255,255,255,0.04)',
                 color: notes.tags.includes(tag) ? '#A78BFA' : 'rgba(255,255,255,0.4)',
