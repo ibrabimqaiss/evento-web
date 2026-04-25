@@ -1,5 +1,9 @@
 import { useEffect, useState, useRef } from 'react'
 import { useParams } from 'react-router-dom'
+import {
+  BuildingOffice2Icon, UsersIcon, BanknotesIcon, TagIcon,
+  MapPinIcon, MapIcon, CalendarDaysIcon,
+} from '@heroicons/react/24/outline'
 import { getPublicVenue } from '../lib/api.js'
 
 // ─── OG meta helper ───────────────────────────────────────────────────────────
@@ -102,7 +106,7 @@ export default function VenuePage() {
         </div>
       ) : (
         <div className="hero-gradient">
-          <div style={{ fontSize: 48, marginBottom: 12 }}>🏛</div>
+          <BuildingOffice2Icon style={{ width: 52, height: 52, marginBottom: 12, color: 'white', opacity: 0.85 }} />
           <h1 className="h1" style={{ color: 'white' }}>{v.name_ar || v.name}</h1>
         </div>
       )}
@@ -112,12 +116,12 @@ export default function VenuePage() {
         <h1 className="h1">{v.name_ar || v.name}</h1>
         {(v.location_ar || v.location) && (
           <p style={{ color: 'var(--text-secondary)', marginTop: 8, fontSize: 15 }}>
-            📍 {v.location_ar || v.location}
+            <MapPinIcon style={{ width: 14, height: 14, display: 'inline', verticalAlign: 'middle' }} /> {v.location_ar || v.location}
           </p>
         )}
         {v.capacity && (
           <p style={{ color: 'var(--text-secondary)', marginTop: 4, fontSize: 14 }}>
-            👥 سعة {v.capacity} شخص
+            <UsersIcon style={{ width: 14, height: 14, display: 'inline', verticalAlign: 'middle' }} /> سعة {v.capacity} شخص
           </p>
         )}
       </div>
@@ -125,16 +129,16 @@ export default function VenuePage() {
       {/* Venue details */}
       <div className="section card" style={{ margin: '0 16px 12px', borderRadius: 'var(--radius)' }}>
         {v.base_price_iqd && (
-          <DetailRow icon="💰" label="السعر الأساسي" value={formatIQD(v.base_price_iqd)} />
+          <DetailRow Icon={BanknotesIcon} label="السعر الأساسي" value={formatIQD(v.base_price_iqd)} />
         )}
         {v.venue_type && (
-          <DetailRow icon="🏷" label="نوع القاعة" value={v.venue_type} />
+          <DetailRow Icon={TagIcon} label="نوع القاعة" value={v.venue_type} />
         )}
         {(v.city_ar || v.city) && (
-          <DetailRow icon="🌆" label="المدينة" value={v.city_ar || v.city} />
+          <DetailRow Icon={MapPinIcon} label="المدينة" value={v.city_ar || v.city} />
         )}
         {v.address && (
-          <DetailRow icon="🗺" label="العنوان" value={v.address} />
+          <DetailRow Icon={MapIcon} label="العنوان" value={v.address} />
         )}
         {v.lat && v.lng && (
           <a
@@ -144,7 +148,7 @@ export default function VenuePage() {
             style={{ display: 'block', marginTop: 10 }}
           >
             <button className="btn btn-outline w-full" style={{ marginTop: 0 }}>
-              🗺 فتح على خرائط Google
+              فتح على خرائط Google
             </button>
           </a>
         )}
@@ -235,7 +239,7 @@ export default function VenuePage() {
       <div style={{ padding: '20px 16px' }}>
         <a href={bookUrl}>
           <button className="btn btn-primary w-full" style={{ fontSize: 17, padding: '16px 24px' }}>
-            📅 احجز الآن
+            احجز الآن
           </button>
         </a>
         <p className="small mt-4" style={{ textAlign: 'center' }}>
@@ -250,10 +254,12 @@ export default function VenuePage() {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function DetailRow({ icon, label, value }) {
+function DetailRow({ Icon, label, value }) {
   return (
     <div className="detail-row">
-      <span className="detail-icon">{icon}</span>
+      <span className="detail-icon">
+        {Icon && <Icon style={{ width: 18, height: 18 }} />}
+      </span>
       <div>
         <div className="detail-label">{label}</div>
         <div className="detail-value">{value}</div>

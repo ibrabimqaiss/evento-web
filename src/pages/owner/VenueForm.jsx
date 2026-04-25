@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { CheckCircleIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
 import { getVenueDetail } from '../../lib/api'
 import { createVenue, updateVenue } from '../../lib/ownerApi'
 
@@ -147,7 +148,10 @@ export default function VenueForm() {
             </button>
           ) : (
             <button onClick={handleSubmit} disabled={loading} className="glass-btn glass-btn-primary">
-              {loading ? 'جاري الحفظ...' : isEdit ? '💾 حفظ التغييرات' : '✅ إنشاء القاعة'}
+              {loading ? 'جاري الحفظ...' : isEdit
+                ? <><ArrowDownTrayIcon style={{ width: 16, height: 16 }} /> حفظ التغييرات</>
+                : <><CheckCircleIcon style={{ width: 16, height: 16 }} /> إنشاء القاعة</>
+              }
             </button>
           )}
         </div>
@@ -289,11 +293,11 @@ function Step4({ form, set }) {
       <div style={{ marginTop: '20px', padding: '16px', borderRadius: '14px', background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)' }}>
         <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.4)', marginBottom: '10px' }}>ملخص القاعة</div>
         <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.75)', lineHeight: 2 }}>
-          <div>🏛️ {form.name_ar || form.name || '—'}</div>
-          <div>📍 {form.city} · {form.address_ar || '—'}</div>
-          <div>👥 {form.min_capacity} – {form.max_capacity} ضيف</div>
-          <div>💰 {form.base_price_iqd?.toLocaleString('ar-IQ')} د.ع</div>
-          <div>✅ {form.amenities.length} مرفق محدد</div>
+          <div>{form.name_ar || form.name || '—'}</div>
+          <div>{form.city} · {form.address_ar || '—'}</div>
+          <div>{form.min_capacity} – {form.max_capacity} ضيف</div>
+          <div>{form.base_price_iqd?.toLocaleString('ar-IQ')} د.ع</div>
+          <div>{form.amenities.length} مرفق محدد</div>
         </div>
       </div>
     </div>

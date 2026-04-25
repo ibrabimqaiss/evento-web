@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useParams, useNavigate, useLocation, Link } from 'react-router-dom'
+import { BuildingOffice2Icon } from '@heroicons/react/24/outline'
 import Navbar from '../components/Navbar'
 import { createBooking } from '../lib/api'
 
@@ -109,7 +110,7 @@ export default function BookingPage() {
               />
             ) : (
               <div className="w-16 h-16 rounded-xl bg-purple-100 flex items-center justify-center shrink-0">
-                <span className="text-2xl">🏛</span>
+                <BuildingOffice2Icon style={{ width: 28, height: 28, color: '#7C3AED' }} />
               </div>
             )}
             <div className="min-w-0">

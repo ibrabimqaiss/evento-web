@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react'
 import {
+  PlusIcon, PencilIcon, UsersIcon, ListBulletIcon,
+  CheckCircleIcon, ClockIcon, XCircleIcon,
+  BuildingOffice2Icon, CalendarDaysIcon,
+} from '@heroicons/react/24/outline'
+import {
   getStaff, createStaffMember, updateStaffMember, deleteStaffMember,
   getOwnerBookings, fmtIQD, fmtDate, BOOKING_STATUS_LABELS,
 } from '../../lib/ownerApi'
@@ -19,9 +24,9 @@ const EVENT_TYPE_AR = {
 }
 
 const ATTENDANCE_OPTIONS = [
-  { key: 'present', label: 'حضر', icon: '✅', color: '#34D399' },
-  { key: 'late',    label: 'متأخر', icon: '⏰', color: '#FBBF24' },
-  { key: 'absent',  label: 'غاب', icon: '❌', color: '#F87171' },
+  { key: 'present', label: 'حضر', Icon: CheckCircleIcon, color: '#34D399' },
+  { key: 'late',    label: 'متأخر', Icon: ClockIcon, color: '#FBBF24' },
+  { key: 'absent',  label: 'غاب', Icon: XCircleIcon, color: '#F87171' },
 ]
 
 const empty = { full_name:'', phone:'', role:'waiter', employment_type:'full_time', salary:'', join_date: new Date().toISOString().slice(0,10), notes:'' }
@@ -45,7 +50,7 @@ function StaffTab({ staff, loading, typeFilter, setTypeFilter, openAdd, openEdit
         <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.45)', margin: 0 }}>
           {active.length} موظف نشط · إجمالي الرواتب: {fmtIQD(totalSalaries)}
         </p>
-        <button onClick={openAdd} className="glass-btn glass-btn-primary">➕ إضافة موظف</button>
+        <button onClick={openAdd} className="glass-btn glass-btn-primary"><PlusIcon style={{ width: 16, height: 16 }} /> إضافة موظف</button>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))', gap: '12px', marginBottom: '16px' }}>
@@ -101,7 +106,7 @@ function StaffTab({ staff, loading, typeFilter, setTypeFilter, openAdd, openEdit
                     <td style={{ direction: 'ltr' }}>{s.phone || '—'}</td>
                     <td>
                       <div style={{ display: 'flex', gap: '6px' }}>
-                        <button onClick={() => openEdit(s)} className="glass-btn glass-btn-sm">✏️</button>
+                        <button onClick={() => openEdit(s)} className="glass-btn glass-btn-sm"><PencilIcon style={{ width: 14, height: 14 }} /></button>
                         <button onClick={() => handleDeactivate(s.id)} className="glass-btn glass-btn-sm glass-btn-danger">إنهاء</button>
                       </div>
                     </td>
@@ -203,7 +208,7 @@ function ScheduleTab({ allStaff }) {
         </div>
       ) : bookings.length === 0 ? (
         <div className="glass-card-static" style={{ padding: '60px', textAlign: 'center' }}>
-          <div style={{ fontSize: '36px', marginBottom: '12px' }}>📅</div>
+          <CalendarDaysIcon style={{ width: 36, height: 36, color: 'rgba(255,255,255,0.3)', marginBottom: '12px' }} />
           <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '15px' }}>لا توجد فعاليات في هذا اليوم</div>
         </div>
       ) : (
@@ -222,7 +227,7 @@ function ScheduleTab({ allStaff }) {
                         {EVENT_TYPE_AR[b.event_type] || b.event_type} — {b.customer_name || '—'}
                       </div>
                       <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', marginTop: '3px' }}>
-                        🏛️ {vname} · 👥 {b.guest_count} ضيف · 🕕 {b.start_time || '—'}
+                        {vname} · {b.guest_count} ضيف · {b.start_time || '—'}
                       </div>
                     </div>
                     <span style={{ fontSize: '12px', fontWeight: 600, padding: '4px 12px', borderRadius: '10px', background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)' }}>
@@ -296,7 +301,7 @@ function ScheduleTab({ allStaff }) {
                                         transition: 'all 0.15s',
                                       }}
                                     >
-                                      {opt.icon} {opt.label}
+                                      <opt.Icon style={{ width: 13, height: 13, display: 'inline', verticalAlign: 'middle' }} /> {opt.label}
                                     </button>
                                   )
                                 })}
@@ -368,10 +373,10 @@ export default function OwnerHR() {
       {/* Main tabs */}
       <div className="glass-tabs" style={{ marginBottom: '24px' }}>
         <button className={`glass-tab${hrTab === 'staff' ? ' active' : ''}`} onClick={() => setHrTab('staff')}>
-          👥 الموظفون
+          الموظفون
         </button>
         <button className={`glass-tab${hrTab === 'schedule' ? ' active' : ''}`} onClick={() => setHrTab('schedule')}>
-          📋 جدول العمل اليومي
+          جدول العمل اليومي
         </button>
       </div>
 

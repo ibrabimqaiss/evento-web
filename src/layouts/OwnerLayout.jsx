@@ -62,7 +62,7 @@ export default function OwnerLayout({ children }) {
       >
         {/* Logo */}
         <div style={{ padding: '8px 12px 18px', marginBottom: '10px', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-          <div style={{ fontSize: '20px', fontWeight: 900, color: '#fff', letterSpacing: '-0.5px' }}>إيفنتو</div>
+          <img src="/evento_logo.svg" alt="Evento" height="30" style={{ display: 'block' }} />
           <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.38)', marginTop: '3px', fontWeight: 500 }}>
             لوحة تحكم المالك
           </div>

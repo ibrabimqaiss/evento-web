@@ -3,6 +3,9 @@ import {
   BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts'
+import {
+  BanknotesIcon, CalendarDaysIcon, ChartBarIcon, ArrowTrendingDownIcon,
+} from '@heroicons/react/24/outline'
 import { getAnalytics, fmtIQD } from '../../lib/ownerApi'
 
 const COLORS = ['#7C3AED', '#34D399', '#FBBF24', '#60A5FA', '#F87171', '#A78BFA']
@@ -36,10 +39,10 @@ export default function OwnerAnalytics() {
 
       {/* KPIs */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '14px', marginBottom: '24px' }}>
-        <KpiCard label="إجمالي الإيرادات" value={fmtIQD(kpis.total_revenue)} icon="💰" color="#34D399" />
-        <KpiCard label="إجمالي الحجوزات" value={kpis.total_bookings ?? 0} icon="📅" color="#A78BFA" />
-        <KpiCard label="معدل الإلغاء" value={`${kpis.cancellation_rate ?? 0}%`} icon="📉" color="#F87171" />
-        <KpiCard label="متوسط قيمة الحجز" value={fmtIQD(kpis.avg_booking_value)} icon="📊" color="#FBBF24" />
+        <KpiCard label="إجمالي الإيرادات" value={fmtIQD(kpis.total_revenue)} Icon={BanknotesIcon} color="#34D399" />
+        <KpiCard label="إجمالي الحجوزات" value={kpis.total_bookings ?? 0} Icon={CalendarDaysIcon} color="#A78BFA" />
+        <KpiCard label="معدل الإلغاء" value={`${kpis.cancellation_rate ?? 0}%`} Icon={ArrowTrendingDownIcon} color="#F87171" />
+        <KpiCard label="متوسط قيمة الحجز" value={fmtIQD(kpis.avg_booking_value)} Icon={ChartBarIcon} color="#FBBF24" />
       </div>
 
       {/* Monthly Revenue Chart */}
@@ -152,10 +155,12 @@ export default function OwnerAnalytics() {
   )
 }
 
-function KpiCard({ label, value, icon, color }) {
+function KpiCard({ label, value, Icon, color }) {
   return (
     <div className="glass-card-static" style={{ padding: '20px' }}>
-      <div style={{ fontSize: '22px', marginBottom: '10px' }}>{icon}</div>
+      <div style={{ marginBottom: '10px', color }}>
+        <Icon style={{ width: 24, height: 24 }} />
+      </div>
       <div style={{ fontSize: '20px', fontWeight: 700, color }}>{value}</div>
       <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginTop: '4px' }}>{label}</div>
     </div>

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { BuildingOffice2Icon } from '@heroicons/react/24/outline'
 
 export default function VenueCard({ venue }) {
   const cover = venue.cover_image || venue.images?.[0]?.image || null
@@ -14,7 +15,7 @@ export default function VenueCard({ venue }) {
           />
         ) : (
           <div className="w-full h-44 bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center">
-            <span className="text-white text-4xl">🏛</span>
+            <BuildingOffice2Icon className="text-white" style={{ width: 40, height: 40 }} />
           </div>
         )}
         {venue.city && (

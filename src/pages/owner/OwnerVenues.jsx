@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import {
+  BuildingOffice2Icon, UsersIcon, BanknotesIcon, CalendarDaysIcon,
+  PlusIcon, PencilIcon, StarIcon,
+} from '@heroicons/react/24/outline'
 import { getOwnerVenues, fmtIQD, VENUE_TYPE_LABELS } from '../../lib/ownerApi'
 
 const STATUS_LABELS = { active: 'نشط', inactive: 'غير نشط', under_review: 'قيد المراجعة' }
@@ -29,7 +33,7 @@ export default function OwnerVenues() {
           </p>
         </div>
         <Link to="/owner/venues/new" className="glass-btn glass-btn-primary">
-          ➕ قاعة جديدة
+          <PlusIcon style={{ width: 16, height: 16 }} /> قاعة جديدة
         </Link>
       </div>
 
@@ -39,14 +43,14 @@ export default function OwnerVenues() {
         </div>
       ) : venues.length === 0 ? (
         <div className="glass-card" style={{ padding: '60px 40px', textAlign: 'center' }}>
-          <div style={{ fontSize: '48px', marginBottom: '16px' }}>🏛️</div>
+          <BuildingOffice2Icon style={{ width: 48, height: 48, color: 'rgba(255,255,255,0.3)', marginBottom: '16px' }} />
           <div style={{ fontSize: '18px', fontWeight: 600, color: 'rgba(255,255,255,0.7)', marginBottom: '8px' }}>
             لا توجد قاعات بعد
           </div>
           <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)', marginBottom: '20px' }}>
             أضف قاعتك الأولى للبدء في استقبال الحجوزات
           </p>
-          <Link to="/owner/venues/new" className="glass-btn glass-btn-primary">➕ إضافة قاعة</Link>
+          <Link to="/owner/venues/new" className="glass-btn glass-btn-primary"><PlusIcon style={{ width: 16, height: 16 }} /> إضافة قاعة</Link>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
@@ -69,7 +73,7 @@ function VenueCard({ venue }) {
           : 'linear-gradient(135deg, rgba(124,58,237,0.3), rgba(59,130,246,0.3))',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        {!coverImg && <span style={{ fontSize: '40px' }}>🏛️</span>}
+        {!coverImg && <BuildingOffice2Icon style={{ width: 48, height: 48, color: 'rgba(255,255,255,0.35)' }} />}
       </div>
 
       <div style={{ padding: '18px' }}>
@@ -88,18 +92,18 @@ function VenueCard({ venue }) {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', margin: '14px 0' }}>
-          <InfoChip icon="👥" label="سعة قصوى" value={`${venue.max_capacity} شخص`} />
-          <InfoChip icon="💰" label="السعر الأساسي" value={fmtIQD(venue.base_price_iqd)} />
-          <InfoChip icon="📅" label="إجمالي الحجوزات" value={venue.total_bookings ?? 0} />
-          <InfoChip icon="⭐" label="التقييم" value={`${venue.avg_rating ?? 0} / 5`} />
+          <InfoChip Icon={UsersIcon} label="سعة قصوى" value={`${venue.max_capacity} شخص`} />
+          <InfoChip Icon={BanknotesIcon} label="السعر الأساسي" value={fmtIQD(venue.base_price_iqd)} />
+          <InfoChip Icon={CalendarDaysIcon} label="إجمالي الحجوزات" value={venue.total_bookings ?? 0} />
+          <InfoChip Icon={StarIcon} label="التقييم" value={`${venue.avg_rating ?? 0} / 5`} />
         </div>
 
         <div style={{ display: 'flex', gap: '8px' }}>
           <Link to={`/owner/venues/${venue.slug}/edit`} className="glass-btn glass-btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
-            ✏️ تعديل
+            <PencilIcon style={{ width: 14, height: 14 }} /> تعديل
           </Link>
           <Link to={`/owner/bookings?venue_id=${venue.id}`} className="glass-btn glass-btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
-            📅 الحجوزات
+            <CalendarDaysIcon style={{ width: 14, height: 14 }} /> الحجوزات
           </Link>
         </div>
       </div>
@@ -107,11 +111,14 @@ function VenueCard({ venue }) {
   )
 }
 
-function InfoChip({ icon, label, value }) {
+function InfoChip({ Icon, label, value }) {
   return (
-    <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '10px', padding: '8px 10px' }}>
-      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', marginBottom: '3px' }}>{icon} {label}</div>
-      <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>{value}</div>
+    <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '10px', padding: '8px 10px', minWidth: 0 }}>
+      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', marginBottom: '3px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+        {Icon && <Icon style={{ width: 11, height: 11, flexShrink: 0 }} />}
+        {label}
+      </div>
+      <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.85)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{value}</div>
     </div>
   )
 }

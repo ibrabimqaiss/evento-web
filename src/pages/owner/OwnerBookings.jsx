@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
+import { ListBulletIcon, CalendarDaysIcon } from '@heroicons/react/24/outline'
 import {
   getOwnerBookings, confirmBooking, cancelBooking,
   fmtDate, fmtIQD, BOOKING_STATUS_LABELS, BOOKING_STATUS_CLASS,
@@ -151,7 +152,7 @@ export default function OwnerBookings() {
 
         {/* View toggle */}
         <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '4px', border: '1px solid rgba(255,255,255,0.08)', gap: '4px' }}>
-          {[{ v: 'list', icon: '📋', label: 'قائمة' }, { v: 'calendar', icon: '📅', label: 'تقويم' }].map(({ v, icon, label }) => (
+          {[{ v: 'list', Icon: ListBulletIcon, label: 'قائمة' }, { v: 'calendar', Icon: CalendarDaysIcon, label: 'تقويم' }].map(({ v, Icon, label }) => (
             <button
               key={v}
               onClick={() => setView(v)}
@@ -163,7 +164,7 @@ export default function OwnerBookings() {
                 display: 'flex', alignItems: 'center',
               }}
             >
-              {icon} {label}
+              <Icon style={{ width: 16, height: 16 }} /> {label}
             </button>
           ))}
         </div>
@@ -356,9 +357,9 @@ export default function OwnerBookings() {
                     </span>
                   </div>
                   <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
-                    <span>🏛️ {getVenueName(b)}</span>
-                    <span>👥 {b.guest_count} ضيف</span>
-                    <span>🎉 {EVENT_TYPE_AR[b.event_type] || b.event_type || '—'}</span>
+                    <span>{getVenueName(b)}</span>
+                    <span>{b.guest_count} ضيف</span>
+                    <span>{EVENT_TYPE_AR[b.event_type] || b.event_type || '—'}</span>
                   </div>
                   <Link to={`/owner/bookings/${b.id}`} className="glass-btn glass-btn-sm" style={{ marginTop: '10px', display: 'inline-flex' }}>
                     عرض التفاصيل ←

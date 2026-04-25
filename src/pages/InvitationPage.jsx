@@ -1,5 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate, useLocation } from 'react-router-dom'
+import {
+  CalendarDaysIcon, ClockIcon, MapPinIcon, MapIcon,
+  UserGroupIcon, ShieldCheckIcon, NoSymbolIcon,
+  CheckCircleIcon, XCircleIcon, LockClosedIcon,
+} from '@heroicons/react/24/outline'
 import { getPublicEvent, submitRSVP, isAuthenticated } from '../lib/api.js'
 
 // ─── OG meta helper ───────────────────────────────────────────────────────────
@@ -129,15 +134,15 @@ export default function InvitationPage() {
 
       {/* Date & time */}
       <div className="section card" style={{ margin: '0 16px 12px', borderRadius: 'var(--radius)' }}>
-        <DetailRow icon="📅" label="التاريخ" value={formatArabicDate(e.event_date)} />
-        {e.start_time && <DetailRow icon="🕖" label="الوقت" value={formatTime(e.start_time)} />}
+        <DetailRow Icon={CalendarDaysIcon} label="التاريخ" value={formatArabicDate(e.event_date)} />
+        {e.start_time && <DetailRow Icon={ClockIcon} label="الوقت" value={formatTime(e.start_time)} />}
       </div>
 
       {/* Venue */}
       {venueName && (
         <div className="section card" style={{ margin: '0 16px 12px', borderRadius: 'var(--radius)' }}>
-          <DetailRow icon="📍" label="القاعة" value={venueName} />
-          {venueAddress && <DetailRow icon="🗺" label="العنوان" value={venueAddress} />}
+          <DetailRow Icon={MapPinIcon} label="القاعة" value={venueName} />
+          {venueAddress && <DetailRow Icon={MapIcon} label="العنوان" value={venueAddress} />}
           {e.venue_lat && e.venue_lng && (
             <a
               href={`https://maps.google.com/?q=${e.venue_lat},${e.venue_lng}`}
@@ -146,7 +151,7 @@ export default function InvitationPage() {
               style={{ display: 'block', marginTop: 10, textAlign: 'center' }}
             >
               <button className="btn btn-outline w-full" style={{ marginTop: 0 }}>
-                🗺 فتح على خرائط Google
+                فتح على خرائط Google
               </button>
             </a>
           )}
@@ -156,14 +161,14 @@ export default function InvitationPage() {
       {/* Dress code */}
       {dressCode && (
         <div className="section card" style={{ margin: '0 16px 12px', borderRadius: 'var(--radius)' }}>
-          <DetailRow icon="👗" label="كود الأزياء" value={dressCode} />
+          <DetailRow Icon={UserGroupIcon} label="كود الأزياء" value={dressCode} />
         </div>
       )}
 
       {/* Kids policy */}
       <div className="section card" style={{ margin: '0 16px 12px', borderRadius: 'var(--radius)' }}>
         <DetailRow
-          icon={e.allow_kids ? '👶' : '🚫'}
+          Icon={e.allow_kids ? ShieldCheckIcon : NoSymbolIcon}
           label="سياسة الأطفال"
           value={e.allow_kids ? 'الأطفال مرحب بهم' : 'للكبار فقط'}
         />
@@ -206,10 +211,12 @@ export default function InvitationPage() {
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-function DetailRow({ icon, label, value }) {
+function DetailRow({ Icon, label, value }) {
   return (
     <div className="detail-row">
-      <span className="detail-icon">{icon}</span>
+      <span className="detail-icon">
+        {Icon && <Icon style={{ width: 18, height: 18 }} />}
+      </span>
       <div>
         <div className="detail-label">{label}</div>
         <div className="detail-value">{value}</div>
@@ -244,7 +251,7 @@ function RSVPForm({ plusOnes, onPlusOnesChange, onAccept, onDecline, submitting,
           disabled={submitting}
           style={{ opacity: submitting ? 0.7 : 1 }}
         >
-          ✅ سأحضر
+          <CheckCircleIcon style={{ width: 18, height: 18, display: 'inline', verticalAlign: 'middle', marginLeft: 4 }} /> سأحضر
         </button>
         <button
           className="btn btn-danger-outline"
@@ -252,7 +259,7 @@ function RSVPForm({ plusOnes, onPlusOnesChange, onAccept, onDecline, submitting,
           disabled={submitting}
           style={{ opacity: submitting ? 0.7 : 1 }}
         >
-          ❌ لن أحضر
+          <XCircleIcon style={{ width: 18, height: 18, display: 'inline', verticalAlign: 'middle', marginLeft: 4 }} /> لن أحضر
         </button>
       </div>
 
@@ -266,7 +273,7 @@ function LoginPrompt({ slug }) {
 
   return (
     <div className="login-prompt">
-      <div style={{ fontSize: 36, marginBottom: 12 }}>🔐</div>
+      <LockClosedIcon style={{ width: 36, height: 36, marginBottom: 12, color: 'var(--primary, #7C3AED)' }} />
       <h3 className="h3">سجّل الدخول للرد</h3>
       <p className="small mt-4">للرد على الدعوة، يرجى تسجيل الدخول</p>
       <div className="login-prompt-buttons">

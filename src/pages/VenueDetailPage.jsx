@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
+import { BuildingOffice2Icon } from '@heroicons/react/24/outline'
 import Navbar from '../components/Navbar'
 import { getVenueDetail, isAuthenticated } from '../lib/api'
 
@@ -100,7 +101,7 @@ export default function VenueDetailPage() {
           </div>
         ) : (
           <div className="rounded-2xl overflow-hidden mb-5 w-full h-48 bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center">
-            <span className="text-white text-5xl">🏛</span>
+            <BuildingOffice2Icon style={{ width: 56, height: 56, color: 'white', opacity: 0.8 }} />
           </div>
         )}
 

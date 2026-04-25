@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
 import {
   getInventory, createInventoryItem, updateInventoryItem, deleteInventoryItem,
 } from '../../lib/ownerApi'
@@ -69,7 +70,7 @@ export default function OwnerInventory() {
             )}
           </p>
         </div>
-        <button onClick={openAdd} className="glass-btn glass-btn-primary">➕ إضافة عنصر</button>
+        <button onClick={openAdd} className="glass-btn glass-btn-primary"><PlusIcon style={{ width: 16, height: 16 }} /> إضافة عنصر</button>
       </div>
 
       {/* Category filter */}
@@ -112,7 +113,7 @@ export default function OwnerInventory() {
                     <td>
                       <span style={{ color: item.is_low_stock ? '#FBBF24' : 'rgba(255,255,255,0.8)' }}>
                         {item.quantity}
-                        {item.is_low_stock && ' ⚠️'}
+                        {item.is_low_stock && ' !'}
                       </span>
                     </td>
                     <td>{item.min_quantity}</td>
@@ -132,8 +133,8 @@ export default function OwnerInventory() {
                     </td>
                     <td>
                       <div style={{ display: 'flex', gap: '6px' }}>
-                        <button onClick={() => openEdit(item)} className="glass-btn glass-btn-sm">✏️</button>
-                        <button onClick={() => handleDelete(item.id)} className="glass-btn glass-btn-sm glass-btn-danger">🗑</button>
+                        <button onClick={() => openEdit(item)} className="glass-btn glass-btn-sm"><PencilIcon style={{ width: 14, height: 14 }} /></button>
+                        <button onClick={() => handleDelete(item.id)} className="glass-btn glass-btn-sm glass-btn-danger"><TrashIcon style={{ width: 14, height: 14 }} /></button>
                       </div>
                     </td>
                   </tr>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { PlusIcon, XMarkIcon } from '@heroicons/react/24/outline'
 import {
   getFinanceSummary, getExpenses, createExpense, deleteExpense,
   fmtIQD, fmtDate,
@@ -102,7 +103,10 @@ export default function OwnerFinance() {
         <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'rgba(255,255,255,0.9)', margin: 0 }}>المصروفات</h2>
           <button onClick={() => setShowAdd(v => !v)} className="glass-btn glass-btn-sm glass-btn-primary">
-            {showAdd ? '✕ إغلاق' : '➕ إضافة'}
+            {showAdd
+              ? <><XMarkIcon style={{ width: 15, height: 15 }} /> إغلاق</>
+              : <><PlusIcon style={{ width: 15, height: 15 }} /> إضافة</>
+            }
           </button>
         </div>
 
