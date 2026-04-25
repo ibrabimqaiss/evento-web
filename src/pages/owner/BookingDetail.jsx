@@ -95,7 +95,7 @@ export default function BookingDetail() {
           <Row label="الهاتف" value={booking.customer_phone || booking.customer?.phone || '—'} ltr />
         </InfoCard>
         <InfoCard title="معلومات الفعالية">
-          <Row label="القاعة" value={booking.venue_name || booking.venue?.name || '—'} />
+          <Row label="القاعة" value={booking.venue_detail?.name_ar || booking.venue_detail?.name || '—'} />
           <Row label="نوع الفعالية" value={EVENT_TYPE_AR[booking.event_type] || booking.event_type || '—'} />
           <Row label="تاريخ الفعالية" value={fmtDate(booking.event_date)} />
           <Row label="وقت البدء" value={booking.start_time || '—'} ltr />
@@ -145,8 +145,8 @@ export default function BookingDetail() {
 
       {/* Cancel Modal */}
       {cancelModal && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={() => setCancelModal(false)}>
-          <div className="glass-card-static" style={{ maxWidth: 420, width: '100%', padding: '28px' }} onClick={e => e.stopPropagation()}>
+        <div className="glass-modal-overlay" onClick={() => setCancelModal(false)}>
+          <div className="glass-modal-panel" style={{ maxWidth: 420, padding: '28px' }} onClick={e => e.stopPropagation()}>
             <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'rgba(255,255,255,0.9)', marginBottom: '16px' }}>إلغاء الحجز</h3>
             <label className="glass-label">سبب الإلغاء</label>
             <textarea className="glass-textarea" value={cancelReason} onChange={e => setCancelReason(e.target.value)} placeholder="سبب الإلغاء..." style={{ minHeight: '80px', marginBottom: '16px' }} />

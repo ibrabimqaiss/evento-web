@@ -497,6 +497,41 @@
   backdrop-filter: blur(20px);
 }
 
+/* ── Glass Modal ─────────────────────────────────────────────────────────────── */
+.glass-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.glass-modal-panel {
+  background: rgba(15, 12, 41, 0.85);
+  backdrop-filter: blur(40px) saturate(200%) brightness(0.9);
+  -webkit-backdrop-filter: blur(40px) saturate(200%) brightness(0.9);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 20px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.glass-modal-panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  pointer-events: none;
+}
+
 /* ── Owner Layout Responsive ────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .owner-sidebar { display: none !important; }

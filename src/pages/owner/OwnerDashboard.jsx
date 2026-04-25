@@ -94,7 +94,7 @@ export default function OwnerDashboard() {
                 {bookings.map((b) => (
                   <tr key={b.id} onClick={() => window.location.href = `/owner/bookings/${b.id}`}>
                     <td>{b.customer_name || b.customer?.full_name || '—'}</td>
-                    <td>{b.venue_name || b.venue?.name || '—'}</td>
+                    <td>{b.venue_detail?.name_ar || b.venue_detail?.name || '—'}</td>
                     <td>{fmtDate(b.event_date)}</td>
                     <td>{b.guest_count}</td>
                     <td>

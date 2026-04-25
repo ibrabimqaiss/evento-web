@@ -146,8 +146,8 @@ export default function OwnerInventory() {
 
       {/* Modal */}
       {modal && (
-        <div style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(8px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }} onClick={() => setModal(null)}>
-          <div className="glass-card-static" style={{ maxWidth: 480, width: '100%', padding: '28px', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
+        <div className="glass-modal-overlay" onClick={() => setModal(null)}>
+          <div className="glass-modal-panel" style={{ maxWidth: 480, padding: '28px', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
             <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'rgba(255,255,255,0.9)', marginBottom: '20px' }}>
               {modal === 'add' ? 'إضافة عنصر جديد' : 'تعديل العنصر'}
             </h3>
