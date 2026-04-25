@@ -4,6 +4,10 @@
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+html { overflow-x: hidden; width: 100%; }
+body { overflow-x: hidden; width: 100%; max-width: 100vw; position: relative; }
+#root { overflow-x: hidden; width: 100%; max-width: 100vw; }
+
 :root {
   --primary: #7C3AED;
   --primary-light: #EDE9FE;

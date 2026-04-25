@@ -58,7 +58,7 @@ export default function OwnerDashboard() {
       </div>
 
       {/* Stat Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '16px', marginBottom: '28px' }}>
+      <div className="stats-grid" style={{ marginBottom: '28px' }}>
         {cards.map((c) => (
           <div key={c.label} className={`glass-card stat-card stat-card-${c.color}${c.pulse ? ' pulse-pending' : ''}`}>
             <div className="stat-card-icon"><c.Icon /></div>
