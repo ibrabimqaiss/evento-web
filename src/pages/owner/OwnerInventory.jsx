@@ -188,7 +188,7 @@ export default function OwnerInventory() {
               <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
                 <button type="button" onClick={() => setModal(null)} className="glass-btn" style={{ flex: 1 }}>إلغاء</button>
                 <button type="submit" disabled={saving} className="glass-btn glass-btn-primary" style={{ flex: 1 }}>
-                  {saving ? 'جاري الحفظ...' : '💾 حفظ'}
+                  {saving ? 'جاري الحفظ...' : 'حفظ'}
                 </button>
               </div>
             </form>

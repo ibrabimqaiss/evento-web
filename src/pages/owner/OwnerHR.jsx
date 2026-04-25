@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import {
   PlusIcon, PencilIcon, UsersIcon, ListBulletIcon,
-  CheckCircleIcon, ClockIcon, XCircleIcon,
-  BuildingOffice2Icon, CalendarDaysIcon,
+  CheckCircleIcon, ClockIcon, XCircleIcon, CheckIcon,
+  BuildingOffice2Icon, CalendarDaysIcon, BanknotesIcon,
+  TrashIcon, WrenchScrewdriverIcon,
 } from '@heroicons/react/24/outline'
 import {
   getStaff, createStaffMember, updateStaffMember, deleteStaffMember,
@@ -30,6 +31,229 @@ const ATTENDANCE_OPTIONS = [
 ]
 
 const empty = { full_name:'', phone:'', role:'waiter', employment_type:'full_time', salary:'', join_date: new Date().toISOString().slice(0,10), notes:'' }
+
+// ── Daily workers localStorage helpers ──────────────────────────────────────
+function dwKey() { return 'evento_daily_workers' }
+function loadDW() { try { return JSON.parse(localStorage.getItem(dwKey()) || '[]') } catch { return [] } }
+function saveDW(data) { localStorage.setItem(dwKey(), JSON.stringify(data)) }
+
+const DW_ROLES = [['waiter','نادل'],['security','أمن'],['chef','طاهي'],['cleaner','عمال نظافة'],['decor','ديكور']]
+const emptyDW = { name: '', phone: '', role: 'waiter', daily_rate: '', work_date: new Date().toISOString().slice(0,10), booking_ref: '', notes: '', is_paid: false }
+
+function DailyWorkersTab() {
+  const [workers, setWorkers] = useState(loadDW)
+  const [showForm, setShowForm] = useState(false)
+  const [form, setForm] = useState(emptyDW)
+  const [filter, setFilter] = useState('') // 'paid' | 'unpaid' | ''
+
+  function addWorker(e) {
+    e.preventDefault()
+    const next = [...workers, { ...form, id: Date.now(), daily_rate: +form.daily_rate }]
+    saveDW(next); setWorkers(next); setForm(emptyDW); setShowForm(false)
+  }
+
+  function togglePaid(id) {
+    const next = workers.map(w => w.id === id ? { ...w, is_paid: !w.is_paid } : w)
+    saveDW(next); setWorkers(next)
+  }
+
+  function remove(id) {
+    const next = workers.filter(w => w.id !== id)
+    saveDW(next); setWorkers(next)
+  }
+
+  const shown = filter ? workers.filter(w => filter === 'paid' ? w.is_paid : !w.is_paid) : workers
+  const totalCost = workers.reduce((s, w) => s + (w.daily_rate || 0), 0)
+  const paidCost = workers.filter(w => w.is_paid).reduce((s, w) => s + (w.daily_rate || 0), 0)
+  const unpaidCost = totalCost - paidCost
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px', flexWrap: 'wrap', gap: '10px' }}>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          {[['', 'الكل'], ['unpaid', 'غير مدفوع'], ['paid', 'مدفوع']].map(([v, l]) => (
+            <button key={v} className={`glass-btn glass-btn-sm${filter === v ? ' glass-btn-primary' : ''}`} onClick={() => setFilter(v)}>{l}</button>
+          ))}
+        </div>
+        <button onClick={() => setShowForm(v => !v)} className="glass-btn glass-btn-primary glass-btn-sm">
+          <PlusIcon style={{ width: 14, height: 14 }} /> إضافة عامل
+        </button>
+      </div>
+
+      {/* Summary */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '16px' }}>
+        {[
+          { label: 'إجمالي التكلفة', value: fmtIQD(totalCost), color: 'rgba(255,255,255,0.8)' },
+          { label: 'غير مدفوع', value: fmtIQD(unpaidCost), color: '#FBBF24' },
+          { label: 'مدفوع', value: fmtIQD(paidCost), color: '#34D399' },
+        ].map(m => (
+          <div key={m.label} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '14px', textAlign: 'center' }}>
+            <div style={{ fontSize: '15px', fontWeight: 700, color: m.color, marginBottom: 4 }}>{m.value}</div>
+            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>{m.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {showForm && (
+        <form onSubmit={addWorker} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 16, padding: '20px', marginBottom: '16px', border: '1px solid rgba(255,255,255,0.08)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+          <div style={{ gridColumn: '1/-1' }}><label className="glass-label">الاسم</label><input className="glass-input" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required /></div>
+          <div><label className="glass-label">الدور</label>
+            <select className="glass-select" value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))}>
+              {DW_ROLES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+            </select>
+          </div>
+          <div><label className="glass-label">الأجر اليومي (د.ع)</label><input className="glass-input" type="number" min={0} value={form.daily_rate} onChange={e => setForm(f => ({ ...f, daily_rate: e.target.value }))} dir="ltr" required /></div>
+          <div><label className="glass-label">تاريخ العمل</label><input className="glass-input" type="date" value={form.work_date} onChange={e => setForm(f => ({ ...f, work_date: e.target.value }))} dir="ltr" /></div>
+          <div><label className="glass-label">رقم الهاتف</label><input className="glass-input" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} dir="ltr" /></div>
+          <div style={{ gridColumn: '1/-1' }}><label className="glass-label">ملاحظات</label><input className="glass-input" value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} /></div>
+          <div style={{ gridColumn: '1/-1', display: 'flex', gap: '10px' }}>
+            <button type="button" onClick={() => setShowForm(false)} className="glass-btn" style={{ flex: 1 }}>إلغاء</button>
+            <button type="submit" className="glass-btn glass-btn-primary" style={{ flex: 1 }}><CheckIcon style={{ width: 14, height: 14 }} /> إضافة</button>
+          </div>
+        </form>
+      )}
+
+      {shown.length === 0 ? (
+        <div className="glass-card-static" style={{ padding: '50px', textAlign: 'center', color: 'rgba(255,255,255,0.35)' }}>لا يوجد عمال يومية</div>
+      ) : (
+        <div className="glass-card-static">
+          <div className="glass-table-wrap">
+            <table className="glass-table">
+              <thead><tr><th>الاسم</th><th>الدور</th><th>الأجر</th><th>تاريخ العمل</th><th>الحالة</th><th>الإجراءات</th></tr></thead>
+              <tbody>
+                {shown.map(w => (
+                  <tr key={w.id}>
+                    <td style={{ fontWeight: 600 }}>{w.name}</td>
+                    <td>{DW_ROLES.find(([v]) => v === w.role)?.[1] || w.role}</td>
+                    <td style={{ direction: 'ltr', textAlign: 'right' }}>{fmtIQD(w.daily_rate)}</td>
+                    <td>{w.work_date}</td>
+                    <td>
+                      <span style={{ padding: '3px 10px', borderRadius: 10, fontSize: 12, fontWeight: 600, background: w.is_paid ? 'rgba(52,211,153,0.12)' : 'rgba(251,191,36,0.12)', color: w.is_paid ? '#34D399' : '#FBBF24', border: `1px solid ${w.is_paid ? 'rgba(52,211,153,0.3)' : 'rgba(251,191,36,0.3)'}` }}>
+                        {w.is_paid ? 'مدفوع' : 'غير مدفوع'}
+                      </span>
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', gap: '6px' }}>
+                        <button onClick={() => togglePaid(w.id)} className={`glass-btn glass-btn-sm ${w.is_paid ? '' : 'glass-btn-success'}`}>
+                          {w.is_paid ? <XCircleIcon style={{ width: 13, height: 13 }} /> : <CheckCircleIcon style={{ width: 13, height: 13 }} />}
+                        </button>
+                        <button onClick={() => remove(w.id)} className="glass-btn glass-btn-sm glass-btn-danger"><TrashIcon style={{ width: 13, height: 13 }} /></button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// ── Payroll Tab ───────────────────────────────────────────────────────────────
+function PayrollTab({ staff }) {
+  const active = staff.filter(s => s.is_active !== false)
+  const [payHistory, setPayHistory] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('evento_payroll') || '{}') } catch { return {} }
+  })
+  const [payModal, setPayModal] = useState(null) // staff id
+  const [payDate, setPayDate] = useState(new Date().toISOString().slice(0, 10))
+
+  function markPaid(staffId) {
+    const month = new Date().toISOString().slice(0, 7)
+    const key = `${staffId}_${month}`
+    const next = { ...payHistory, [key]: { paid: true, date: payDate, month } }
+    setPayHistory(next)
+    localStorage.setItem('evento_payroll', JSON.stringify(next))
+    setPayModal(null)
+  }
+
+  function getPayStatus(staffId) {
+    const month = new Date().toISOString().slice(0, 7)
+    return payHistory[`${staffId}_${month}`]
+  }
+
+  const totalPayroll = active.reduce((s, m) => s + parseFloat(m.salary || 0), 0)
+  const paidCount = active.filter(s => getPayStatus(s.id)?.paid).length
+
+  return (
+    <div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px', marginBottom: '20px' }}>
+        {[
+          { label: 'إجمالي الرواتب', value: fmtIQD(totalPayroll), color: 'rgba(255,255,255,0.8)' },
+          { label: 'تم صرفه', value: `${paidCount} / ${active.length}`, color: '#34D399' },
+          { label: 'متبقي', value: `${active.length - paidCount} موظف`, color: '#FBBF24' },
+        ].map(m => (
+          <div key={m.label} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '14px', textAlign: 'center' }}>
+            <div style={{ fontSize: '15px', fontWeight: 700, color: m.color, marginBottom: 4 }}>{m.value}</div>
+            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>{m.label}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="glass-card-static">
+        {active.length === 0 ? (
+          <div style={{ padding: '50px', textAlign: 'center', color: 'rgba(255,255,255,0.35)' }}>لا يوجد موظفون</div>
+        ) : (
+          <div className="glass-table-wrap">
+            <table className="glass-table">
+              <thead><tr><th>الموظف</th><th>الدور</th><th>الراتب</th><th>حالة الشهر</th><th>تاريخ الصرف</th><th></th></tr></thead>
+              <tbody>
+                {active.map(s => {
+                  const ps = getPayStatus(s.id)
+                  return (
+                    <tr key={s.id}>
+                      <td style={{ fontWeight: 600 }}>{s.full_name}</td>
+                      <td>{ROLE_AR[s.role] || s.role}</td>
+                      <td style={{ direction: 'ltr', textAlign: 'right' }}>{fmtIQD(s.salary)}</td>
+                      <td>
+                        <span style={{ padding: '3px 10px', borderRadius: 10, fontSize: 12, fontWeight: 600, background: ps?.paid ? 'rgba(52,211,153,0.12)' : 'rgba(251,191,36,0.12)', color: ps?.paid ? '#34D399' : '#FBBF24', border: `1px solid ${ps?.paid ? 'rgba(52,211,153,0.3)' : 'rgba(251,191,36,0.3)'}` }}>
+                          {ps?.paid ? 'مصروف' : 'لم يُصرف'}
+                        </span>
+                      </td>
+                      <td style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>{ps?.date || '—'}</td>
+                      <td>
+                        {!ps?.paid ? (
+                          <button onClick={() => setPayModal(s.id)} className="glass-btn glass-btn-sm glass-btn-success">
+                            <BanknotesIcon style={{ width: 13, height: 13 }} /> صرف
+                          </button>
+                        ) : (
+                          <button onClick={() => { const m = new Date().toISOString().slice(0,7); const next = {...payHistory}; delete next[`${s.id}_${m}`]; setPayHistory(next); localStorage.setItem('evento_payroll', JSON.stringify(next)) }} className="glass-btn glass-btn-sm">تراجع</button>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
+
+      {payModal && (
+        <div className="glass-modal-overlay" onClick={() => setPayModal(null)}>
+          <div className="glass-modal-panel" style={{ maxWidth: 360, padding: '24px' }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'rgba(255,255,255,0.9)', marginBottom: '14px' }}>تأكيد صرف الراتب</h3>
+            <div style={{ marginBottom: '14px' }}>
+              <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.7)', marginBottom: '6px' }}>
+                {active.find(s => s.id === payModal)?.full_name} — {fmtIQD(active.find(s => s.id === payModal)?.salary)}
+              </div>
+              <label className="glass-label">تاريخ الصرف</label>
+              <input className="glass-input" type="date" value={payDate} onChange={e => setPayDate(e.target.value)} dir="ltr" />
+            </div>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button onClick={() => setPayModal(null)} className="glass-btn" style={{ flex: 1 }}>إلغاء</button>
+              <button onClick={() => markPaid(payModal)} className="glass-btn glass-btn-primary" style={{ flex: 1 }}>
+                <CheckIcon style={{ width: 14, height: 14 }} /> تأكيد الصرف
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
 
 // ── Schedule localStorage helpers ────────────────────────────────────────────
 function scheduleKey(date) { return `evento_schedule_${date}` }
@@ -269,7 +493,7 @@ function ScheduleTab({ allStaff }) {
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                               }}
                             >
-                              {isAssigned ? '✓' : ''}
+                              {isAssigned ? <CheckIcon style={{ width: 12, height: 12 }} /> : ''}
                             </button>
 
                             {/* Name + role */}
@@ -371,24 +595,23 @@ export default function OwnerHR() {
       </div>
 
       {/* Main tabs */}
-      <div className="glass-tabs" style={{ marginBottom: '24px' }}>
-        <button className={`glass-tab${hrTab === 'staff' ? ' active' : ''}`} onClick={() => setHrTab('staff')}>
-          الموظفون
-        </button>
-        <button className={`glass-tab${hrTab === 'schedule' ? ' active' : ''}`} onClick={() => setHrTab('schedule')}>
-          جدول العمل اليومي
-        </button>
+      <div className="glass-tabs" style={{ marginBottom: '24px', flexWrap: 'wrap' }}>
+        <button className={`glass-tab${hrTab === 'staff' ? ' active' : ''}`} onClick={() => setHrTab('staff')}>الموظفون</button>
+        <button className={`glass-tab${hrTab === 'schedule' ? ' active' : ''}`} onClick={() => setHrTab('schedule')}>جدول العمل</button>
+        <button className={`glass-tab${hrTab === 'daily' ? ' active' : ''}`} onClick={() => setHrTab('daily')}>عمال اليومية</button>
+        <button className={`glass-tab${hrTab === 'payroll' ? ' active' : ''}`} onClick={() => setHrTab('payroll')}>الرواتب</button>
       </div>
 
-      {hrTab === 'staff' ? (
+      {hrTab === 'staff' && (
         <StaffTab
           staff={staff} loading={loading}
           typeFilter={typeFilter} setTypeFilter={setTypeFilter}
           openAdd={openAdd} openEdit={openEdit} handleDeactivate={handleDeactivate}
         />
-      ) : (
-        <ScheduleTab allStaff={staff} />
       )}
+      {hrTab === 'schedule' && <ScheduleTab allStaff={staff} />}
+      {hrTab === 'daily' && <DailyWorkersTab />}
+      {hrTab === 'payroll' && <PayrollTab staff={staff} />}
 
       {/* Staff modal */}
       {modal && (
@@ -435,7 +658,7 @@ export default function OwnerHR() {
               <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
                 <button type="button" onClick={() => setModal(null)} className="glass-btn" style={{ flex: 1 }}>إلغاء</button>
                 <button type="submit" disabled={saving} className="glass-btn glass-btn-primary" style={{ flex: 1 }}>
-                  {saving ? 'جاري الحفظ...' : '💾 حفظ'}
+                  {saving ? 'جاري الحفظ...' : <><CheckIcon style={{ width: 14, height: 14 }} /> حفظ</>}
                 </button>
               </div>
             </form>

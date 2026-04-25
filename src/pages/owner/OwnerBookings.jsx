@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { ListBulletIcon, CalendarDaysIcon } from '@heroicons/react/24/outline'
+import { ListBulletIcon, CalendarDaysIcon, CheckCircleIcon, XCircleIcon, UserCircleIcon } from '@heroicons/react/24/outline'
 import {
   getOwnerBookings, confirmBooking, cancelBooking,
   fmtDate, fmtIQD, BOOKING_STATUS_LABELS, BOOKING_STATUS_CLASS,
@@ -68,6 +68,18 @@ export default function OwnerBookings() {
   const [actionId, setActionId] = useState(null)
   const [cancelModal, setCancelModal] = useState(null)
   const [cancelReason, setCancelReason] = useState('')
+
+  // ── Customer profile modal ──────────────────────────────────────────────────
+  const [customerModal, setCustomerModal] = useState(null) // { name, phone, bookings[] }
+
+  function openCustomer(b) {
+    const same = bookings.filter(x => x.customer_name === b.customer_name && b.customer_name)
+    setCustomerModal({
+      name: b.customer_name || '—',
+      phone: b.customer_phone || '—',
+      bookings: same,
+    })
+  }
 
   // ── Calendar state ──────────────────────────────────────────────────────────
   const today = new Date()
@@ -196,7 +208,15 @@ export default function OwnerBookings() {
                   <tbody>
                     {bookings.map(b => (
                       <tr key={b.id}>
-                        <td>{b.customer_name || '—'}</td>
+                        <td>
+                          <button
+                            onClick={() => openCustomer(b)}
+                            style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.85)', cursor: 'pointer', fontFamily: 'Cairo, sans-serif', fontSize: '14px', padding: 0, display: 'flex', alignItems: 'center', gap: '5px' }}
+                          >
+                            <UserCircleIcon style={{ width: 15, height: 15, color: '#A78BFA', flexShrink: 0 }} />
+                            {b.customer_name || '—'}
+                          </button>
+                        </td>
                         <td>{getVenueName(b)}</td>
                         <td>{fmtDate(b.event_date)}</td>
                         <td>{EVENT_TYPE_AR[b.event_type] || b.event_type || '—'}</td>
@@ -212,12 +232,12 @@ export default function OwnerBookings() {
                             <Link to={`/owner/bookings/${b.id}`} className="glass-btn glass-btn-sm">تفاصيل</Link>
                             {b.status === 'pending' && (
                               <button className="glass-btn glass-btn-sm glass-btn-success" disabled={actionId === b.id} onClick={() => handleConfirm(b.id)}>
-                                {actionId === b.id ? '...' : '✓ تأكيد'}
+                                {actionId === b.id ? '...' : <><CheckCircleIcon style={{ width: 13, height: 13 }} /> تأكيد</>}
                               </button>
                             )}
                             {(b.status === 'pending' || b.status === 'confirmed') && (
                               <button className="glass-btn glass-btn-sm glass-btn-danger" onClick={() => { setCancelModal(b.id); setCancelReason('') }}>
-                                ✕ إلغاء
+                                <XCircleIcon style={{ width: 13, height: 13 }} /> إلغاء
                               </button>
                             )}
                           </div>
@@ -332,6 +352,55 @@ export default function OwnerBookings() {
               <button onClick={handleCancel} disabled={actionId === cancelModal} className="glass-btn glass-btn-danger" style={{ flex: 1 }}>
                 {actionId === cancelModal ? 'جاري الإلغاء...' : 'تأكيد الإلغاء'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Customer Profile Modal ─────────────────────────────────────────── */}
+      {customerModal && (
+        <div className="glass-modal-overlay" onClick={() => setCustomerModal(null)}>
+          <div className="glass-modal-panel" style={{ maxWidth: 480, padding: '28px' }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(124,58,237,0.2)', border: '2px solid rgba(124,58,237,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <UserCircleIcon style={{ width: 28, height: 28, color: '#A78BFA' }} />
+                </div>
+                <div>
+                  <div style={{ fontSize: '17px', fontWeight: 700, color: 'rgba(255,255,255,0.95)' }}>{customerModal.name}</div>
+                  <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', direction: 'ltr', textAlign: 'right' }}>{customerModal.phone}</div>
+                </div>
+              </div>
+              <button onClick={() => setCustomerModal(null)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: '22px', cursor: 'pointer' }}>×</button>
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '20px' }}>
+              {[
+                { label: 'إجمالي الحجوزات', value: customerModal.bookings.length },
+                { label: 'إجمالي الإنفاق', value: fmtIQD(customerModal.bookings.reduce((s, b) => s + parseFloat(b.quoted_price_iqd || 0), 0)) },
+                { label: 'أول حجز', value: customerModal.bookings.reduce((m, b) => !m || b.created_at < m ? b.created_at : m, null) ? fmtDate(customerModal.bookings.reduce((m, b) => !m || b.created_at < m ? b.created_at : m, null)) : '—' },
+              ].map(({ label, value }) => (
+                <div key={label} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '12px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '15px', fontWeight: 700, color: '#A78BFA', marginBottom: 4 }}>{value}</div>
+                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>{label}</div>
+                </div>
+              ))}
+            </div>
+            <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.45)', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>آخر الحجوزات</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '200px', overflowY: 'auto' }}>
+              {customerModal.bookings.slice(0, 5).map(b => (
+                <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: '10px 14px', border: '1px solid rgba(255,255,255,0.06)' }}>
+                  <div>
+                    <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.8)' }}>{EVENT_TYPE_AR[b.event_type] || b.event_type}</div>
+                    <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>{fmtDate(b.event_date)}</div>
+                  </div>
+                  <div style={{ textAlign: 'left' }}>
+                    <div style={{ fontSize: '13px', direction: 'ltr', color: '#34D399' }}>{fmtIQD(b.quoted_price_iqd)}</div>
+                    <span className={BOOKING_STATUS_CLASS[b.status] || 'status-badge status-pending'} style={{ fontSize: '10px', padding: '2px 8px' }}>
+                      {BOOKING_STATUS_LABELS[b.status] || b.status}
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>

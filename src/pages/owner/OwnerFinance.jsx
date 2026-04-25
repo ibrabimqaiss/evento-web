@@ -1,9 +1,20 @@
 import { useEffect, useState } from 'react'
-import { PlusIcon, XMarkIcon } from '@heroicons/react/24/outline'
+import { PlusIcon, XMarkIcon, TrashIcon, CheckIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
 import {
   getFinanceSummary, getExpenses, createExpense, deleteExpense,
   fmtIQD, fmtDate,
 } from '../../lib/ownerApi'
+
+function exportCSV(expenses, summary) {
+  const rows = [['الوصف', 'الفئة', 'المبلغ (د.ع)', 'التاريخ']]
+  expenses.forEach(e => rows.push([e.description, e.category, e.amount, e.date]))
+  rows.push([])
+  rows.push(['إجمالي الإيرادات (الشهر)', '', summary?.month ?? 0, ''])
+  const csv = rows.map(r => r.map(v => `"${v}"`).join(',')).join('\n')
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' })
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob)
+  a.download = `evento_finance_${new Date().toISOString().slice(0,10)}.csv`; a.click()
+}
 
 const PERIOD_TABS = [
   { key: 'today', label: 'اليوم' },
@@ -65,9 +76,14 @@ export default function OwnerFinance() {
 
   return (
     <div className="owner-page">
-      <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'rgba(255,255,255,0.95)', margin: 0 }}>المالية</h1>
-        <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.45)', marginTop: '4px' }}>متابعة الإيرادات والمصروفات</p>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
+        <div>
+          <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'rgba(255,255,255,0.95)', margin: 0 }}>المالية</h1>
+          <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.45)', marginTop: '4px' }}>متابعة الإيرادات والمصروفات</p>
+        </div>
+        <button onClick={() => exportCSV(expenses, summary)} className="glass-btn glass-btn-sm" disabled={loading}>
+          <ArrowDownTrayIcon style={{ width: 15, height: 15 }} /> تصدير CSV
+        </button>
       </div>
 
       {/* Revenue Summary */}
@@ -133,7 +149,7 @@ export default function OwnerFinance() {
             </div>
             <div style={{ display: 'flex', alignItems: 'flex-end' }}>
               <button type="submit" disabled={saving} className="glass-btn glass-btn-primary" style={{ width: '100%' }}>
-                {saving ? 'جاري الحفظ...' : '💾 حفظ'}
+                {saving ? 'جاري الحفظ...' : <><CheckIcon style={{ width: 15, height: 15 }} /> حفظ</>}
               </button>
             </div>
           </form>
@@ -169,7 +185,7 @@ export default function OwnerFinance() {
                     <td>{fmtDate(exp.date)}</td>
                     <td>
                       <button onClick={() => handleDelete(exp.id)} className="glass-btn glass-btn-sm glass-btn-danger">
-                        🗑
+                        <TrashIcon style={{ width: 14, height: 14 }} />
                       </button>
                     </td>
                   </tr>

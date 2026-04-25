@@ -7,10 +7,11 @@ import {
   BuildingOffice2Icon,
   PlusIcon,
   ChartBarIcon,
+  ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline'
 import {
-  getDashboardStats, getOwnerBookings,
-  fmtDate, BOOKING_STATUS_LABELS, BOOKING_STATUS_CLASS,
+  getDashboardStats, getOwnerBookings, getInventory,
+  fmtDate, fmtIQD, BOOKING_STATUS_LABELS, BOOKING_STATUS_CLASS,
 } from '../../lib/ownerApi'
 
 function fmtShort(n) {
@@ -22,16 +23,21 @@ function fmtShort(n) {
 export default function OwnerDashboard() {
   const [stats, setStats] = useState(null)
   const [bookings, setBookings] = useState([])
+  const [lowStock, setLowStock] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     Promise.all([
       getDashboardStats(),
       getOwnerBookings({ limit: 8, ordering: '-created_at' }),
-    ]).then(([sRes, bRes]) => {
+      getInventory(),
+    ]).then(([sRes, bRes, invRes]) => {
       setStats(sRes.data?.data ?? sRes.data)
       const bData = bRes.data?.data ?? bRes.data
       setBookings(Array.isArray(bData) ? bData : (bData?.results ?? []))
+      const invData = invRes.data?.data ?? invRes.data
+      const inv = Array.isArray(invData) ? invData : (invData?.results ?? [])
+      setLowStock(inv.filter(i => i.is_low_stock))
     }).finally(() => setLoading(false))
   }, [])
 
@@ -56,6 +62,25 @@ export default function OwnerDashboard() {
           {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
         </p>
       </div>
+
+      {/* Low Stock Alert */}
+      {lowStock.length > 0 && (
+        <div style={{ background: 'rgba(248,113,113,0.08)', border: '1px solid rgba(248,113,113,0.35)', borderRadius: 16, padding: '16px 20px', marginBottom: '20px', boxShadow: '0 0 20px rgba(248,113,113,0.12)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '12px' }}>
+            <ExclamationTriangleIcon style={{ width: 20, height: 20, color: '#F87171', flexShrink: 0 }} />
+            <span style={{ fontSize: '14px', fontWeight: 700, color: '#F87171' }}>تنبيه: {lowStock.length} عنصر منخفض المخزون</span>
+            <Link to="/owner/inventory" className="glass-btn glass-btn-sm glass-btn-danger" style={{ marginRight: 'auto', padding: '4px 12px' }}>إدارة المخزون</Link>
+          </div>
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+            {lowStock.map(item => (
+              <div key={item.id} style={{ background: 'rgba(248,113,113,0.1)', borderRadius: 10, padding: '6px 12px', fontSize: '13px', color: '#F87171', border: '1px solid rgba(248,113,113,0.25)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ fontWeight: 600 }}>{item.name}</span>
+                <span style={{ opacity: 0.7 }}>({item.quantity}/{item.min_quantity})</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Stat Cards */}
       <div className="stats-grid" style={{ marginBottom: '28px' }}>
