@@ -1,9 +1,12 @@
 import { useEffect, useState, useCallback } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { ListBulletIcon, CalendarDaysIcon, CheckCircleIcon, XCircleIcon, UserCircleIcon } from '@heroicons/react/24/outline'
 import {
-  getOwnerBookings, confirmBooking, cancelBooking,
-  fmtDate, fmtIQD, BOOKING_STATUS_LABELS, BOOKING_STATUS_CLASS,
+  ListBulletIcon, CalendarDaysIcon, CheckCircleIcon, XCircleIcon,
+  UserCircleIcon, PlusIcon,
+} from '@heroicons/react/24/outline'
+import {
+  getOwnerBookings, getOwnerVenues, confirmBooking, cancelBooking,
+  createOwnerBooking, fmtDate, fmtIQD, BOOKING_STATUS_LABELS, BOOKING_STATUS_CLASS,
 } from '../../lib/ownerApi'
 
 const TABS = [
@@ -16,8 +19,13 @@ const TABS = [
 
 const EVENT_TYPE_AR = {
   wedding: 'زفاف', graduation: 'تخرج', conference: 'مؤتمر',
-  party: 'حفلة', birthday: 'عيد ميلاد', other: 'أخرى',
+  party: 'حفلة', birthday: 'عيد ميلاد', exhibition: 'معارض', other: 'أخرى',
 }
+
+const EVENT_TYPES_LIST = [
+  ['wedding', 'زفاف'], ['conference', 'مؤتمر'], ['party', 'حفلة'],
+  ['graduation', 'تخرج'], ['exhibition', 'معارض'], ['birthday', 'عيد ميلاد'], ['other', 'أخرى'],
+]
 
 const ARABIC_MONTHS = [
   'يناير','فبراير','مارس','أبريل','مايو','يونيو',
@@ -55,6 +63,147 @@ const Spinner = () => (
   </div>
 )
 
+// ── Add Booking Modal ─────────────────────────────────────────────────────────
+function AddBookingModal({ venues, initialDate, onClose, onSuccess }) {
+  const emptyForm = {
+    venue_id: venues[0]?.id || '',
+    customer_name: '',
+    customer_phone: '',
+    event_type: 'wedding',
+    event_date: initialDate || '',
+    start_time: '18:00',
+    end_time: '23:00',
+    guest_count: '',
+    total_amount: '',
+    notes: '',
+    status: 'pending',
+  }
+  const [form, setForm] = useState(emptyForm)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (venues[0]?.id && !form.venue_id) {
+      setForm(f => ({ ...f, venue_id: venues[0].id }))
+    }
+  }, [venues])
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    setSaving(true)
+    setError('')
+    try {
+      await createOwnerBooking({
+        venue_id: form.venue_id,
+        customer_name: form.customer_name,
+        customer_phone: form.customer_phone,
+        event_type: form.event_type,
+        event_date: form.event_date,
+        start_time: form.start_time || '18:00',
+        end_time: form.end_time || null,
+        guest_count: +form.guest_count || 1,
+        total_amount: +form.total_amount || 0,
+        notes: form.notes,
+        status: form.status,
+      })
+      onSuccess()
+    } catch (err) {
+      setError(err.response?.data?.error?.message || 'حدث خطأ أثناء الحفظ')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  function set(key, val) { setForm(f => ({ ...f, [key]: val })) }
+
+  return (
+    <div className="glass-modal-overlay" onClick={onClose}>
+      <div
+        className="glass-modal-panel"
+        style={{ maxWidth: 560, padding: '28px', maxHeight: '90vh', overflowY: 'auto' }}
+        onClick={e => e.stopPropagation()}
+      >
+        <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'rgba(255,255,255,0.9)', marginBottom: '20px' }}>
+          إضافة حجز جديد
+        </h3>
+
+        {error && (
+          <div style={{ background: 'rgba(248,113,113,0.12)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 10, padding: '10px 14px', marginBottom: '16px', color: '#F87171', fontSize: '13px' }}>
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div>
+            <label className="glass-label">القاعة</label>
+            <select className="glass-select" value={form.venue_id} onChange={e => set('venue_id', e.target.value)} required>
+              {venues.length === 0 && <option value="">لا توجد قاعات</option>}
+              {venues.map(v => <option key={v.id} value={v.id}>{v.name_ar || v.name}</option>)}
+            </select>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div>
+              <label className="glass-label">اسم العميل *</label>
+              <input className="glass-input" value={form.customer_name} onChange={e => set('customer_name', e.target.value)} required />
+            </div>
+            <div>
+              <label className="glass-label">رقم الهاتف *</label>
+              <input className="glass-input" value={form.customer_phone} onChange={e => set('customer_phone', e.target.value)} dir="ltr" required placeholder="07xxxxxxxxx" />
+            </div>
+            <div>
+              <label className="glass-label">نوع المناسبة</label>
+              <select className="glass-select" value={form.event_type} onChange={e => set('event_type', e.target.value)}>
+                {EVENT_TYPES_LIST.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="glass-label">حالة الحجز</label>
+              <select className="glass-select" value={form.status} onChange={e => set('status', e.target.value)}>
+                <option value="pending">معلق</option>
+                <option value="confirmed">مؤكد</option>
+              </select>
+            </div>
+            <div>
+              <label className="glass-label">تاريخ المناسبة *</label>
+              <input className="glass-input" type="date" value={form.event_date} onChange={e => set('event_date', e.target.value)} dir="ltr" required />
+            </div>
+            <div>
+              <label className="glass-label">عدد الضيوف *</label>
+              <input className="glass-input" type="number" min={1} value={form.guest_count} onChange={e => set('guest_count', e.target.value)} dir="ltr" required />
+            </div>
+            <div>
+              <label className="glass-label">وقت البدء</label>
+              <input className="glass-input" type="time" value={form.start_time} onChange={e => set('start_time', e.target.value)} dir="ltr" />
+            </div>
+            <div>
+              <label className="glass-label">وقت الانتهاء</label>
+              <input className="glass-input" type="time" value={form.end_time} onChange={e => set('end_time', e.target.value)} dir="ltr" />
+            </div>
+          </div>
+
+          <div>
+            <label className="glass-label">المبلغ الإجمالي (د.ع)</label>
+            <input className="glass-input" type="number" min={0} value={form.total_amount} onChange={e => set('total_amount', e.target.value)} dir="ltr" placeholder="0" />
+          </div>
+          <div>
+            <label className="glass-label">ملاحظات</label>
+            <textarea className="glass-textarea" value={form.notes} onChange={e => set('notes', e.target.value)} style={{ minHeight: '70px' }} />
+          </div>
+
+          <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
+            <button type="button" onClick={onClose} className="glass-btn" style={{ flex: 1 }}>إلغاء</button>
+            <button type="submit" disabled={saving} className="glass-btn glass-btn-primary" style={{ flex: 1 }}>
+              {saving ? 'جاري الحفظ...' : <><PlusIcon style={{ width: 14, height: 14 }} /> إضافة الحجز</>}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  )
+}
+
+// ── Main Component ────────────────────────────────────────────────────────────
 export default function OwnerBookings() {
   const [searchParams] = useSearchParams()
   const venueId = searchParams.get('venue_id')
@@ -69,16 +218,21 @@ export default function OwnerBookings() {
   const [cancelModal, setCancelModal] = useState(null)
   const [cancelReason, setCancelReason] = useState('')
 
+  // ── Venues (for add modal) ──────────────────────────────────────────────────
+  const [venues, setVenues] = useState([])
+
+  // ── Add booking modal ──────────────────────────────────────────────────────
+  const [addModal, setAddModal] = useState(null) // null | { date: '' }
+
+  // ── Toast ──────────────────────────────────────────────────────────────────
+  const [toast, setToast] = useState('')
+
   // ── Customer profile modal ──────────────────────────────────────────────────
-  const [customerModal, setCustomerModal] = useState(null) // { name, phone, bookings[] }
+  const [customerModal, setCustomerModal] = useState(null)
 
   function openCustomer(b) {
     const same = bookings.filter(x => x.customer_name === b.customer_name && b.customer_name)
-    setCustomerModal({
-      name: b.customer_name || '—',
-      phone: b.customer_phone || '—',
-      bookings: same,
-    })
+    setCustomerModal({ name: b.customer_name || '—', phone: b.customer_phone || '—', bookings: same })
   }
 
   // ── Calendar state ──────────────────────────────────────────────────────────
@@ -88,6 +242,7 @@ export default function OwnerBookings() {
   const [calBookings, setCalBookings] = useState([])
   const [calLoading, setCalLoading] = useState(false)
   const [dayModal, setDayModal] = useState(null)
+  const [hoveredDay, setHoveredDay] = useState(null)
 
   // ── List loader ─────────────────────────────────────────────────────────────
   const load = useCallback(() => {
@@ -105,6 +260,14 @@ export default function OwnerBookings() {
 
   useEffect(() => { if (view === 'list') load() }, [load, view])
 
+  // ── Load venues once ────────────────────────────────────────────────────────
+  useEffect(() => {
+    getOwnerVenues().then(res => {
+      const d = res.data?.data ?? res.data
+      setVenues(Array.isArray(d) ? d : (d?.results ?? []))
+    }).catch(() => {})
+  }, [])
+
   // ── Calendar loader ─────────────────────────────────────────────────────────
   useEffect(() => {
     if (view !== 'calendar') return
@@ -120,7 +283,6 @@ export default function OwnerBookings() {
       .finally(() => setCalLoading(false))
   }, [view, calYear, calMonth])
 
-  // Group by date
   const byDate = {}
   calBookings.forEach(b => {
     if (b.event_date) {
@@ -128,6 +290,11 @@ export default function OwnerBookings() {
       byDate[b.event_date].push(b)
     }
   })
+
+  function showToast(msg) {
+    setToast(msg)
+    setTimeout(() => setToast(''), 3000)
+  }
 
   async function handleConfirm(id) {
     setActionId(id)
@@ -137,7 +304,7 @@ export default function OwnerBookings() {
   async function handleCancel() {
     if (!cancelModal) return
     setActionId(cancelModal)
-    try { await cancelBooking(cancelModal, cancelReason); load() } catch { }
+    try { await cancelBooking(cancelModal, cancelReason); load() }
     finally { setActionId(null); setCancelModal(null); setCancelReason('') }
   }
 
@@ -155,6 +322,13 @@ export default function OwnerBookings() {
 
   return (
     <div className="owner-page">
+      {/* ── Toast ──────────────────────────────────────────────────────────── */}
+      {toast && (
+        <div style={{ position: 'fixed', top: 20, left: '50%', transform: 'translateX(-50%)', zIndex: 1000, background: 'rgba(52,211,153,0.18)', border: '1px solid rgba(52,211,153,0.5)', borderRadius: 12, padding: '12px 28px', color: '#34D399', fontSize: '14px', fontWeight: 600, backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', whiteSpace: 'nowrap' }}>
+          {toast}
+        </div>
+      )}
+
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
@@ -162,23 +336,30 @@ export default function OwnerBookings() {
           <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.45)', marginTop: '4px' }}>إدارة جميع حجوزات قاعاتك</p>
         </div>
 
-        {/* View toggle */}
-        <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '4px', border: '1px solid rgba(255,255,255,0.08)', gap: '4px' }}>
-          {[{ v: 'list', Icon: ListBulletIcon, label: 'قائمة' }, { v: 'calendar', Icon: CalendarDaysIcon, label: 'تقويم' }].map(({ v, Icon, label }) => (
-            <button
-              key={v}
-              onClick={() => setView(v)}
-              style={{
-                padding: '8px 18px', borderRadius: '9px', border: 'none', cursor: 'pointer', gap: '6px',
-                background: view === v ? 'rgba(124,58,237,0.3)' : 'transparent',
-                color: view === v ? '#A78BFA' : 'rgba(255,255,255,0.45)',
-                fontSize: '14px', fontWeight: 600, fontFamily: 'Cairo, sans-serif', transition: 'all 0.2s',
-                display: 'flex', alignItems: 'center',
-              }}
-            >
-              <Icon style={{ width: 16, height: 16 }} /> {label}
-            </button>
-          ))}
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
+          {/* Add booking button */}
+          <button onClick={() => setAddModal({ date: '' })} className="glass-btn glass-btn-primary">
+            <PlusIcon style={{ width: 16, height: 16 }} /> إضافة حجز +
+          </button>
+
+          {/* View toggle */}
+          <div style={{ display: 'flex', background: 'rgba(255,255,255,0.05)', borderRadius: '12px', padding: '4px', border: '1px solid rgba(255,255,255,0.08)', gap: '4px' }}>
+            {[{ v: 'list', Icon: ListBulletIcon, label: 'قائمة' }, { v: 'calendar', Icon: CalendarDaysIcon, label: 'تقويم' }].map(({ v, Icon, label }) => (
+              <button
+                key={v}
+                onClick={() => setView(v)}
+                style={{
+                  padding: '8px 18px', borderRadius: '9px', cursor: 'pointer', gap: '6px',
+                  background: view === v ? 'rgba(124,58,237,0.3)' : 'transparent',
+                  color: view === v ? '#A78BFA' : 'rgba(255,255,255,0.45)',
+                  fontSize: '14px', fontWeight: 600, fontFamily: 'Cairo, sans-serif', transition: 'all 0.2s',
+                  display: 'flex', alignItems: 'center', border: 'none',
+                }}
+              >
+                <Icon style={{ width: 16, height: 16 }} /> {label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -283,26 +464,37 @@ export default function OwnerBookings() {
                 const isPast = ds < todayStr
                 const hasPending = dayBks.some(b => b.status === 'pending')
                 const allConfirmed = dayBks.length > 0 && dayBks.every(b => b.status === 'confirmed')
+                const isEmpty = dayBks.length === 0
+                const isHovered = hoveredDay === ds
 
                 return (
                   <div
                     key={ds}
-                    onClick={() => dayBks.length > 0 && setDayModal({ dateStr: ds, bookings: dayBks })}
+                    onClick={() => {
+                      if (dayBks.length > 0) setDayModal({ dateStr: ds, bookings: dayBks })
+                      else setAddModal({ date: ds })
+                    }}
+                    onMouseEnter={() => setHoveredDay(ds)}
+                    onMouseLeave={() => setHoveredDay(null)}
                     style={{
                       minHeight: 72, borderRadius: 12, padding: '8px 6px', position: 'relative',
-                      cursor: dayBks.length > 0 ? 'pointer' : 'default',
-                      opacity: isPast && !isToday ? 0.5 : 1,
+                      cursor: 'pointer',
+                      opacity: isPast && !isToday ? 0.55 : 1,
                       background: isToday
                         ? 'rgba(124,58,237,0.2)'
+                        : isEmpty && isHovered ? 'rgba(52,211,153,0.08)'
                         : hasPending ? 'rgba(251,191,36,0.07)'
                         : allConfirmed ? 'rgba(52,211,153,0.07)'
                         : dayBks.length > 0 ? 'rgba(255,255,255,0.04)'
                         : 'rgba(255,255,255,0.02)',
                       border: isToday
                         ? '1px solid rgba(124,58,237,0.65)'
+                        : isEmpty && isHovered ? '1px solid rgba(52,211,153,0.4)'
                         : dayBks.length > 0 ? '1px solid rgba(255,255,255,0.09)' : '1px solid rgba(255,255,255,0.04)',
-                      boxShadow: isToday ? '0 0 14px rgba(124,58,237,0.28)' : 'none',
-                      transition: 'background 0.15s, border-color 0.15s',
+                      boxShadow: isToday
+                        ? '0 0 14px rgba(124,58,237,0.28)'
+                        : isEmpty && isHovered ? '0 0 12px rgba(52,211,153,0.15)' : 'none',
+                      transition: 'background 0.15s, border-color 0.15s, box-shadow 0.15s',
                     }}
                   >
                     <div style={{
@@ -312,16 +504,22 @@ export default function OwnerBookings() {
                     }}>
                       {day}
                     </div>
-                    <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap', justifyContent: 'center' }}>
-                      {dayBks.slice(0, 5).map((b, i) => (
-                        <div key={i} style={{ width: 8, height: 8, borderRadius: '50%', background: DOT_COLOR[b.status] || '#A78BFA' }} />
-                      ))}
-                      {dayBks.length > 5 && <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)' }}>+{dayBks.length - 5}</span>}
-                    </div>
-                    {dayBks.length > 0 && (
-                      <div style={{ textAlign: 'center', fontSize: 10, color: 'rgba(255,255,255,0.38)', marginTop: 4 }}>
-                        {dayBks.length} حجز
-                      </div>
+                    {isEmpty && isHovered ? (
+                      <div style={{ textAlign: 'center', fontSize: 18, color: '#34D399', lineHeight: 1 }}>+</div>
+                    ) : (
+                      <>
+                        <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap', justifyContent: 'center' }}>
+                          {dayBks.slice(0, 5).map((b, i) => (
+                            <div key={i} style={{ width: 8, height: 8, borderRadius: '50%', background: DOT_COLOR[b.status] || '#A78BFA' }} />
+                          ))}
+                          {dayBks.length > 5 && <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)' }}>+{dayBks.length - 5}</span>}
+                        </div>
+                        {dayBks.length > 0 && (
+                          <div style={{ textAlign: 'center', fontSize: 10, color: 'rgba(255,255,255,0.38)', marginTop: 4 }}>
+                            {dayBks.length} حجز
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 )
@@ -330,12 +528,15 @@ export default function OwnerBookings() {
           )}
 
           {/* Legend */}
-          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginTop: 18, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.06)' }}>
+          <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', marginTop: 18, paddingTop: 16, borderTop: '1px solid rgba(255,255,255,0.06)', alignItems: 'center' }}>
             {[['#FBBF24','معلق'],['#34D399','مؤكد'],['#60A5FA','مكتمل'],['#F87171','ملغي/مرفوض']].map(([c,l]) => (
               <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'rgba(255,255,255,0.48)' }}>
                 <div style={{ width: 10, height: 10, borderRadius: '50%', background: c }} />{l}
               </div>
             ))}
+            <div style={{ fontSize: 12, color: 'rgba(52,211,153,0.7)', marginRight: 'auto' }}>
+              اضغط على يوم فارغ لإضافة حجز
+            </div>
           </div>
         </div>
       )}
@@ -385,7 +586,7 @@ export default function OwnerBookings() {
                 </div>
               ))}
             </div>
-            <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.45)', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>آخر الحجوزات</div>
+            <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.45)', marginBottom: '10px' }}>آخر الحجوزات</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '200px', overflowY: 'auto' }}>
               {customerModal.bookings.slice(0, 5).map(b => (
                 <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: '10px 14px', border: '1px solid rgba(255,255,255,0.06)' }}>
@@ -414,7 +615,15 @@ export default function OwnerBookings() {
               <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'rgba(255,255,255,0.95)', margin: 0 }}>
                 حجوزات {fmtDate(dayModal.dateStr)}
               </h3>
-              <button onClick={() => setDayModal(null)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: '22px', cursor: 'pointer', lineHeight: 1, padding: '0 4px' }}>×</button>
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <button
+                  onClick={() => { setDayModal(null); setAddModal({ date: dayModal.dateStr }) }}
+                  className="glass-btn glass-btn-sm glass-btn-primary"
+                >
+                  <PlusIcon style={{ width: 13, height: 13 }} /> إضافة
+                </button>
+                <button onClick={() => setDayModal(null)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: '22px', cursor: 'pointer', lineHeight: 1, padding: '0 4px' }}>×</button>
+              </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {dayModal.bookings.map(b => (
@@ -438,6 +647,34 @@ export default function OwnerBookings() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* ── Add Booking Modal ───────────────────────────────────────────────── */}
+      {addModal && (
+        <AddBookingModal
+          venues={venues}
+          initialDate={addModal.date}
+          onClose={() => setAddModal(null)}
+          onSuccess={() => {
+            setAddModal(null)
+            load()
+            if (view === 'calendar') {
+              // re-trigger calendar reload
+              setCalBookings([])
+              setCalLoading(true)
+              const firstDay = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-01`
+              const lastDay = new Date(calYear, calMonth + 1, 0)
+              const lastDayStr = `${calYear}-${String(calMonth + 1).padStart(2, '0')}-${String(lastDay.getDate()).padStart(2, '0')}`
+              getOwnerBookings({ date_from: firstDay, date_to: lastDayStr })
+                .then(res => {
+                  const d = res.data?.data ?? res.data
+                  setCalBookings(Array.isArray(d) ? d : (d?.results ?? []))
+                })
+                .finally(() => setCalLoading(false))
+            }
+            showToast('تم إضافة الحجز بنجاح ✓')
+          }}
+        />
       )}
     </div>
   )

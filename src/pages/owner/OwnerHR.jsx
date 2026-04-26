@@ -16,8 +16,10 @@ const ROLES = [
   ['decorator','مزين'],['driver','سائق'],['other','أخرى'],
 ]
 const EMP_TYPES = [['full_time','دوام كامل'],['part_time','دوام جزئي'],['contract','عقد']]
+const WAGE_TYPES = [['monthly','شهري'],['daily','يومي'],['hourly','بالساعة']]
 const ROLE_AR = Object.fromEntries(ROLES)
 const TYPE_AR = Object.fromEntries(EMP_TYPES)
+const WAGE_AR = Object.fromEntries(WAGE_TYPES)
 
 const EVENT_TYPE_AR = {
   wedding:'حفل زفاف', graduation:'تخرج', conference:'مؤتمر',
@@ -30,7 +32,23 @@ const ATTENDANCE_OPTIONS = [
   { key: 'absent',  label: 'غاب', Icon: XCircleIcon, color: '#F87171' },
 ]
 
-const empty = { full_name:'', phone:'', role:'waiter', employment_type:'full_time', salary:'', join_date: new Date().toISOString().slice(0,10), notes:'' }
+const empty = { full_name:'', phone:'', role:'waiter', employment_type:'full_time', wage_type:'monthly', salary:'', daily_rate:'', hourly_rate:'', join_date: new Date().toISOString().slice(0,10), notes:'' }
+
+// ── Worked hours/days localStorage helpers ──────────────────────────────────
+function workedKey() { return 'evento_worked' }
+function loadWorked() { try { return JSON.parse(localStorage.getItem(workedKey()) || '{}') } catch { return {} } }
+function saveWorked(data) { localStorage.setItem(workedKey(), JSON.stringify(data)) }
+
+function getEffectiveSalary(s, workedData) {
+  const month = new Date().toISOString().slice(0, 7)
+  const key = `${s.id}_${month}`
+  if (s.wage_type === 'daily') {
+    return parseFloat(s.daily_rate || 0) * parseFloat(workedData[key]?.days_worked || 0)
+  } else if (s.wage_type === 'hourly') {
+    return parseFloat(s.hourly_rate || 0) * parseFloat(workedData[key]?.hours_worked || 0)
+  }
+  return parseFloat(s.salary || 0)
+}
 
 // ── Daily workers localStorage helpers ──────────────────────────────────────
 function dwKey() { return 'evento_daily_workers' }
@@ -154,27 +172,34 @@ function DailyWorkersTab() {
 // ── Payroll Tab ───────────────────────────────────────────────────────────────
 function PayrollTab({ staff }) {
   const active = staff.filter(s => s.is_active !== false)
+  const month = new Date().toISOString().slice(0, 7)
   const [payHistory, setPayHistory] = useState(() => {
     try { return JSON.parse(localStorage.getItem('evento_payroll') || '{}') } catch { return {} }
   })
-  const [payModal, setPayModal] = useState(null) // staff id
+  const [workedData, setWorkedData] = useState(loadWorked)
+  const [payModal, setPayModal] = useState(null)
   const [payDate, setPayDate] = useState(new Date().toISOString().slice(0, 10))
 
-  function markPaid(staffId) {
-    const month = new Date().toISOString().slice(0, 7)
+  function updateWorked(staffId, field, val) {
     const key = `${staffId}_${month}`
-    const next = { ...payHistory, [key]: { paid: true, date: payDate, month } }
+    const next = { ...workedData, [key]: { ...(workedData[key] || {}), [field]: val } }
+    setWorkedData(next); saveWorked(next)
+  }
+
+  function markPaid(staffId) {
+    const key = `${staffId}_${month}`
+    const amount = getEffectiveSalary(active.find(s => s.id === staffId) || {}, workedData)
+    const next = { ...payHistory, [key]: { paid: true, date: payDate, month, amount } }
     setPayHistory(next)
     localStorage.setItem('evento_payroll', JSON.stringify(next))
     setPayModal(null)
   }
 
   function getPayStatus(staffId) {
-    const month = new Date().toISOString().slice(0, 7)
     return payHistory[`${staffId}_${month}`]
   }
 
-  const totalPayroll = active.reduce((s, m) => s + parseFloat(m.salary || 0), 0)
+  const totalPayroll = active.reduce((s, m) => s + getEffectiveSalary(m, workedData), 0)
   const paidCount = active.filter(s => getPayStatus(s.id)?.paid).length
 
   return (
@@ -198,15 +223,47 @@ function PayrollTab({ staff }) {
         ) : (
           <div className="glass-table-wrap">
             <table className="glass-table">
-              <thead><tr><th>الموظف</th><th>الدور</th><th>الراتب</th><th>حالة الشهر</th><th>تاريخ الصرف</th><th></th></tr></thead>
+              <thead><tr><th>الموظف</th><th>الدور</th><th>نوع الأجر</th><th>الراتب المحسوب</th><th>أيام/ساعات</th><th>حالة الشهر</th><th>تاريخ الصرف</th><th></th></tr></thead>
               <tbody>
                 {active.map(s => {
                   const ps = getPayStatus(s.id)
+                  const wKey = `${s.id}_${month}`
+                  const effective = getEffectiveSalary(s, workedData)
                   return (
                     <tr key={s.id}>
                       <td style={{ fontWeight: 600 }}>{s.full_name}</td>
                       <td>{ROLE_AR[s.role] || s.role}</td>
-                      <td style={{ direction: 'ltr', textAlign: 'right' }}>{fmtIQD(s.salary)}</td>
+                      <td>
+                        <span style={{ fontSize: 12, fontWeight: 600, color: '#A78BFA' }}>
+                          {WAGE_AR[s.wage_type] || 'شهري'}
+                        </span>
+                      </td>
+                      <td style={{ direction: 'ltr', textAlign: 'right' }}>{fmtIQD(effective)}</td>
+                      <td>
+                        {s.wage_type === 'daily' && (
+                          <input
+                            type="number" min={0} max={31}
+                            className="glass-input"
+                            style={{ width: 60, padding: '4px 8px', fontSize: 12 }}
+                            value={workedData[wKey]?.days_worked || ''}
+                            onChange={e => updateWorked(s.id, 'days_worked', e.target.value)}
+                            placeholder="أيام"
+                            dir="ltr"
+                          />
+                        )}
+                        {s.wage_type === 'hourly' && (
+                          <input
+                            type="number" min={0}
+                            className="glass-input"
+                            style={{ width: 60, padding: '4px 8px', fontSize: 12 }}
+                            value={workedData[wKey]?.hours_worked || ''}
+                            onChange={e => updateWorked(s.id, 'hours_worked', e.target.value)}
+                            placeholder="ساعة"
+                            dir="ltr"
+                          />
+                        )}
+                        {s.wage_type === 'monthly' && <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>ثابت</span>}
+                      </td>
                       <td>
                         <span style={{ padding: '3px 10px', borderRadius: 10, fontSize: 12, fontWeight: 600, background: ps?.paid ? 'rgba(52,211,153,0.12)' : 'rgba(251,191,36,0.12)', color: ps?.paid ? '#34D399' : '#FBBF24', border: `1px solid ${ps?.paid ? 'rgba(52,211,153,0.3)' : 'rgba(251,191,36,0.3)'}` }}>
                           {ps?.paid ? 'مصروف' : 'لم يُصرف'}
@@ -219,7 +276,7 @@ function PayrollTab({ staff }) {
                             <BanknotesIcon style={{ width: 13, height: 13 }} /> صرف
                           </button>
                         ) : (
-                          <button onClick={() => { const m = new Date().toISOString().slice(0,7); const next = {...payHistory}; delete next[`${s.id}_${m}`]; setPayHistory(next); localStorage.setItem('evento_payroll', JSON.stringify(next)) }} className="glass-btn glass-btn-sm">تراجع</button>
+                          <button onClick={() => { const next = {...payHistory}; delete next[`${s.id}_${month}`]; setPayHistory(next); localStorage.setItem('evento_payroll', JSON.stringify(next)) }} className="glass-btn glass-btn-sm">تراجع</button>
                         )}
                       </td>
                     </tr>
@@ -236,9 +293,15 @@ function PayrollTab({ staff }) {
           <div className="glass-modal-panel" style={{ maxWidth: 360, padding: '24px' }} onClick={e => e.stopPropagation()}>
             <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'rgba(255,255,255,0.9)', marginBottom: '14px' }}>تأكيد صرف الراتب</h3>
             <div style={{ marginBottom: '14px' }}>
-              <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.7)', marginBottom: '6px' }}>
-                {active.find(s => s.id === payModal)?.full_name} — {fmtIQD(active.find(s => s.id === payModal)?.salary)}
-              </div>
+              {(() => {
+                const s = active.find(x => x.id === payModal)
+                return (
+                  <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.7)', marginBottom: '6px' }}>
+                    {s?.full_name} — {fmtIQD(getEffectiveSalary(s || {}, workedData))}
+                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginRight: 6 }}>({WAGE_AR[s?.wage_type] || 'شهري'})</span>
+                  </div>
+                )
+              })()}
               <label className="glass-label">تاريخ الصرف</label>
               <input className="glass-input" type="date" value={payDate} onChange={e => setPayDate(e.target.value)} dir="ltr" />
             </div>
@@ -309,7 +372,7 @@ function StaffTab({ staff, loading, typeFilter, setTypeFilter, openAdd, openEdit
               <thead>
                 <tr>
                   <th>الاسم</th><th>الدور</th><th>نوع التوظيف</th>
-                  <th>الراتب</th><th>تاريخ الانضمام</th><th>الهاتف</th><th>الإجراءات</th>
+                  <th>نوع الأجر</th><th>الراتب/الأجر</th><th>تاريخ الانضمام</th><th>الهاتف</th><th>الإجراءات</th>
                 </tr>
               </thead>
               <tbody>
@@ -325,7 +388,12 @@ function StaffTab({ staff, loading, typeFilter, setTypeFilter, openAdd, openEdit
                         border: `1px solid ${s.employment_type === 'full_time' ? 'rgba(52,211,153,0.3)' : 'rgba(251,191,36,0.3)'}`,
                       }}>{TYPE_AR[s.employment_type] || s.employment_type}</span>
                     </td>
-                    <td style={{ direction: 'ltr', textAlign: 'right' }}>{fmtIQD(s.salary)}</td>
+                    <td><span style={{ fontSize: 12, fontWeight: 600, color: '#A78BFA' }}>{WAGE_AR[s.wage_type] || 'شهري'}</span></td>
+                    <td style={{ direction: 'ltr', textAlign: 'right' }}>
+                      {s.wage_type === 'daily' ? fmtIQD(s.daily_rate) + '/يوم'
+                        : s.wage_type === 'hourly' ? fmtIQD(s.hourly_rate) + '/ساعة'
+                        : fmtIQD(s.salary)}
+                    </td>
                     <td>{fmtDate(s.join_date)}</td>
                     <td style={{ direction: 'ltr' }}>{s.phone || '—'}</td>
                     <td>
@@ -574,9 +642,17 @@ export default function OwnerHR() {
   async function handleSave(e) {
     e.preventDefault()
     setSaving(true)
+    const wt = form.wage_type || 'monthly'
+    const payload = {
+      ...form,
+      wage_type: wt,
+      salary: wt === 'monthly' ? +form.salary || 0 : 0,
+      daily_rate: wt === 'daily' ? +form.daily_rate || 0 : null,
+      hourly_rate: wt === 'hourly' ? +form.hourly_rate || 0 : null,
+    }
     try {
-      if (modal === 'add') await createStaffMember({ ...form, salary: +form.salary })
-      else await updateStaffMember(modal, { ...form, salary: +form.salary })
+      if (modal === 'add') await createStaffMember(payload)
+      else await updateStaffMember(modal, payload)
       setModal(null)
       load()
     } catch { } finally { setSaving(false) }
@@ -639,9 +715,29 @@ export default function OwnerHR() {
                   </select>
                 </div>
                 <div>
-                  <label className="glass-label">الراتب (د.ع)</label>
-                  <input className="glass-input" type="number" min={0} value={form.salary} onChange={e => setForm(f => ({ ...f, salary: e.target.value }))} dir="ltr" />
+                  <label className="glass-label">نوع الأجر</label>
+                  <select className="glass-select" value={form.wage_type || 'monthly'} onChange={e => setForm(f => ({ ...f, wage_type: e.target.value }))}>
+                    {WAGE_TYPES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                  </select>
                 </div>
+                {(!form.wage_type || form.wage_type === 'monthly') && (
+                  <div>
+                    <label className="glass-label">الراتب الشهري (د.ع)</label>
+                    <input className="glass-input" type="number" min={0} value={form.salary} onChange={e => setForm(f => ({ ...f, salary: e.target.value }))} dir="ltr" />
+                  </div>
+                )}
+                {form.wage_type === 'daily' && (
+                  <div>
+                    <label className="glass-label">الأجر اليومي (د.ع)</label>
+                    <input className="glass-input" type="number" min={0} value={form.daily_rate} onChange={e => setForm(f => ({ ...f, daily_rate: e.target.value }))} dir="ltr" />
+                  </div>
+                )}
+                {form.wage_type === 'hourly' && (
+                  <div>
+                    <label className="glass-label">الأجر بالساعة (د.ع)</label>
+                    <input className="glass-input" type="number" min={0} value={form.hourly_rate} onChange={e => setForm(f => ({ ...f, hourly_rate: e.target.value }))} dir="ltr" />
+                  </div>
+                )}
                 <div>
                   <label className="glass-label">رقم الهاتف</label>
                   <input className="glass-input" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} dir="ltr" />

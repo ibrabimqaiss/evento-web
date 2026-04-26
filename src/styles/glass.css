@@ -546,6 +546,19 @@ img { max-width: 100%; }
   pointer-events: none;
 }
 
+/* ── Owner Mobile Header ────────────────────────────────────────────────────── */
+.owner-mobile-header {
+  display: none;
+  padding: 12px 16px;
+  background: rgba(8, 6, 20, 0.75);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
 /* ── Owner Mobile Nav ───────────────────────────────────────────────────────── */
 .owner-mobile-nav {
   position: fixed;
@@ -597,6 +610,7 @@ img { max-width: 100%; }
 @media (max-width: 768px) {
   .owner-sidebar { display: none !important; }
   .owner-main { margin-right: 0 !important; min-width: 0; }
+  .owner-mobile-header { display: flex; align-items: center; }
   .owner-mobile-nav { display: flex !important; }
   .owner-content { padding: 16px 16px 80px; }
   .glass-card { border-radius: 16px; }

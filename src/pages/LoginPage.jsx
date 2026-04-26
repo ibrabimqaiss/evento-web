@@ -46,7 +46,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="mb-4">
-            <img src="/evento_logo_color.svg" alt="Evento" style={{ height: 44, margin: '0 auto' }} />
+            <img src="/evento_logo.svg" alt="Evento" style={{ height: 44, margin: '0 auto' }} />
           </div>
           <h1 className="text-2xl font-black text-gray-900">مرحباً بك</h1>
           <p className="text-gray-500 text-sm mt-1">سجّل دخولك للمتابعة</p>

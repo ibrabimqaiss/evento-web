@@ -14,7 +14,7 @@ export default function Navbar() {
     <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
       <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
         <Link to="/home" className="flex items-center">
-          <img src="/evento_logo_color.svg" alt="Evento" style={{ height: 28 }} />
+          <img src="/evento_logo.svg" alt="Evento" style={{ height: 28 }} />
         </Link>
         <div className="flex items-center gap-3">
           {authed ? (

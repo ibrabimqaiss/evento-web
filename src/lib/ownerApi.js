@@ -11,6 +11,7 @@ export const updateVenue = (slug, data) => api.patch(`/venues/${slug}/`, data)
 // ─── Bookings ────────────────────────────────────────────────────────────────
 export const getOwnerBookings = (params = {}) => api.get('/owner/bookings/', { params })
 export const getOwnerBookingDetail = (id) => api.get(`/owner/bookings/${id}/`)
+export const createOwnerBooking = (data) => api.post('/owner/bookings/create/', data)
 export const confirmBooking = (id) => api.put(`/owner/bookings/${id}/confirm/`)
 export const rejectBooking = (id, reason) => api.put(`/owner/bookings/${id}/reject/`, { reason })
 export const completeBooking = (id) => api.put(`/owner/bookings/${id}/complete/`)

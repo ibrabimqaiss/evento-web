@@ -111,6 +111,10 @@ export default function OwnerLayout({ children }) {
         className="owner-main"
         style={{ flex: 1, position: 'relative', zIndex: 1, marginRight: SIDEBAR_W }}
       >
+        {/* Mobile top header — logo only, hidden on desktop */}
+        <div className="owner-mobile-header">
+          <img src="/evento_logo.svg" alt="Evento" style={{ height: 28, display: 'block' }} />
+        </div>
         <div className="owner-content">
           {children}
         </div>

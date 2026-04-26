@@ -30,6 +30,19 @@ const EXPENSE_CATS = [
 
 const emptyExpense = { description: '', category: 'salaries', amount: '', date: new Date().toISOString().slice(0, 10) }
 
+const FIXED_EXP_DEFS = [
+  { key: 'rent', label: 'إيجار القاعة' },
+  { key: 'electricity', label: 'الكهرباء' },
+  { key: 'water', label: 'الماء' },
+  { key: 'insurance', label: 'التأمين' },
+  { key: 'other_fixed', label: 'أخرى ثابتة' },
+]
+
+function loadFixedExp() {
+  try { return JSON.parse(localStorage.getItem('evento_fixed_exp') || '{}') } catch { return {} }
+}
+function saveFixedExp(data) { localStorage.setItem('evento_fixed_exp', JSON.stringify(data)) }
+
 export default function OwnerFinance() {
   const [period, setPeriod] = useState('month')
   const [summary, setSummary] = useState(null)
@@ -38,6 +51,8 @@ export default function OwnerFinance() {
   const [showAdd, setShowAdd] = useState(false)
   const [form, setForm] = useState(emptyExpense)
   const [saving, setSaving] = useState(false)
+  const [fixedExp, setFixedExp] = useState(loadFixedExp)
+  const [showFixed, setShowFixed] = useState(false)
 
   function load() {
     setLoading(true)
@@ -71,8 +86,15 @@ export default function OwnerFinance() {
 
   const revenue = summary ? summary[period] ?? 0 : 0
 
-  const totalExpenses = expenses.reduce((s, e) => s + parseFloat(e.amount || 0), 0)
+  const totalVariable = expenses.reduce((s, e) => s + parseFloat(e.amount || 0), 0)
+  const totalFixed = FIXED_EXP_DEFS.reduce((s, d) => s + (parseFloat(fixedExp[d.key] || 0)), 0)
+  const totalExpenses = totalVariable + totalFixed
   const profit = parseFloat(revenue) - totalExpenses
+
+  function updateFixed(key, val) {
+    const next = { ...fixedExp, [key]: val }
+    setFixedExp(next); saveFixedExp(next)
+  }
 
   return (
     <div className="owner-page">
@@ -106,18 +128,74 @@ export default function OwnerFinance() {
 
         {/* Profit summary */}
         {!loading && summary && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginTop: '20px' }}>
-            <MetricBox label="الإيرادات (الشهر)" value={fmtIQD(summary.month ?? 0)} color="#34D399" />
-            <MetricBox label="إجمالي المصروفات" value={fmtIQD(totalExpenses)} color="#F87171" />
-            <MetricBox label="صافي الربح" value={fmtIQD(profit)} color={profit >= 0 ? '#34D399' : '#F87171'} />
+          <>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginTop: '20px' }}>
+              <MetricBox label="الإيرادات (الشهر)" value={fmtIQD(summary.month ?? 0)} color="#34D399" />
+              <MetricBox label="المصروفات المتغيرة" value={fmtIQD(totalVariable)} color="#F87171" />
+              <MetricBox label="المصروفات الثابتة" value={fmtIQD(totalFixed)} color="#FBBF24" />
+            </div>
+            {/* Net profit breakdown */}
+            <div style={{ marginTop: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: 14, padding: '16px 20px', border: '1px solid rgba(255,255,255,0.06)' }}>
+              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginBottom: '10px', fontWeight: 600 }}>تفصيل صافي الربح</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '14px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.55)' }}>الإيرادات</span>
+                  <span style={{ color: '#34D399', direction: 'ltr' }}>{fmtIQD(summary.month ?? 0)}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.55)' }}>- المصروفات المتغيرة</span>
+                  <span style={{ color: '#F87171', direction: 'ltr' }}>{fmtIQD(totalVariable)}</span>
+                </div>
+                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <span style={{ color: 'rgba(255,255,255,0.55)' }}>- المصروفات الثابتة</span>
+                  <span style={{ color: '#FBBF24', direction: 'ltr' }}>{fmtIQD(totalFixed)}</span>
+                </div>
+                <div style={{ height: 1, background: 'rgba(255,255,255,0.1)', margin: '4px 0' }} />
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700 }}>
+                  <span style={{ color: 'rgba(255,255,255,0.85)' }}>= صافي الربح</span>
+                  <span style={{ color: profit >= 0 ? '#34D399' : '#F87171', direction: 'ltr', fontSize: '16px' }}>{fmtIQD(profit)}</span>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Fixed Expenses */}
+      <div className="glass-card-static" style={{ marginBottom: '20px' }}>
+        <div style={{ padding: '20px 24px', borderBottom: showFixed ? '1px solid rgba(255,255,255,0.06)' : 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div>
+            <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'rgba(255,255,255,0.9)', margin: 0 }}>المصاريف الثابتة الشهرية</h2>
+            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)', margin: '2px 0 0' }}>إجمالي: {fmtIQD(totalFixed)}</p>
+          </div>
+          <button onClick={() => setShowFixed(v => !v)} className="glass-btn glass-btn-sm">
+            {showFixed ? 'إخفاء' : 'تعديل'}
+          </button>
+        </div>
+        {showFixed && (
+          <div style={{ padding: '20px 24px', display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '14px' }}>
+            {FIXED_EXP_DEFS.map(d => (
+              <div key={d.key}>
+                <label className="glass-label">{d.label} (د.ع/شهر)</label>
+                <input
+                  className="glass-input"
+                  type="number"
+                  min={0}
+                  value={fixedExp[d.key] || ''}
+                  onChange={e => updateFixed(d.key, e.target.value)}
+                  dir="ltr"
+                  placeholder="0"
+                />
+              </div>
+            ))}
           </div>
         )}
       </div>
 
-      {/* Expenses */}
+      {/* Variable Expenses */}
       <div className="glass-card-static">
         <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'rgba(255,255,255,0.9)', margin: 0 }}>المصروفات</h2>
+          <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'rgba(255,255,255,0.9)', margin: 0 }}>المصاريف المتغيرة</h2>
           <button onClick={() => setShowAdd(v => !v)} className="glass-btn glass-btn-sm glass-btn-primary">
             {showAdd
               ? <><XMarkIcon style={{ width: 15, height: 15 }} /> إغلاق</>
