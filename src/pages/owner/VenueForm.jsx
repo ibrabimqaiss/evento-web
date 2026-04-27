@@ -4,7 +4,6 @@ import { CheckCircleIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
 import { getVenueDetail } from '../../lib/api'
 import { createVenue, updateVenue } from '../../lib/ownerApi'
 
-const CITIES = ['Baghdad', 'Erbil', 'Basra', 'Mosul', 'Najaf', 'Karbala', 'Sulaymaniyah', 'Kirkuk']
 const VENUE_TYPES = [
   ['wedding_hall', 'قاعة أفراح'], ['conference_center', 'مركز مؤتمرات'], ['restaurant', 'مطعم'],
   ['garden', 'حديقة'], ['hotel_ballroom', 'قاعة فندقية'], ['rooftop', 'سطح مفتوح'],
@@ -22,7 +21,7 @@ const STEPS = ['المعلومات الأساسية', 'السعة والتسعي
 
 const empty = {
   name: '', name_ar: '', description_ar: '', venue_type: 'wedding_hall',
-  city: 'Baghdad', address_ar: '', min_capacity: 50, max_capacity: 300,
+  city: '', address_ar: '', min_capacity: 50, max_capacity: 300,
   base_price_iqd: 1000000, amenities: [], cancellation_policy: '',
   status: 'active', is_published: false,
 }
@@ -47,7 +46,7 @@ export default function VenueForm() {
           name: d.name || '', name_ar: d.name_ar || '',
           description_ar: d.description_ar || d.description || '',
           venue_type: d.venue_type || 'wedding_hall',
-          city: d.city || 'Baghdad', address_ar: d.address_ar || d.address || '',
+          city: d.city || '', address_ar: d.address_ar || d.address || '',
           min_capacity: d.min_capacity || 50, max_capacity: d.max_capacity || 300,
           base_price_iqd: d.base_price_iqd || 1000000,
           amenities: Array.isArray(d.amenities) ? d.amenities : [],
@@ -187,9 +186,7 @@ function Step1({ form, set }) {
       </Field>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
         <Field label="المدينة">
-          <select className="glass-select" value={form.city} onChange={e => set('city', e.target.value)}>
-            {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
+          <input className="glass-input" value={form.city} onChange={e => set('city', e.target.value)} placeholder="مثال: بغداد، أربيل، البصرة..." />
         </Field>
         <Field label="العنوان التفصيلي">
           <input className="glass-input" value={form.address_ar} onChange={e => set('address_ar', e.target.value)} placeholder="الحي، الشارع..." />
