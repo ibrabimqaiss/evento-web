@@ -67,6 +67,7 @@ export default function VenuePublicPage() {
         console.log('[VenuePublicPage] raw response:', res.data)
         const data = res.data?.data ?? res.data
         console.log('[VenuePublicPage] venue:', data)
+        console.log('[VenuePublicPage] JSON:', JSON.stringify(data))
         console.log('[VenuePublicPage] images:', data?.images)
         setVenue(data)
       })
