@@ -17,6 +17,7 @@ const OwnerDashboard  = lazy(() => import('./pages/owner/OwnerDashboard.jsx'))
 const OwnerVenues     = lazy(() => import('./pages/owner/OwnerVenues.jsx'))
 const VenueForm       = lazy(() => import('./pages/owner/VenueForm.jsx'))
 const CreateVenuePage = lazy(() => import('./pages/owner/CreateVenuePage.jsx'))
+const EditVenuePage   = lazy(() => import('./pages/owner/EditVenuePage.jsx'))
 const VenueMenuPage   = lazy(() => import('./pages/owner/VenueMenuPage.jsx'))
 const OwnerBookings   = lazy(() => import('./pages/owner/OwnerBookings.jsx'))
 const BookingDetail   = lazy(() => import('./pages/owner/BookingDetail.jsx'))
@@ -67,7 +68,7 @@ export default function App() {
         <Route path="/owner/venues" element={<OwnerRoute><OwnerVenues /></OwnerRoute>} />
         <Route path="/owner/venues/create" element={<OwnerRoute><CreateVenuePage /></OwnerRoute>} />
         <Route path="/owner/venues/new" element={<OwnerRoute><VenueForm /></OwnerRoute>} />
-        <Route path="/owner/venues/:slug/edit" element={<OwnerRoute><VenueForm /></OwnerRoute>} />
+        <Route path="/owner/venues/:slug/edit" element={<OwnerRoute><EditVenuePage /></OwnerRoute>} />
         <Route path="/owner/venues/:slug/menu" element={<OwnerRoute><VenueMenuPage /></OwnerRoute>} />
         <Route path="/owner/bookings" element={<OwnerRoute><OwnerBookings /></OwnerRoute>} />
         <Route path="/owner/bookings/:id" element={<OwnerRoute><BookingDetail /></OwnerRoute>} />

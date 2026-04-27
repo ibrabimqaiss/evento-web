@@ -9,6 +9,7 @@ import {
   getStaff, createStaffMember, updateStaffMember, deleteStaffMember,
   getOwnerBookings, fmtIQD, fmtDate, BOOKING_STATUS_LABELS,
 } from '../../lib/ownerApi'
+import { DEMO_STAFF } from '../../lib/demoData'
 
 const ROLES = [
   ['manager','مدير'],['waiter','نادل'],['chef','طاهي'],
@@ -629,8 +630,11 @@ export default function OwnerHR() {
     getStaff()
       .then(res => {
         const d = res.data?.data ?? res.data
-        setStaff(Array.isArray(d) ? d : (d?.results ?? []))
+        const list = Array.isArray(d) ? d : (d?.results ?? [])
+        // Fall back to demo data if API returns empty list
+        setStaff(list.length > 0 ? list : DEMO_STAFF)
       })
+      .catch(() => setStaff(DEMO_STAFF))
       .finally(() => setLoading(false))
   }
 

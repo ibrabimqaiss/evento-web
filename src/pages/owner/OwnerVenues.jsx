@@ -3,9 +3,11 @@ import { Link } from 'react-router-dom'
 import {
   BuildingOffice2Icon, UsersIcon, BanknotesIcon, CalendarDaysIcon,
   PlusIcon, PencilIcon, StarIcon, CalculatorIcon, XMarkIcon,
-  CheckCircleIcon, PrinterIcon, QueueListIcon,
+  CheckCircleIcon, PrinterIcon, QueueListIcon, LinkIcon,
 } from '@heroicons/react/24/outline'
 import { getOwnerVenues, getOwnerBookings, fmtIQD, VENUE_TYPE_LABELS } from '../../lib/ownerApi'
+
+const SHARE_BASE = 'https://evento-iq.com/venue'
 
 const STATUS_LABELS = { active: 'نشط', inactive: 'غير نشط', under_review: 'قيد المراجعة' }
 const STATUS_CLASS = { active: 'status-badge status-active', inactive: 'status-badge status-inactive', under_review: 'status-badge status-review' }
@@ -367,7 +369,17 @@ export default function OwnerVenues() {
 }
 
 function VenueCard({ venue, onCalc, onCal }) {
+  const [copied, setCopied] = useState(false)
   const coverImg = venue.cover_image?.card_url || venue.cover_image?.image_url || null
+
+  function copyLink() {
+    if (!venue.share_token) return
+    navigator.clipboard.writeText(`${SHARE_BASE}/${venue.share_token}`).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
+
   return (
     <div className="glass-card" style={{ overflow: 'hidden' }}>
       {/* Cover */}
@@ -381,7 +393,7 @@ function VenueCard({ venue, onCalc, onCal }) {
 
       <div style={{ padding: '18px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-          <div>
+          <div style={{ flex: 1, minWidth: 0 }}>
             <div style={{ fontSize: '16px', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>{venue.name_ar || venue.name}</div>
             <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginTop: '2px' }}>
               {VENUE_TYPE_LABELS[venue.venue_type] || venue.venue_type} · {venue.city}
@@ -398,6 +410,18 @@ function VenueCard({ venue, onCalc, onCal }) {
           <InfoChip Icon={CalendarDaysIcon} label="إجمالي الحجوزات" value={venue.total_bookings ?? 0} />
           <InfoChip Icon={StarIcon} label="التقييم" value={`${venue.avg_rating ?? 0} / 5`} />
         </div>
+
+        {/* Copy link button */}
+        {venue.share_token && (
+          <button
+            onClick={copyLink}
+            className="glass-btn glass-btn-sm"
+            style={{ width: '100%', justifyContent: 'center', marginBottom: '8px', color: copied ? '#34D399' : undefined, borderColor: copied ? 'rgba(52,211,153,0.4)' : undefined }}
+          >
+            <LinkIcon style={{ width: 13, height: 13 }} />
+            {copied ? 'تم النسخ!' : 'نسخ الرابط'}
+          </button>
+        )}
 
         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
           <Link to={`/owner/venues/${venue.slug}/edit`} className="glass-btn glass-btn-sm" style={{ flex: 1, justifyContent: 'center' }}>

@@ -552,7 +552,8 @@ img { max-width: 100%; }
 .owner-mobile-header {
   display: none;
   padding: 12px 16px;
-  background: rgba(8, 6, 20, 0.85);
+  padding-top: calc(12px + env(safe-area-inset-top, 0px));
+  background: rgba(8, 6, 20, 0.9);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -560,7 +561,7 @@ img { max-width: 100%; }
   top: 0;
   left: 0;
   right: 0;
-  z-index: 100;
+  z-index: 9999;
 }
 
 /* ── Owner Mobile Nav ───────────────────────────────────────────────────────── */
@@ -620,7 +621,9 @@ img { max-width: 100%; }
   .glass-card { border-radius: 16px; }
   .glass-card-static { border-radius: 16px; }
   .glass-table-wrap { -webkit-overflow-scrolling: touch; overflow-x: auto; width: 100%; }
-  .glass-table { min-width: 600px; word-break: break-word; }
+  .glass-table { min-width: 600px; font-size: 13px; }
+  .glass-table td, .glass-table th { padding: 8px 12px; vertical-align: middle; white-space: nowrap; }
+  .glass-table tr { white-space: nowrap; }
   .quick-actions { flex-direction: column; }
   .glass-modal-overlay { align-items: flex-end; padding: 0; }
   .glass-modal-panel { border-radius: 20px 20px 0 0; max-height: 85vh; }

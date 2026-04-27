@@ -7,6 +7,7 @@ import {
   BanknotesIcon, CalendarDaysIcon, ChartBarIcon, ArrowTrendingDownIcon,
 } from '@heroicons/react/24/outline'
 import { getAnalytics, fmtIQD } from '../../lib/ownerApi'
+import { DEMO_ANALYTICS } from '../../lib/demoData'
 
 const COLORS = ['#7C3AED', '#34D399', '#FBBF24', '#60A5FA', '#F87171', '#A78BFA']
 
@@ -16,7 +17,12 @@ export default function OwnerAnalytics() {
 
   useEffect(() => {
     getAnalytics()
-      .then(res => setData(res.data?.data ?? res.data))
+      .then(res => {
+        const d = res.data?.data ?? res.data
+        // Fall back to demo data if API returns empty
+        setData(d && (d.kpis || d.monthly_revenue) ? d : DEMO_ANALYTICS)
+      })
+      .catch(() => setData(DEMO_ANALYTICS))
       .finally(() => setLoading(false))
   }, [])
 

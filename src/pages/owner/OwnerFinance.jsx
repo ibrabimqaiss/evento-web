@@ -4,6 +4,7 @@ import {
   getFinanceSummary, getExpenses, createExpense, deleteExpense,
   fmtIQD, fmtDate,
 } from '../../lib/ownerApi'
+import { DEMO_FINANCE_SUMMARY } from '../../lib/demoData'
 
 function exportCSV(expenses, summary) {
   const rows = [['الوصف', 'الفئة', 'المبلغ (د.ع)', 'التاريخ']]
@@ -58,10 +59,13 @@ export default function OwnerFinance() {
     setLoading(true)
     Promise.all([getFinanceSummary(), getExpenses()])
       .then(([sRes, eRes]) => {
-        setSummary(sRes.data?.data ?? sRes.data)
+        const s = sRes.data?.data ?? sRes.data
+        // Fall back to demo data if API returns empty
+        setSummary(s && (s.month !== undefined || s.year !== undefined) ? s : DEMO_FINANCE_SUMMARY)
         const eData = eRes.data?.data ?? eRes.data
         setExpenses(Array.isArray(eData) ? eData : (eData?.results ?? []))
       })
+      .catch(() => setSummary(DEMO_FINANCE_SUMMARY))
       .finally(() => setLoading(false))
   }
 
