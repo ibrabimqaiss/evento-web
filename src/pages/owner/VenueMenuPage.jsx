@@ -62,21 +62,43 @@ function AddEditModal({ slug, activeTab, item, onSave, onClose }) {
     if (!form.name.trim() || !form.price) return
     setSaving(true)
     setSaveError('')
-    const fd = new FormData()
-    fd.append('name', form.name)
-    fd.append('name_ar', form.name)
-    fd.append('description', form.description)
-    fd.append('description_ar', form.description)
-    fd.append('category', activeTab)
-    fd.append('service_type', 'paid')
-    fd.append('service_price_iqd', String(Math.round(Number(form.price))))
-    if (form.photo) fd.append('image', form.photo)
+    const priceStr = String(Math.round(Number(form.price)))
     try {
+      let res
       if (isEdit) {
-        const res = await updateMenuItem(slug, item.id, fd)
+        if (form.photo) {
+          // New file selected — must use FormData (multipart) for file upload
+          const fd = new FormData()
+          fd.append('name', form.name)
+          fd.append('name_ar', form.name)
+          fd.append('description', form.description)
+          fd.append('description_ar', form.description)
+          fd.append('category', activeTab)
+          fd.append('service_type', 'paid')
+          fd.append('service_price_iqd', priceStr)
+          fd.append('image', form.photo)
+          res = await updateMenuItem(slug, item.id, fd)
+        } else {
+          // No new file — send JSON to avoid multipart "not a file" errors
+          res = await updateMenuItem(slug, item.id, {
+            name: form.name, name_ar: form.name,
+            description: form.description, description_ar: form.description,
+            category: activeTab, service_type: 'paid',
+            service_price_iqd: priceStr,
+          })
+        }
         onSave(res.data?.data ?? res.data, true)
       } else {
-        const res = await createMenuItem(slug, fd)
+        const fd = new FormData()
+        fd.append('name', form.name)
+        fd.append('name_ar', form.name)
+        fd.append('description', form.description)
+        fd.append('description_ar', form.description)
+        fd.append('category', activeTab)
+        fd.append('service_type', 'paid')
+        fd.append('service_price_iqd', priceStr)
+        if (form.photo) fd.append('image', form.photo)
+        res = await createMenuItem(slug, fd)
         onSave(res.data?.data ?? res.data, false)
       }
       onClose()
@@ -89,7 +111,7 @@ function AddEditModal({ slug, activeTab, item, onSave, onClose }) {
 
   return (
     <div className="glass-modal-overlay" onClick={onClose}>
-      <div className="glass-modal-panel" onClick={e => e.stopPropagation()} style={{ maxWidth: '460px', width: '100%' }}>
+      <div className="glass-modal-panel" onClick={e => e.stopPropagation()} style={{ maxWidth: '500px', width: '90vw', maxHeight: '90vh', overflowY: 'auto', padding: '24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>
             {isEdit ? 'تعديل الصنف' : 'إضافة صنف جديد'}

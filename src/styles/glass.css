@@ -515,7 +515,7 @@ img { max-width: 100%; }
 .glass-modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: 200;
+  z-index: 1000;
   background: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -526,7 +526,7 @@ img { max-width: 100%; }
 }
 
 .glass-modal-panel {
-  background: rgba(15, 12, 41, 0.85);
+  background: rgba(15, 12, 41, 0.92);
   backdrop-filter: blur(40px) saturate(200%) brightness(0.9);
   -webkit-backdrop-filter: blur(40px) saturate(200%) brightness(0.9);
   border: 1px solid rgba(255, 255, 255, 0.25);
@@ -535,6 +535,8 @@ img { max-width: 100%; }
   position: relative;
   overflow: hidden;
   width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .glass-modal-panel::before {
@@ -550,13 +552,15 @@ img { max-width: 100%; }
 .owner-mobile-header {
   display: none;
   padding: 12px 16px;
-  background: rgba(8, 6, 20, 0.75);
+  background: rgba(8, 6, 20, 0.85);
   backdrop-filter: blur(24px) saturate(180%);
   -webkit-backdrop-filter: blur(24px) saturate(180%);
   border-bottom: 1px solid rgba(255,255,255,0.06);
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 40;
+  left: 0;
+  right: 0;
+  z-index: 100;
 }
 
 /* ── Owner Mobile Nav ───────────────────────────────────────────────────────── */
@@ -612,14 +616,14 @@ img { max-width: 100%; }
   .owner-main { margin-right: 0 !important; min-width: 0; }
   .owner-mobile-header { display: flex; align-items: center; }
   .owner-mobile-nav { display: flex !important; }
-  .owner-content { padding: 16px 16px 80px; }
+  .owner-content { padding: 68px 16px 80px; /* 52px fixed header + 16px gap */ }
   .glass-card { border-radius: 16px; }
   .glass-card-static { border-radius: 16px; }
   .glass-table-wrap { -webkit-overflow-scrolling: touch; overflow-x: auto; width: 100%; }
   .glass-table { min-width: 600px; word-break: break-word; }
   .quick-actions { flex-direction: column; }
   .glass-modal-overlay { align-items: flex-end; padding: 0; }
-  .glass-modal-panel { border-radius: 20px 20px 0 0; }
+  .glass-modal-panel { border-radius: 20px 20px 0 0; max-height: 85vh; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
 }
 

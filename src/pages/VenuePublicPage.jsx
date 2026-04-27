@@ -20,6 +20,8 @@ function fmtIQD(n) {
   return new Intl.NumberFormat('ar-IQ', { style: 'decimal', maximumFractionDigits: 0 }).format(n || 0) + ' د.ع'
 }
 
+const imgSrc = (img) => img?.card_url || img?.full_url || img?.thumbnail_url || img?.image_url || img?.image || null
+
 // ── Lightbox ─────────────────────────────────────────────────────────────────
 function Lightbox({ images, startIndex, onClose }) {
   const [idx, setIdx] = useState(startIndex)
@@ -41,7 +43,7 @@ function Lightbox({ images, startIndex, onClose }) {
       <button onClick={prev} style={{ position: 'absolute', right: 20, background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', width: 44, height: 44, cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <ChevronRightIcon style={{ width: 22, height: 22 }} />
       </button>
-      <img src={img?.full_url || img?.card_url || img?.image_url} alt="" style={{ maxWidth: '90vw', maxHeight: '85vh', objectFit: 'contain', borderRadius: '12px' }} />
+      <img src={imgSrc(img)} alt="" style={{ maxWidth: '90vw', maxHeight: '85vh', objectFit: 'contain', borderRadius: '12px' }} />
       <button onClick={next} style={{ position: 'absolute', left: 20, background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', width: 44, height: 44, cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <ChevronLeftIcon style={{ width: 22, height: 22 }} />
       </button>
@@ -62,7 +64,10 @@ export default function VenuePublicPage() {
   useEffect(() => {
     axios.get(`${BASE_URL}/venues/share/${shareToken}/`)
       .then(res => {
+        console.log('[VenuePublicPage] raw response:', res.data)
         const data = res.data?.data ?? res.data
+        console.log('[VenuePublicPage] venue:', data)
+        console.log('[VenuePublicPage] images:', data?.images)
         setVenue(data)
       })
       .catch(() => setError('لم يتم العثور على القاعة'))
@@ -104,7 +109,7 @@ export default function VenuePublicPage() {
       {/* Hero cover */}
       <div style={{ position: 'relative', height: '320px', overflow: 'hidden' }}>
         {cover ? (
-          <img src={cover.full_url || cover.card_url || cover.image_url} alt={venue.name_ar} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <img src={imgSrc(cover)} alt={venue.name_ar} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         ) : (
           <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg,rgba(124,58,237,0.4),rgba(59,130,246,0.3))' }} />
         )}
@@ -153,7 +158,7 @@ export default function VenuePublicPage() {
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px' }}>
               {venue.images.map((img, i) => (
                 <div key={img.id || i} style={{ borderRadius: '12px', overflow: 'hidden', aspectRatio: '4/3', cursor: 'pointer', border: '2px solid rgba(255,255,255,0.08)' }} onClick={() => setLightbox(i)}>
-                  <img src={img.card_url || img.thumbnail_url || img.image_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.2s' }} />
+                  {imgSrc(img) && <img src={imgSrc(img)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.2s' }} />}
                 </div>
               ))}
             </div>
