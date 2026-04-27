@@ -51,15 +51,17 @@ function AddEditModal({ slug, activeTab, item, onSave, onClose }) {
   const [form, setForm] = useState({
     name: item?.name_ar || item?.name || '',
     description: item?.description_ar || item?.description || '',
-    price: item?.service_price_iqd || '',
+    price: item?.service_price_iqd ? String(Math.round(Number(item.service_price_iqd))) : '',
     photo: null,
   })
   const [saving, setSaving] = useState(false)
+  const [saveError, setSaveError] = useState('')
   const photoRef = useRef()
 
   async function save() {
     if (!form.name.trim() || !form.price) return
     setSaving(true)
+    setSaveError('')
     const fd = new FormData()
     fd.append('name', form.name)
     fd.append('name_ar', form.name)
@@ -67,7 +69,7 @@ function AddEditModal({ slug, activeTab, item, onSave, onClose }) {
     fd.append('description_ar', form.description)
     fd.append('category', activeTab)
     fd.append('service_type', 'paid')
-    fd.append('service_price_iqd', form.price)
+    fd.append('service_price_iqd', String(Math.round(Number(form.price))))
     if (form.photo) fd.append('image', form.photo)
     try {
       if (isEdit) {
@@ -78,7 +80,10 @@ function AddEditModal({ slug, activeTab, item, onSave, onClose }) {
         onSave(res.data?.data ?? res.data, false)
       }
       onClose()
-    } catch {}
+    } catch (err) {
+      const d = err.response?.data
+      setSaveError(d?.error?.message || d?.detail || JSON.stringify(d) || 'فشل الحفظ')
+    }
     setSaving(false)
   }
 
@@ -119,7 +124,12 @@ function AddEditModal({ slug, activeTab, item, onSave, onClose }) {
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '10px', marginTop: '22px', justifyContent: 'flex-start' }}>
+        {saveError && (
+          <div style={{ marginTop: '12px', padding: '10px 14px', background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: '10px', color: '#FCA5A5', fontSize: '13px' }}>
+            {saveError}
+          </div>
+        )}
+        <div style={{ display: 'flex', gap: '10px', marginTop: '16px', justifyContent: 'flex-start' }}>
           <button className="glass-btn glass-btn-primary" onClick={save} disabled={saving || !form.name.trim() || !form.price}>
             <CheckIcon style={{ width: 15, height: 15 }} /> {saving ? 'جاري الحفظ...' : 'حفظ'}
           </button>
