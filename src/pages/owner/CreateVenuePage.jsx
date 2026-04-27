@@ -12,7 +12,6 @@ import {
 
 const STEPS = ['المعلومات الأساسية', 'الصور والفيديو', 'الخدمات', 'القائمة']
 
-const CITIES = ['بغداد','البصرة','الموصل','أربيل','النجف','كربلاء','السليمانية','كركوك','الأنبار','ديالى','ذي قار','واسط','بابل','صلاح الدين','المثنى','القادسية','ميسان','دهوك','حلبجة']
 const VENUE_TYPES = [
   ['wedding_hall','قاعة أفراح'],['conference_center','مركز مؤتمرات'],['restaurant','مطعم'],
   ['garden','حديقة'],['hotel_ballroom','قاعة فندقية'],['rooftop','سطح مفتوح'],
@@ -76,10 +75,7 @@ function Step1({ form, setForm, onNext, loading }) {
         </div>
         <div>
           <label className="glass-label">المدينة *</label>
-          <select className="glass-select" value={form.city} onChange={e => set('city', e.target.value)}>
-            <option value="">اختر مدينة</option>
-            {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
-          </select>
+          <input className="glass-input" value={form.city} onChange={e => set('city', e.target.value)} placeholder="مثال: بغداد، البصرة، أربيل..." />
         </div>
         <div style={{ gridColumn: '1 / -1' }}>
           <label className="glass-label">العنوان التفصيلي</label>
