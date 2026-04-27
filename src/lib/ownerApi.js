@@ -5,8 +5,30 @@ export const getDashboardStats = () => api.get('/owner/dashboard/stats/')
 
 // ─── Venues ───────────────────────────────────────────────────────────────────
 export const getOwnerVenues = () => api.get('/owner/venues/')
-export const createVenue = (data) => api.post('/venues/', data)
-export const updateVenue = (slug, data) => api.patch(`/venues/${slug}/`, data)
+export const createVenue = (data) => api.post('/venues/create/', data)
+export const updateVenue = (slug, data) => api.patch(`/venues/${slug}/edit/`, data)
+
+// ─── Venue Media ──────────────────────────────────────────────────────────────
+export const uploadVenuePhoto = (slug, formData) =>
+  api.post(`/venues/${slug}/images/`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+export const deleteVenuePhoto = (slug, imgId) => api.delete(`/venues/${slug}/images/${imgId}/`)
+export const uploadVenueVideo = (slug, formData) =>
+  api.post(`/venues/${slug}/video/`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+export const deleteVenueVideo = (slug) => api.delete(`/venues/${slug}/video/`)
+
+// ─── Venue Services ───────────────────────────────────────────────────────────
+export const getVenueServices = (slug) => api.get(`/venues/${slug}/services/`)
+export const createVenueService = (slug, data) => api.post(`/venues/${slug}/services/`, data)
+export const updateVenueService = (slug, serviceId, data) => api.put(`/venues/${slug}/services/${serviceId}/`, data)
+export const deleteVenueService = (slug, serviceId) => api.delete(`/venues/${slug}/services/${serviceId}/`)
+
+// ─── Venue Menu ───────────────────────────────────────────────────────────────
+export const getVenueMenu = (slug) => api.get(`/venues/${slug}/menu/`)
+export const createMenuItem = (slug, formData) =>
+  api.post(`/venues/${slug}/menu/`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+export const updateMenuItem = (slug, itemId, formData) =>
+  api.put(`/venues/${slug}/menu/${itemId}/`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+export const deleteMenuItem = (slug, itemId) => api.delete(`/venues/${slug}/menu/${itemId}/`)
 
 // ─── Bookings ────────────────────────────────────────────────────────────────
 export const getOwnerBookings = (params = {}) => api.get('/owner/bookings/', { params })

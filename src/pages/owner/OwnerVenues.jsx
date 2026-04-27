@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import {
   BuildingOffice2Icon, UsersIcon, BanknotesIcon, CalendarDaysIcon,
   PlusIcon, PencilIcon, StarIcon, CalculatorIcon, XMarkIcon,
-  CheckCircleIcon, PrinterIcon,
+  CheckCircleIcon, PrinterIcon, QueueListIcon,
 } from '@heroicons/react/24/outline'
 import { getOwnerVenues, getOwnerBookings, fmtIQD, VENUE_TYPE_LABELS } from '../../lib/ownerApi'
 
@@ -336,8 +336,8 @@ export default function OwnerVenues() {
           <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'rgba(255,255,255,0.95)', margin: 0 }}>القاعات</h1>
           <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.45)', marginTop: '4px' }}>إدارة قاعاتك وإعداداتها</p>
         </div>
-        <Link to="/owner/venues/new" className="glass-btn glass-btn-primary">
-          <PlusIcon style={{ width: 16, height: 16 }} /> قاعة جديدة
+        <Link to="/owner/venues/create" className="glass-btn glass-btn-primary">
+          <PlusIcon style={{ width: 16, height: 16 }} /> إضافة قاعة جديدة
         </Link>
       </div>
 
@@ -350,7 +350,7 @@ export default function OwnerVenues() {
           <BuildingOffice2Icon style={{ width: 48, height: 48, color: 'rgba(255,255,255,0.3)', marginBottom: '16px' }} />
           <div style={{ fontSize: '18px', fontWeight: 600, color: 'rgba(255,255,255,0.7)', marginBottom: '8px' }}>لا توجد قاعات بعد</div>
           <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)', marginBottom: '20px' }}>أضف قاعتك الأولى للبدء في استقبال الحجوزات</p>
-          <Link to="/owner/venues/new" className="glass-btn glass-btn-primary"><PlusIcon style={{ width: 16, height: 16 }} /> إضافة قاعة</Link>
+          <Link to="/owner/venues/create" className="glass-btn glass-btn-primary"><PlusIcon style={{ width: 16, height: 16 }} /> إضافة قاعة جديدة</Link>
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '16px' }}>
@@ -402,6 +402,9 @@ function VenueCard({ venue, onCalc, onCal }) {
         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
           <Link to={`/owner/venues/${venue.slug}/edit`} className="glass-btn glass-btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
             <PencilIcon style={{ width: 13, height: 13 }} /> تعديل
+          </Link>
+          <Link to={`/owner/venues/${venue.slug}/menu`} className="glass-btn glass-btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
+            <QueueListIcon style={{ width: 13, height: 13 }} /> القائمة
           </Link>
           <Link to={`/owner/bookings?venue_id=${venue.id}`} className="glass-btn glass-btn-sm" style={{ flex: 1, justifyContent: 'center' }}>
             <CalendarDaysIcon style={{ width: 13, height: 13 }} /> الحجوزات

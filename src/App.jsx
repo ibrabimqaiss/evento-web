@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 import InvitationPage from './pages/InvitationPage.jsx'
 import VenuePage from './pages/VenuePage.jsx'
+import VenuePublicPage from './pages/VenuePublicPage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import RegisterPage from './pages/RegisterPage.jsx'
 import HomePage from './pages/HomePage.jsx'
@@ -15,6 +16,8 @@ import OwnerLayout from './layouts/OwnerLayout.jsx'
 const OwnerDashboard  = lazy(() => import('./pages/owner/OwnerDashboard.jsx'))
 const OwnerVenues     = lazy(() => import('./pages/owner/OwnerVenues.jsx'))
 const VenueForm       = lazy(() => import('./pages/owner/VenueForm.jsx'))
+const CreateVenuePage = lazy(() => import('./pages/owner/CreateVenuePage.jsx'))
+const VenueMenuPage   = lazy(() => import('./pages/owner/VenueMenuPage.jsx'))
 const OwnerBookings   = lazy(() => import('./pages/owner/OwnerBookings.jsx'))
 const BookingDetail   = lazy(() => import('./pages/owner/BookingDetail.jsx'))
 const OwnerFinance    = lazy(() => import('./pages/owner/OwnerFinance.jsx'))
@@ -56,13 +59,16 @@ export default function App() {
         {/* Public shareable pages */}
         <Route path="/e/:slug" element={<InvitationPage />} />
         <Route path="/p/venues/:slug" element={<VenuePage />} />
+        <Route path="/venue/:shareToken" element={<VenuePublicPage />} />
 
         {/* Owner ERP */}
         <Route path="/owner" element={<Navigate to="/owner/dashboard" replace />} />
         <Route path="/owner/dashboard" element={<OwnerRoute><OwnerDashboard /></OwnerRoute>} />
         <Route path="/owner/venues" element={<OwnerRoute><OwnerVenues /></OwnerRoute>} />
+        <Route path="/owner/venues/create" element={<OwnerRoute><CreateVenuePage /></OwnerRoute>} />
         <Route path="/owner/venues/new" element={<OwnerRoute><VenueForm /></OwnerRoute>} />
         <Route path="/owner/venues/:slug/edit" element={<OwnerRoute><VenueForm /></OwnerRoute>} />
+        <Route path="/owner/venues/:slug/menu" element={<OwnerRoute><VenueMenuPage /></OwnerRoute>} />
         <Route path="/owner/bookings" element={<OwnerRoute><OwnerBookings /></OwnerRoute>} />
         <Route path="/owner/bookings/:id" element={<OwnerRoute><BookingDetail /></OwnerRoute>} />
         <Route path="/owner/finance" element={<OwnerRoute><OwnerFinance /></OwnerRoute>} />
