@@ -5,5 +5,12 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
+    proxy: {
+      '/api': {
+        target: 'https://web-production-73fa7.up.railway.app',
+        changeOrigin: true,
+        secure: true,
+      },
+    },
   },
 })

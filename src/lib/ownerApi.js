@@ -10,11 +10,13 @@ export const createVenue = (data) => api.post('/venues/create/', data)
 export const updateVenue = (slug, data) => api.patch(`/owner/venues/${slug}/`, data)
 
 // ─── Venue Media ──────────────────────────────────────────────────────────────
+const MULTIPART = { headers: { 'Content-Type': undefined } }
+
 export const uploadVenuePhoto = (slug, formData) =>
-  api.post(`/venues/${slug}/images/`, formData)
+  api.post(`/venues/${slug}/images/`, formData, MULTIPART)
 export const deleteVenuePhoto = (slug, imgId) => api.delete(`/venues/${slug}/images/${imgId}/`)
 export const uploadVenueVideo = (slug, formData) =>
-  api.post(`/venues/${slug}/video/`, formData)
+  api.post(`/venues/${slug}/video/`, formData, MULTIPART)
 export const deleteVenueVideo = (slug) => api.delete(`/venues/${slug}/video/`)
 
 // ─── Venue Services ───────────────────────────────────────────────────────────
@@ -26,9 +28,9 @@ export const deleteVenueService = (slug, serviceId) => api.delete(`/venues/${slu
 // ─── Venue Menu ───────────────────────────────────────────────────────────────
 export const getVenueMenu = (slug) => api.get(`/venues/${slug}/menu/`)
 export const createMenuItem = (slug, formData) =>
-  api.post(`/venues/${slug}/menu/`, formData)
+  api.post(`/venues/${slug}/menu/`, formData, MULTIPART)
 export const updateMenuItem = (slug, itemId, formData) =>
-  api.put(`/venues/${slug}/menu/${itemId}/`, formData)
+  api.put(`/venues/${slug}/menu/${itemId}/`, formData, MULTIPART)
 export const deleteMenuItem = (slug, itemId) => api.delete(`/venues/${slug}/menu/${itemId}/`)
 
 // ─── Bookings ────────────────────────────────────────────────────────────────
