@@ -20,6 +20,7 @@ function fmtIQD(n) {
 }
 
 const getImageUrl = (img) =>
+  (typeof img === 'string' ? img : '') ||
   img?.full_url || img?.image_url || img?.card_url || img?.thumbnail_url || img?.url || img?.image || ''
 
 const getPhotoUrl = (item) =>

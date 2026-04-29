@@ -647,7 +647,8 @@ function ProgressBar({ pct, label }) {
 
 // ── Main Page ─────────────────────────────────────────────────────────────────
 export default function EditVenuePage() {
-  const { slug } = useParams()
+  const { slug: rawSlug } = useParams()
+  const slug = rawSlug?.replace(/^item-/, '') || rawSlug
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('info')
 

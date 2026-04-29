@@ -163,7 +163,8 @@ function AddEditModal({ slug, activeTab, item, onSave, onClose }) {
 }
 
 export default function VenueMenuPage() {
-  const { slug } = useParams()
+  const { slug: rawSlug } = useParams()
+  const slug = rawSlug?.replace(/^item-/, '') || rawSlug
   const [venue, setVenue] = useState(null)
   const [items, setItems] = useState([])
   const [loading, setLoading] = useState(true)

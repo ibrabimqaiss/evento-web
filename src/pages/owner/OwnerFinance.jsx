@@ -92,8 +92,10 @@ export default function OwnerFinance() {
 
   const totalVariable = expenses.reduce((s, e) => s + parseFloat(e.amount || 0), 0)
   const totalFixed = FIXED_EXP_DEFS.reduce((s, d) => s + (parseFloat(fixedExp[d.key] || 0)), 0)
-  const totalExpenses = totalVariable + totalFixed
-  const profit = parseFloat(revenue) - totalExpenses
+  // Use backend salary total if available, else fall back to local fixed expenses
+  const salaryCost = summary?.total_salary_expenses ?? 0
+  const totalExpenses = totalVariable + totalFixed + salaryCost
+  const profit = summary?.net_profit ?? (parseFloat(summary?.month ?? revenue) - totalExpenses)
 
   function updateFixed(key, val) {
     const next = { ...fixedExp, [key]: val }
@@ -133,8 +135,9 @@ export default function OwnerFinance() {
         {/* Profit summary */}
         {!loading && summary && (
           <>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px', marginTop: '20px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '12px', marginTop: '20px' }}>
               <MetricBox label="الإيرادات (الشهر)" value={fmtIQD(summary.month ?? 0)} color="#34D399" />
+              <MetricBox label="الرواتب" value={fmtIQD(salaryCost)} color="#F87171" />
               <MetricBox label="المصروفات المتغيرة" value={fmtIQD(totalVariable)} color="#F87171" />
               <MetricBox label="المصروفات الثابتة" value={fmtIQD(totalFixed)} color="#FBBF24" />
             </div>
@@ -146,6 +149,12 @@ export default function OwnerFinance() {
                   <span style={{ color: 'rgba(255,255,255,0.55)' }}>الإيرادات</span>
                   <span style={{ color: '#34D399', direction: 'ltr' }}>{fmtIQD(summary.month ?? 0)}</span>
                 </div>
+                {salaryCost > 0 && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <span style={{ color: 'rgba(255,255,255,0.55)' }}>- الرواتب</span>
+                    <span style={{ color: '#F87171', direction: 'ltr' }}>{fmtIQD(salaryCost)}</span>
+                  </div>
+                )}
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <span style={{ color: 'rgba(255,255,255,0.55)' }}>- المصروفات المتغيرة</span>
                   <span style={{ color: '#F87171', direction: 'ltr' }}>{fmtIQD(totalVariable)}</span>
