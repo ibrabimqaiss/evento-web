@@ -5,9 +5,9 @@ export const getDashboardStats = () => api.get('/owner/dashboard/stats/')
 
 // ─── Venues ───────────────────────────────────────────────────────────────────
 export const getOwnerVenues = () => api.get('/owner/venues/')
-export const getOwnerVenueDetail = (slug) => api.get(`/venues/${slug}/edit/`)
+export const getOwnerVenueDetail = (slug) => api.get(`/owner/venues/${slug}/`)
 export const createVenue = (data) => api.post('/venues/create/', data)
-export const updateVenue = (slug, data) => api.patch(`/venues/${slug}/edit/`, data)
+export const updateVenue = (slug, data) => api.patch(`/owner/venues/${slug}/`, data)
 
 // ─── Venue Media ──────────────────────────────────────────────────────────────
 export const uploadVenuePhoto = (slug, formData) =>
