@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { CheckCircleIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
-import { getVenueDetail } from '../../lib/api'
-import { createVenue, updateVenue } from '../../lib/ownerApi'
+import { getOwnerVenueDetail, createVenue, updateVenue } from '../../lib/ownerApi'
 
 const VENUE_TYPES = [
   ['wedding_hall', 'قاعة أفراح'], ['conference_center', 'مركز مؤتمرات'], ['restaurant', 'مطعم'],
@@ -39,7 +38,7 @@ export default function VenueForm() {
 
   useEffect(() => {
     if (!isEdit) return
-    getVenueDetail(slug)
+    getOwnerVenueDetail(slug)
       .then((res) => {
         const d = res.data?.data ?? res.data
         setForm({

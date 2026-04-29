@@ -4,8 +4,8 @@ import {
   CheckIcon, XMarkIcon, PhotoIcon, TrashIcon, PlusIcon,
   ArrowRightIcon, VideoCameraIcon, WrenchScrewdriverIcon, QueueListIcon,
 } from '@heroicons/react/24/outline'
-import { getVenueDetail } from '../../lib/api'
 import {
+  getOwnerVenueDetail,
   updateVenue,
   uploadVenuePhoto, deleteVenuePhoto,
   uploadVenueVideo, deleteVenueVideo,
@@ -46,7 +46,7 @@ function InfoTab({ slug }) {
   useEffect(() => {
     const token = localStorage.getItem('access_token')
     console.log('[EditVenuePage] token:', token ? token.slice(0, 30) + '...' : 'MISSING')
-    getVenueDetail(slug)
+    getOwnerVenueDetail(slug)
       .then(res => {
         console.log('[EditVenuePage] venue fetch status:', res.status, res.data)
         const d = res.data?.data ?? res.data
@@ -162,7 +162,7 @@ function MediaTab({ slug }) {
   useEffect(() => {
     const token = localStorage.getItem('access_token')
     console.log('[EditVenuePage/Media] token:', token ? token.slice(0, 30) + '...' : 'MISSING')
-    getVenueDetail(slug)
+    getOwnerVenueDetail(slug)
       .then(res => {
         console.log('[EditVenuePage/Media] venue fetch status:', res.status)
         const d = res.data?.data ?? res.data
