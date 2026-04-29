@@ -44,8 +44,11 @@ function InfoTab({ slug }) {
   const [error, setError] = useState('')
 
   useEffect(() => {
+    const token = localStorage.getItem('access_token')
+    console.log('[EditVenuePage] token:', token ? token.slice(0, 30) + '...' : 'MISSING')
     getVenueDetail(slug)
       .then(res => {
+        console.log('[EditVenuePage] venue fetch status:', res.status, res.data)
         const d = res.data?.data ?? res.data
         setForm({
           name: d.name || '',
@@ -59,7 +62,10 @@ function InfoTab({ slug }) {
           base_price_iqd: d.base_price_iqd || 0,
         })
       })
-      .catch(() => setError('فشل تحميل بيانات القاعة'))
+      .catch(err => {
+        console.error('[EditVenuePage] venue fetch error:', err.response?.status, err.response?.data)
+        setError(err.response?.data?.error?.message || err.response?.data?.detail || 'فشل تحميل بيانات القاعة')
+      })
       .finally(() => setLoading(false))
   }, [slug])
 
@@ -154,11 +160,17 @@ function MediaTab({ slug }) {
   const videoRef = useRef()
 
   useEffect(() => {
+    const token = localStorage.getItem('access_token')
+    console.log('[EditVenuePage/Media] token:', token ? token.slice(0, 30) + '...' : 'MISSING')
     getVenueDetail(slug)
       .then(res => {
+        console.log('[EditVenuePage/Media] venue fetch status:', res.status)
         const d = res.data?.data ?? res.data
         setImages(d.images || [])
         setVideo(d.video_url || null)
+      })
+      .catch(err => {
+        console.error('[EditVenuePage/Media] venue fetch error:', err.response?.status, err.response?.data)
       })
       .finally(() => setLoading(false))
   }, [slug])

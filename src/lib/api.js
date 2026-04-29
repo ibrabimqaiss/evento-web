@@ -171,7 +171,7 @@ export function searchVenues(params = {}) {
 }
 
 export function getVenueDetail(slug) {
-  return api.get(`/venues/${slug}/`)
+  return api.get(`/venues/p/${slug}/`)
 }
 
 // ─── Bookings ─────────────────────────────────────────────────────────────────
