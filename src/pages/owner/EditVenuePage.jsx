@@ -166,7 +166,9 @@ function MediaTab({ slug }) {
       .then(res => {
         console.log('[EditVenuePage/Media] venue fetch status:', res.status)
         const d = res.data?.data ?? res.data
-        setImages(d.images || [])
+        const imgs = d.images || []
+        console.log('[EditVenue] images data:', JSON.stringify(imgs))
+        setImages(imgs)
         setVideo(d.video_url || null)
       })
       .catch(err => {
@@ -226,7 +228,11 @@ function MediaTab({ slug }) {
     } catch { /* noop */ }
   }
 
-  const getImgUrl = (img) => img?.card_url || img?.full_url || img?.image_url || img?.thumbnail_url || ''
+  const getImageUrl = (img) => {
+    if (!img) return ''
+    if (typeof img === 'string') return img
+    return img.full_url || img.image_url || img.card_url || img.thumbnail_url || img.url || img.image || ''
+  }
 
   if (loading) return <Spinner />
 
@@ -255,7 +261,7 @@ function MediaTab({ slug }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px' }}>
             {images.map(img => (
               <div key={img.id} style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', aspectRatio: '4/3', background: 'rgba(255,255,255,0.05)' }}>
-                {getImgUrl(img) && <img src={getImgUrl(img)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />}
+                {getImageUrl(img) && <img src={getImageUrl(img)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={(e) => { e.target.style.border = '2px solid red'; console.log('Image failed:', e.target.src) }} />}
                 <button
                   onClick={() => handleDeletePhoto(img.id)}
                   style={{ position: 'absolute', top: 6, left: 6, background: 'rgba(0,0,0,0.7)', border: 'none', borderRadius: '50%', width: 28, height: 28, cursor: 'pointer', color: '#F87171', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
