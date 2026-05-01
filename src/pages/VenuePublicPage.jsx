@@ -4,7 +4,9 @@ import axios from 'axios'
 import {
   MapPinIcon, UsersIcon, BanknotesIcon, CheckCircleIcon,
   ShareIcon, ChevronLeftIcon, ChevronRightIcon, XMarkIcon,
+  SunIcon, MoonIcon, QueueListIcon,
 } from '@heroicons/react/24/outline'
+import { useTheme } from '../lib/theme'
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1'
 
@@ -27,8 +29,11 @@ const getImageUrl = (img) => {
   return url
 }
 
-const getPhotoUrl = (item) =>
-  item?.photo_url || item?.photo || item?.image_url || item?.image || ''
+const getPhotoUrl = (item) => {
+  const url = item?.photo_url || item?.photo || item?.image_url || item?.image || ''
+  if (url && !url.startsWith('http')) return `https://evento-media-iq.s3.eu-north-1.amazonaws.com/${url}`
+  return url
+}
 
 // ── Lightbox ─────────────────────────────────────────────────────────────────
 function Lightbox({ images, startIndex, onClose }) {
@@ -48,26 +53,30 @@ function Lightbox({ images, startIndex, onClose }) {
   }, [])
 
   return (
-    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.95)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <button onClick={onClose} style={{ position: 'absolute', top: 20, right: 20, background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', width: 44, height: 44, cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.96)', zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <button onClick={onClose} style={{ position: 'absolute', top: 20, right: 20, background: 'rgba(255,255,255,0.12)', border: 'none', borderRadius: '50%', width: 44, height: 44, cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <XMarkIcon style={{ width: 22, height: 22 }} />
       </button>
-      <button onClick={prev} style={{ position: 'absolute', right: 20, top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', width: 48, height: 48, cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <button onClick={prev} style={{ position: 'absolute', right: 20, top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.12)', border: 'none', borderRadius: '50%', width: 48, height: 48, cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <ChevronRightIcon style={{ width: 24, height: 24 }} />
       </button>
       {getImageUrl(img) && (
-        <img src={getImageUrl(img)} alt="" style={{ maxWidth: '90vw', maxHeight: '88vh', objectFit: 'contain', borderRadius: '12px' }} />
+        <img src={getImageUrl(img)} alt="" style={{ maxWidth: '90vw', maxHeight: '88vh', objectFit: 'contain', borderRadius: 12 }} />
       )}
-      <button onClick={next} style={{ position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '50%', width: 48, height: 48, cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <button onClick={next} style={{ position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)', background: 'rgba(255,255,255,0.12)', border: 'none', borderRadius: '50%', width: 48, height: 48, cursor: 'pointer', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <ChevronLeftIcon style={{ width: 24, height: 24 }} />
       </button>
-      <div style={{ position: 'absolute', bottom: 20, color: 'rgba(255,255,255,0.5)', fontSize: '14px' }}>{idx + 1} / {images.length}</div>
+      <div style={{ position: 'absolute', bottom: 20, color: 'rgba(255,255,255,0.5)', fontSize: 14 }}>{idx + 1} / {images.length}</div>
     </div>
   )
 }
 
+// ── Page ──────────────────────────────────────────────────────────────────────
 export default function VenuePublicPage() {
   const { shareToken } = useParams()
+  const { theme, toggleTheme } = useTheme()
+  const isDark = theme === 'dark'
+
   const [venue, setVenue] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -83,7 +92,6 @@ export default function VenuePublicPage() {
         console.log('[VenuePublicPage] venue:', data)
         console.log('[VenuePublicPage] first image:', JSON.stringify(data.images?.[0]))
         setVenue(data)
-        // Set default menu tab to first tab that has items
         if (data.menu_items?.length > 0) {
           const firstCat = MENU_CATS.find(c => data.menu_items.some(i => i.category === c.key))
           if (firstCat) setMenuTab(firstCat.key)
@@ -101,10 +109,26 @@ export default function VenuePublicPage() {
     })
   }
 
+  // Theme-derived values for styles that can't use pure CSS variables
+  const borderColor = isDark ? 'rgba(255,255,255,0.1)' : '#e5e5e5'
+  const cardBg = isDark ? 'rgba(255,255,255,0.04)' : '#ffffff'
+  const cardShadow = isDark ? 'none' : '0 2px 16px rgba(0,0,0,0.07)'
+  const infoBarBg = isDark ? 'rgba(255,255,255,0.03)' : '#ffffff'
+  const tabActiveBg = isDark ? 'rgba(124,58,237,0.2)' : 'rgba(124,58,237,0.08)'
+  const tabInactiveBg = isDark ? 'rgba(255,255,255,0.05)' : '#f7f7f7'
+  const successBg = isDark ? 'rgba(52,211,153,0.06)' : '#f0fdf9'
+  const successBorder = isDark ? 'rgba(52,211,153,0.2)' : '#a7f3d0'
+  const paidBg = isDark ? 'rgba(251,191,36,0.06)' : '#fffbeb'
+  const paidBorder = isDark ? 'rgba(251,191,36,0.2)' : '#fde68a'
+  const menuItemFallbackBg = isDark ? 'rgba(124,58,237,0.1)' : '#f3f0ff'
+  const stickyBarBg = isDark ? 'rgba(15,10,30,0.94)' : 'rgba(255,255,255,0.97)'
+  const textPrimary = isDark ? 'rgba(255,255,255,0.95)' : '#1a1a2e'
+  const textSecondary = isDark ? 'rgba(255,255,255,0.62)' : '#666666'
+
   if (loading) {
     return (
-      <div style={{ minHeight: '100vh', background: '#0f0a1e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <div style={{ width: 44, height: 44, borderRadius: '50%', border: '3px solid rgba(255,255,255,0.1)', borderTopColor: '#7C3AED', animation: 'spin 0.7s linear infinite' }} />
+      <div style={{ minHeight: '100vh', background: isDark ? '#0f0a1e' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: 44, height: 44, borderRadius: '50%', border: `3px solid ${borderColor}`, borderTopColor: '#7C3AED', animation: 'spin 0.7s linear infinite' }} />
         <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
       </div>
     )
@@ -112,9 +136,9 @@ export default function VenuePublicPage() {
 
   if (error || !venue) {
     return (
-      <div style={{ minHeight: '100vh', background: '#0f0a1e', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '16px' }}>
-        <div style={{ fontSize: '48px' }}>🏛️</div>
-        <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '18px', fontWeight: 600, fontFamily: 'Cairo, sans-serif' }}>{error || 'القاعة غير متاحة'}</div>
+      <div style={{ minHeight: '100vh', background: isDark ? '#0f0a1e' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16 }}>
+        <div style={{ fontSize: 48 }}>🏛️</div>
+        <div style={{ color: textSecondary, fontSize: 18, fontWeight: 600, fontFamily: 'Cairo, sans-serif' }}>{error || 'القاعة غير متاحة'}</div>
       </div>
     )
   }
@@ -124,199 +148,271 @@ export default function VenuePublicPage() {
   const includedServices = (venue.services || []).filter(s => s.is_included)
   const paidServices = (venue.services || []).filter(s => s.is_paid)
   const menuByTab = (cat) => (venue.menu_items || []).filter(i => i.category === cat)
+  const hasTabs = MENU_CATS.filter(c => menuByTab(c.key).length > 0)
+  const menuLink = `/menu/${shareToken}`
 
   return (
-    <div dir="rtl" style={{ minHeight: '100vh', background: '#0f0a1e', fontFamily: 'Cairo, sans-serif', color: '#fff', paddingBottom: '60px' }}>
+    <div dir="rtl" style={{
+      minHeight: '100vh',
+      background: isDark ? '#0f0a1e' : '#ffffff',
+      fontFamily: 'Cairo, sans-serif',
+      color: textPrimary,
+      paddingBottom: 80,
+    }}>
 
-      {/* ── Hero Image ──────────────────────────────────────────────────────── */}
-      <div style={{ position: 'relative', width: '100%', height: 'clamp(280px, 45vw, 520px)', overflow: 'hidden' }}>
-        {heroUrl ? (
+      {/* ── Hero Image ── */}
+      <div style={{ position: 'relative', width: '100%', height: 'clamp(280px, 45vw, 520px)', overflow: 'hidden', background: isDark ? '#1a0f3a' : '#f3f0ff' }}>
+        {heroUrl && (
           <img
             src={heroUrl}
             alt={venue.name_ar || venue.name}
             style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
           />
-        ) : (
-          <div style={{ width: '100%', height: '100%', background: 'linear-gradient(135deg,rgba(124,58,237,0.5),rgba(59,130,246,0.4))' }} />
         )}
+        {/* Dark gradient at bottom so text is always readable */}
+        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.2) 40%, transparent 70%)' }} />
 
-        {/* Dark gradient overlay */}
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(15,10,30,0.97) 0%, rgba(15,10,30,0.45) 40%, rgba(15,10,30,0.15) 70%, transparent 100%)' }} />
+        {/* Top controls: theme toggle + share */}
+        <div style={{ position: 'absolute', top: 16, left: 16, display: 'flex', gap: 8 }}>
+          <button
+            onClick={toggleTheme}
+            style={{
+              background: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(12px)',
+              border: '1px solid rgba(255,255,255,0.3)', borderRadius: '50%',
+              width: 40, height: 40, cursor: 'pointer', color: '#fff',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+          >
+            {isDark ? <SunIcon style={{ width: 18, height: 18 }} /> : <MoonIcon style={{ width: 18, height: 18 }} />}
+          </button>
+          <button
+            onClick={copyLink}
+            style={{
+              background: copied ? 'rgba(52,211,153,0.25)' : 'rgba(255,255,255,0.15)',
+              backdropFilter: 'blur(12px)',
+              border: `1px solid ${copied ? 'rgba(52,211,153,0.55)' : 'rgba(255,255,255,0.3)'}`,
+              borderRadius: 22, padding: '9px 18px', cursor: 'pointer',
+              color: copied ? '#34D399' : '#fff', fontSize: 13, fontWeight: 700,
+              display: 'flex', alignItems: 'center', gap: 7, fontFamily: 'Cairo, sans-serif',
+              transition: 'all 0.2s',
+            }}
+          >
+            <ShareIcon style={{ width: 15, height: 15 }} />
+            {copied ? 'تم نسخ الرابط!' : 'مشاركة'}
+          </button>
+        </div>
 
-        {/* Share button — top right */}
-        <button
-          onClick={copyLink}
-          style={{
-            position: 'absolute', top: 16, right: 16,
-            background: copied ? 'rgba(52,211,153,0.25)' : 'rgba(255,255,255,0.12)',
-            backdropFilter: 'blur(12px)',
-            border: `1px solid ${copied ? 'rgba(52,211,153,0.5)' : 'rgba(255,255,255,0.25)'}`,
-            borderRadius: '22px', padding: '9px 18px', cursor: 'pointer',
-            color: copied ? '#34D399' : '#fff', fontSize: '13px', fontWeight: 700,
-            display: 'flex', alignItems: 'center', gap: '7px', fontFamily: 'Cairo, sans-serif',
-            transition: 'all 0.2s',
-          }}
-        >
-          <ShareIcon style={{ width: 15, height: 15 }} />
-          {copied ? 'تم نسخ الرابط!' : 'مشاركة'}
-        </button>
-
-        {/* Venue name overlaid at bottom left */}
+        {/* Venue name — bottom left */}
         <div style={{ position: 'absolute', bottom: 28, right: 0, left: 0, padding: '0 24px' }}>
-          <h1 style={{ margin: 0, fontSize: 'clamp(22px, 4vw, 36px)', fontWeight: 900, textShadow: '0 2px 16px rgba(0,0,0,0.9)', lineHeight: 1.2 }}>
+          <h1 style={{ margin: 0, fontSize: 'clamp(22px, 4vw, 36px)', fontWeight: 900, color: '#ffffff', textShadow: '0 2px 18px rgba(0,0,0,0.9)', lineHeight: 1.2 }}>
             {venue.name_ar || venue.name}
           </h1>
         </div>
       </div>
 
-      {/* ── Venue Info Bar ───────────────────────────────────────────────────── */}
-      <div style={{ background: 'rgba(255,255,255,0.04)', borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-        <div style={{ maxWidth: '900px', margin: '0 auto', padding: '20px 24px', display: 'flex', gap: '24px', flexWrap: 'wrap', alignItems: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '7px', color: 'rgba(255,255,255,0.75)', fontSize: '14px' }}>
-            <MapPinIcon style={{ width: 16, height: 16, color: '#A78BFA', flexShrink: 0 }} />
-            <span>{venue.city}{venue.address ? ` · ${venue.address_ar || venue.address}` : ''}</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '7px', color: 'rgba(255,255,255,0.75)', fontSize: '14px' }}>
-            <UsersIcon style={{ width: 16, height: 16, color: '#A78BFA', flexShrink: 0 }} />
+      {/* ── Info Bar ── */}
+      <div style={{ background: infoBarBg, borderBottom: `1px solid ${borderColor}`, boxShadow: isDark ? 'none' : '0 1px 0 #f3f3f3' }}>
+        <div style={{ maxWidth: 900, margin: '0 auto', padding: '16px 20px', display: 'flex', gap: 20, flexWrap: 'wrap', alignItems: 'center' }}>
+          {venue.city && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: textSecondary, fontSize: 14 }}>
+              <MapPinIcon style={{ width: 15, height: 15, color: '#7C3AED', flexShrink: 0 }} />
+              <span>{venue.city}{(venue.address_ar || venue.address) ? ` · ${venue.address_ar || venue.address}` : ''}</span>
+            </div>
+          )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: textSecondary, fontSize: 14 }}>
+            <UsersIcon style={{ width: 15, height: 15, color: '#7C3AED', flexShrink: 0 }} />
             <span>{venue.min_capacity} – {venue.max_capacity} شخص</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '7px', fontSize: '15px', fontWeight: 700, color: '#34D399' }}>
-            <BanknotesIcon style={{ width: 16, height: 16, flexShrink: 0 }} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 15, fontWeight: 700, color: '#059669' }}>
+            <BanknotesIcon style={{ width: 15, height: 15, flexShrink: 0 }} />
             <span>{fmtIQD(venue.base_price_iqd)} / اليوم</span>
           </div>
         </div>
       </div>
 
-      {/* ── Content ─────────────────────────────────────────────────────────── */}
-      <div style={{ maxWidth: '900px', margin: '0 auto', padding: '0 20px' }}>
+      {/* ── Sections ── */}
+      <div style={{ maxWidth: 900, margin: '0 auto', padding: '0 20px' }}>
 
         {/* Description */}
         {(venue.description_ar || venue.description) && (
-          <div style={{ marginTop: '32px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '24px' }}>
-            <h2 style={{ fontSize: '17px', fontWeight: 700, marginBottom: '12px', color: 'rgba(255,255,255,0.95)', margin: '0 0 12px' }}>عن القاعة</h2>
-            <p style={{ color: 'rgba(255,255,255,0.65)', lineHeight: 1.9, fontSize: '14px', margin: 0 }}>
+          <section style={{ marginTop: 32, background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 18, padding: 24, boxShadow: cardShadow }}>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: textPrimary, margin: '0 0 12px' }}>عن القاعة</h2>
+            <p style={{ color: textSecondary, lineHeight: 1.9, fontSize: 14, margin: 0 }}>
               {venue.description_ar || venue.description}
             </p>
-          </div>
+          </section>
         )}
 
         {/* Photo Gallery */}
         {venue.images?.length > 0 && (
-          <div style={{ marginTop: '32px' }}>
-            <h2 style={{ fontSize: '17px', fontWeight: 700, marginBottom: '16px', color: 'rgba(255,255,255,0.95)' }}>معرض الصور</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+          <section style={{ marginTop: 32 }}>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: textPrimary, marginBottom: 16 }}>معرض الصور</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
               {venue.images.map((img, i) => {
                 const url = getImageUrl(img)
                 return (
                   <div
                     key={img.id || i}
-                    style={{ borderRadius: '12px', overflow: 'hidden', aspectRatio: '4/3', cursor: 'pointer', border: '2px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.05)' }}
+                    style={{ borderRadius: 12, overflow: 'hidden', aspectRatio: '4/3', cursor: 'pointer', border: `1px solid ${borderColor}`, background: isDark ? 'rgba(255,255,255,0.03)' : '#f7f7f7', boxShadow: cardShadow }}
                     onClick={() => setLightbox(i)}
                   >
-                    {url && <img src={url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.25s', display: 'block' }} onMouseEnter={e => e.target.style.transform='scale(1.04)'} onMouseLeave={e => e.target.style.transform='scale(1)'} />}
+                    {url && (
+                      <img
+                        src={url} alt=""
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transition: 'transform 0.25s' }}
+                        onMouseEnter={e => e.target.style.transform = 'scale(1.04)'}
+                        onMouseLeave={e => e.target.style.transform = 'scale(1)'}
+                      />
+                    )}
                   </div>
                 )
               })}
             </div>
-          </div>
+          </section>
         )}
 
         {/* Video */}
         {venue.video_url && (
-          <div style={{ marginTop: '32px' }}>
-            <h2 style={{ fontSize: '17px', fontWeight: 700, marginBottom: '14px', color: 'rgba(255,255,255,0.95)' }}>الفيديو</h2>
-            <video
-              src={venue.video_url}
-              controls
-              style={{ width: '100%', borderRadius: '16px', background: '#000', maxHeight: '400px', display: 'block' }}
-            />
-          </div>
+          <section style={{ marginTop: 32 }}>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: textPrimary, marginBottom: 14 }}>الفيديو</h2>
+            <video src={venue.video_url} controls style={{ width: '100%', borderRadius: 16, background: '#000', maxHeight: 400, display: 'block', boxShadow: cardShadow }} />
+          </section>
         )}
 
         {/* Services */}
         {venue.services?.length > 0 && (
-          <div style={{ marginTop: '32px' }}>
-            <h2 style={{ fontSize: '17px', fontWeight: 700, marginBottom: '14px', color: 'rgba(255,255,255,0.95)' }}>الخدمات المتاحة</h2>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <section style={{ marginTop: 32, background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 18, padding: 24, boxShadow: cardShadow }}>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: textPrimary, margin: '0 0 16px' }}>الخدمات المتاحة</h2>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {includedServices.map(s => (
-                <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.18)', borderRadius: '12px', padding: '13px 18px' }}>
-                  <CheckCircleIcon style={{ width: 19, height: 19, color: '#34D399', flexShrink: 0 }} />
-                  <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: '14px', flex: 1 }}>{s.name}</span>
-                  <span style={{ fontSize: '12px', fontWeight: 700, color: '#34D399', background: 'rgba(52,211,153,0.15)', padding: '3px 12px', borderRadius: '20px' }}>مشمول</span>
+                <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 12, background: successBg, border: `1px solid ${successBorder}`, borderRadius: 12, padding: '12px 16px' }}>
+                  <CheckCircleIcon style={{ width: 18, height: 18, color: '#059669', flexShrink: 0 }} />
+                  <span style={{ color: textPrimary, fontSize: 14, flex: 1 }}>{s.name}</span>
+                  <span style={{ fontSize: 12, fontWeight: 700, color: '#059669', background: isDark ? 'rgba(52,211,153,0.12)' : '#dcfce7', padding: '2px 10px', borderRadius: 20 }}>مشمول</span>
                 </div>
               ))}
               {paidServices.map(s => (
-                <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(251,191,36,0.06)', border: '1px solid rgba(251,191,36,0.18)', borderRadius: '12px', padding: '13px 18px' }}>
-                  <div style={{ width: 19, height: 19, borderRadius: '50%', border: '2px solid rgba(251,191,36,0.6)', flexShrink: 0 }} />
-                  <span style={{ color: 'rgba(255,255,255,0.85)', fontSize: '14px', flex: 1 }}>{s.name}</span>
-                  <span style={{ fontSize: '13px', fontWeight: 700, color: '#FBBF24' }}>{fmtIQD(s.price)}</span>
+                <div key={s.id} style={{ display: 'flex', alignItems: 'center', gap: 12, background: paidBg, border: `1px solid ${paidBorder}`, borderRadius: 12, padding: '12px 16px' }}>
+                  <div style={{ width: 18, height: 18, borderRadius: '50%', border: '2px solid #d97706', flexShrink: 0 }} />
+                  <span style={{ color: textPrimary, fontSize: 14, flex: 1 }}>{s.name}</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: '#d97706' }}>{fmtIQD(s.price)}</span>
                 </div>
               ))}
             </div>
-          </div>
+          </section>
         )}
 
-        {/* Menu */}
-        {venue.menu_items?.length > 0 && (
-          <div style={{ marginTop: '36px' }}>
-            <h2 style={{ fontSize: '17px', fontWeight: 700, marginBottom: '16px', color: 'rgba(255,255,255,0.95)' }}>قائمة الطعام</h2>
-
-            {/* Category tabs */}
-            <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: '20px' }}>
-              {MENU_CATS.filter(c => menuByTab(c.key).length > 0).map(c => (
-                <button
-                  key={c.key}
-                  onClick={() => setMenuTab(c.key)}
-                  style={{
-                    padding: '9px 20px', borderRadius: '22px', cursor: 'pointer',
-                    fontFamily: 'Cairo, sans-serif', fontSize: '13px', fontWeight: 700,
-                    transition: 'all 0.2s',
-                    background: menuTab === c.key ? 'rgba(124,58,237,0.35)' : 'rgba(255,255,255,0.07)',
-                    color: menuTab === c.key ? '#A78BFA' : 'rgba(255,255,255,0.55)',
-                    border: `1px solid ${menuTab === c.key ? 'rgba(124,58,237,0.5)' : 'rgba(255,255,255,0.1)'}`,
-                  }}
-                >
-                  {c.label}
-                  <span style={{ marginRight: '6px', fontSize: '11px', opacity: 0.7 }}>({menuByTab(c.key).length})</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Items grid */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '14px' }}>
+        {/* Menu — only if show_menu_on_page is true */}
+        {venue.show_menu_on_page && venue.menu_items?.length > 0 && (
+          <section style={{ marginTop: 36 }}>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: textPrimary, marginBottom: 16 }}>قائمة الطعام</h2>
+            {hasTabs.length > 0 && (
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 20 }}>
+                {hasTabs.map(c => (
+                  <button
+                    key={c.key}
+                    onClick={() => setMenuTab(c.key)}
+                    style={{
+                      padding: '8px 18px', borderRadius: 22, cursor: 'pointer',
+                      fontFamily: 'Cairo, sans-serif', fontSize: 13, fontWeight: 700,
+                      border: menuTab === c.key ? '2px solid #7C3AED' : `1px solid ${borderColor}`,
+                      background: menuTab === c.key ? tabActiveBg : tabInactiveBg,
+                      color: menuTab === c.key ? '#7C3AED' : textSecondary,
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    {c.label}
+                    <span style={{ marginRight: 6, fontSize: 11, opacity: 0.7 }}>({menuByTab(c.key).length})</span>
+                  </button>
+                ))}
+              </div>
+            )}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 14 }}>
               {menuByTab(menuTab).map(item => {
                 const photoUrl = getPhotoUrl(item)
                 return (
-                  <div key={item.id} style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', overflow: 'hidden' }}>
+                  <div key={item.id} style={{ background: cardBg, border: `1px solid ${borderColor}`, borderRadius: 16, overflow: 'hidden', boxShadow: cardShadow }}>
                     {photoUrl ? (
-                      <img src={photoUrl} alt={item.name_ar || item.name} style={{ width: '100%', height: '130px', objectFit: 'cover', display: 'block' }} />
+                      <img src={photoUrl} alt={item.name_ar || item.name} style={{ width: '100%', height: 130, objectFit: 'cover', display: 'block' }} />
                     ) : (
-                      <div style={{ width: '100%', height: '80px', background: 'rgba(124,58,237,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <span style={{ fontSize: '24px' }}>🍽️</span>
+                      <div style={{ width: '100%', height: 80, background: menuItemFallbackBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <span style={{ fontSize: 24 }}>🍽️</span>
                       </div>
                     )}
-                    <div style={{ padding: '14px' }}>
-                      <div style={{ fontWeight: 700, fontSize: '14px', color: 'rgba(255,255,255,0.92)', marginBottom: '4px' }}>{item.name_ar || item.name}</div>
+                    <div style={{ padding: 14 }}>
+                      <div style={{ fontWeight: 700, fontSize: 14, color: textPrimary, marginBottom: 4 }}>{item.name_ar || item.name}</div>
                       {(item.description_ar || item.description) && (
-                        <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', marginBottom: '10px', lineHeight: 1.5 }}>
+                        <div style={{ fontSize: 12, color: textSecondary, marginBottom: 8, lineHeight: 1.5 }}>
                           {item.description_ar || item.description}
                         </div>
                       )}
                       {item.service_price_iqd && (
-                        <div style={{ fontSize: '14px', fontWeight: 700, color: '#A78BFA' }}>{fmtIQD(item.service_price_iqd)}</div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: '#7C3AED' }}>{fmtIQD(item.service_price_iqd)}</div>
                       )}
                     </div>
                   </div>
                 )
               })}
             </div>
-          </div>
+          </section>
         )}
 
+        {/* Menu link button — always visible */}
+        <section style={{ marginTop: 28, paddingBottom: 4 }}>
+          <a
+            href={menuLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: 8,
+              background: isDark ? 'rgba(124,58,237,0.12)' : '#f3f0ff',
+              border: '1px solid rgba(124,58,237,0.25)',
+              borderRadius: 12, padding: '12px 22px',
+              color: '#7C3AED', fontSize: 14, fontWeight: 700,
+              textDecoration: 'none', fontFamily: 'Cairo, sans-serif',
+              transition: 'all 0.2s',
+            }}
+          >
+            <QueueListIcon style={{ width: 18, height: 18 }} />
+            عرض قائمة الطعام كاملة
+          </a>
+        </section>
+
         {/* Footer */}
-        <div style={{ marginTop: '56px', textAlign: 'center', color: 'rgba(255,255,255,0.22)', fontSize: '12px', paddingBottom: '20px' }}>
-          مدعوم من <span style={{ color: 'rgba(167,139,250,0.55)', fontWeight: 700 }}>Evento IQ</span>
+        <div style={{ marginTop: 48, textAlign: 'center', color: isDark ? 'rgba(255,255,255,0.2)' : '#ccc', fontSize: 12, paddingBottom: 20 }}>
+          مدعوم من <span style={{ color: isDark ? 'rgba(167,139,250,0.55)' : '#7C3AED', fontWeight: 700 }}>Evento IQ</span>
         </div>
+      </div>
+
+      {/* ── Sticky Reserve Bar ── */}
+      <div style={{
+        position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 100,
+        padding: '12px 20px',
+        background: stickyBarBg,
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
+        borderTop: `1px solid ${borderColor}`,
+        display: 'flex', gap: 16, alignItems: 'center',
+      }}>
+        <div style={{ flex: 1 }}>
+          <div style={{ fontSize: 15, fontWeight: 800, color: textPrimary }}>{fmtIQD(venue.base_price_iqd)}</div>
+          <div style={{ fontSize: 12, color: textSecondary }}>/ اليوم</div>
+        </div>
+        <button
+          style={{
+            background: 'linear-gradient(135deg, #7C3AED, #6D28D9)',
+            color: '#fff', border: 'none', borderRadius: 14,
+            padding: '13px 32px', fontSize: 15, fontWeight: 700,
+            cursor: 'pointer', fontFamily: 'Cairo, sans-serif',
+            boxShadow: '0 4px 18px rgba(124,58,237,0.45)',
+            transition: 'transform 0.15s, box-shadow 0.15s',
+          }}
+          onMouseEnter={e => { e.target.style.transform = 'translateY(-1px)'; e.target.style.boxShadow = '0 6px 22px rgba(124,58,237,0.55)' }}
+          onMouseLeave={e => { e.target.style.transform = 'none'; e.target.style.boxShadow = '0 4px 18px rgba(124,58,237,0.45)' }}
+          onClick={() => alert('قريباً — حجز القاعة')}
+        >
+          احجز الآن
+        </button>
       </div>
 
       {lightbox !== null && (

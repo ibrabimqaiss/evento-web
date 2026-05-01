@@ -3,6 +3,7 @@ import { lazy, Suspense } from 'react'
 import InvitationPage from './pages/InvitationPage.jsx'
 import VenuePage from './pages/VenuePage.jsx'
 import VenuePublicPage from './pages/VenuePublicPage.jsx'
+import VenueMenuPublicPage from './pages/public/VenueMenuPublicPage.jsx'
 import LoginPage from './pages/LoginPage.jsx'
 import RegisterPage from './pages/RegisterPage.jsx'
 import HomePage from './pages/HomePage.jsx'
@@ -61,6 +62,7 @@ export default function App() {
         <Route path="/e/:slug" element={<InvitationPage />} />
         <Route path="/p/venues/:slug" element={<VenuePage />} />
         <Route path="/venue/:shareToken" element={<VenuePublicPage />} />
+        <Route path="/menu/:shareToken" element={<VenueMenuPublicPage />} />
 
         {/* Owner ERP */}
         <Route path="/owner" element={<Navigate to="/owner/dashboard" replace />} />

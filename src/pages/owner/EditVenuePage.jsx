@@ -432,15 +432,29 @@ function MenuTab({ slug }) {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('appetizers')
   const [modal, setModal] = useState(null)
+  const [showMenu, setShowMenu] = useState(false)
+  const [toggling, setToggling] = useState(false)
 
   function load() {
     setLoading(true)
-    getVenueMenu(slug)
-      .then(res => {
-        const d = res.data?.data ?? res.data
-        setItems(Array.isArray(d) ? d : (d?.results ?? []))
-      })
-      .finally(() => setLoading(false))
+    Promise.all([
+      getVenueMenu(slug),
+      getOwnerVenueDetail(slug),
+    ]).then(([menuRes, venueRes]) => {
+      const d = menuRes.data?.data ?? menuRes.data
+      setItems(Array.isArray(d) ? d : (d?.results ?? []))
+      const venue = venueRes.data?.data ?? venueRes.data
+      setShowMenu(venue?.show_menu_on_page ?? false)
+    }).finally(() => setLoading(false))
+  }
+
+  async function handleToggleShowMenu() {
+    setToggling(true)
+    try {
+      await updateVenue(slug, { show_menu_on_page: !showMenu })
+      setShowMenu(prev => !prev)
+    } catch { /* noop */ }
+    setToggling(false)
   }
 
   useEffect(() => { load() }, [slug])
@@ -464,6 +478,35 @@ function MenuTab({ slug }) {
 
   return (
     <div>
+      {/* Show menu on public page toggle */}
+      <div style={{ marginBottom: 20, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 16 }}>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: 'rgba(255,255,255,0.85)' }}>عرض القائمة في الصفحة العامة</div>
+          <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginTop: 3 }}>يتيح لزوار صفحة القاعة رؤية قائمة الطعام</div>
+        </div>
+        <button
+          dir="ltr"
+          onClick={handleToggleShowMenu}
+          disabled={toggling}
+          style={{
+            width: 50, height: 28, borderRadius: 14, flexShrink: 0,
+            background: showMenu ? '#7C3AED' : 'rgba(255,255,255,0.12)',
+            border: showMenu ? '1px solid rgba(124,58,237,0.5)' : '1px solid rgba(255,255,255,0.15)',
+            cursor: toggling ? 'not-allowed' : 'pointer',
+            position: 'relative', transition: 'background 0.25s, border 0.25s',
+            opacity: toggling ? 0.6 : 1,
+          }}
+        >
+          <div style={{
+            position: 'absolute', top: 3,
+            left: showMenu ? 25 : 3,
+            width: 22, height: 22, borderRadius: '50%',
+            background: '#fff', transition: 'left 0.25s',
+            boxShadow: '0 1px 4px rgba(0,0,0,0.35)',
+          }} />
+        </button>
+      </div>
+
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
         <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'rgba(255,255,255,0.9)', margin: 0 }}>قائمة الطعام ({items.length})</h3>
         <button className="glass-btn glass-btn-sm glass-btn-primary" onClick={() => setModal({ item: null })}>
