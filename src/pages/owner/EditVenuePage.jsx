@@ -74,7 +74,7 @@ function InfoTab({ slug }) {
     setSaving(true)
     setError('')
     try {
-      await updateVenue(slug, {
+      const formData = {
         name: form.name,
         name_ar: form.name_ar,
         venue_type: form.venue_type,
@@ -84,11 +84,16 @@ function InfoTab({ slug }) {
         min_capacity: +form.min_capacity,
         max_capacity: +form.max_capacity,
         base_price_iqd: +form.base_price_iqd,
-      })
+      }
+      const patchUrl = `/owner/venues/${slug}/`
+      console.log('[EditVenue] PATCH payload:', JSON.stringify(formData))
+      console.log('[EditVenue] PATCH URL:', patchUrl)
+      await updateVenue(slug, formData)
       setSaved(true)
       setTimeout(() => setSaved(false), 2500)
     } catch (err) {
-      setError(err.response?.data?.error?.message || 'فشل الحفظ')
+      console.error('[EditVenue] PATCH error:', err.response?.status, err.response?.data)
+      setError(err.response?.data?.error?.message || err.response?.data?.detail || 'فشل الحفظ')
     } finally {
       setSaving(false)
     }
@@ -231,7 +236,9 @@ function MediaTab({ slug }) {
   const getImageUrl = (img) => {
     if (!img) return ''
     if (typeof img === 'string') return img
-    return img.full_url || img.image_url || img.card_url || img.thumbnail_url || img.url || img.image || ''
+    const url = img.full_url || img.image_url || img.card_url || img.thumbnail_url || img.url || img.image || ''
+    if (url && !url.startsWith('http')) return `https://evento-media-iq.s3.eu-north-1.amazonaws.com/${url}`
+    return url
   }
 
   if (loading) return <Spinner />

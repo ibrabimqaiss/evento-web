@@ -19,9 +19,13 @@ function fmtIQD(n) {
   return new Intl.NumberFormat('ar-IQ', { style: 'decimal', maximumFractionDigits: 0 }).format(n || 0) + ' د.ع'
 }
 
-const getImageUrl = (img) =>
-  (typeof img === 'string' ? img : '') ||
-  img?.full_url || img?.image_url || img?.card_url || img?.thumbnail_url || img?.url || img?.image || ''
+const getImageUrl = (img) => {
+  if (!img) return ''
+  if (typeof img === 'string') return img
+  const url = img.full_url || img.image_url || img.card_url || img.thumbnail_url || img.url || img.image || ''
+  if (url && !url.startsWith('http')) return `https://evento-media-iq.s3.eu-north-1.amazonaws.com/${url}`
+  return url
+}
 
 const getPhotoUrl = (item) =>
   item?.photo_url || item?.photo || item?.image_url || item?.image || ''
