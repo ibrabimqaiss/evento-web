@@ -6,7 +6,8 @@ import {
 } from '@heroicons/react/24/outline'
 import {
   getOwnerBookings, getOwnerVenues, confirmBooking, cancelBooking,
-  createOwnerBooking, fmtDate, fmtIQD, BOOKING_STATUS_LABELS, BOOKING_STATUS_CLASS,
+  rejectBooking, createOwnerBooking, fmtDate, fmtIQD,
+  BOOKING_STATUS_LABELS, BOOKING_STATUS_CLASS,
 } from '../../lib/ownerApi'
 
 const TABS = [
@@ -221,6 +222,10 @@ export default function OwnerBookings() {
   // ── Venues (for add modal) ──────────────────────────────────────────────────
   const [venues, setVenues] = useState([])
 
+  // ── Reject modal ───────────────────────────────────────────────────────────
+  const [rejectModal, setRejectModal] = useState(null)
+  const [rejectReason, setRejectReason] = useState('')
+
   // ── Add booking modal ──────────────────────────────────────────────────────
   const [addModal, setAddModal] = useState(null) // null | { date: '' }
 
@@ -299,6 +304,13 @@ export default function OwnerBookings() {
   async function handleConfirm(id) {
     setActionId(id)
     try { await confirmBooking(id); load() } catch { } finally { setActionId(null) }
+  }
+
+  async function handleReject() {
+    if (!rejectModal) return
+    setActionId(rejectModal)
+    try { await rejectBooking(rejectModal, rejectReason); load() }
+    finally { setActionId(null); setRejectModal(null); setRejectReason('') }
   }
 
   async function handleCancel() {
@@ -414,6 +426,11 @@ export default function OwnerBookings() {
                             {b.status === 'pending' && (
                               <button className="glass-btn glass-btn-sm glass-btn-success" disabled={actionId === b.id} onClick={() => handleConfirm(b.id)}>
                                 {actionId === b.id ? '...' : <><CheckCircleIcon style={{ width: 13, height: 13 }} /> تأكيد</>}
+                              </button>
+                            )}
+                            {b.status === 'pending' && (
+                              <button className="glass-btn glass-btn-sm glass-btn-danger" onClick={() => { setRejectModal(b.id); setRejectReason('') }}>
+                                <XCircleIcon style={{ width: 13, height: 13 }} /> رفض
                               </button>
                             )}
                             {(b.status === 'pending' || b.status === 'confirmed') && (
@@ -552,6 +569,23 @@ export default function OwnerBookings() {
               <button onClick={() => setCancelModal(null)} className="glass-btn" style={{ flex: 1 }}>تراجع</button>
               <button onClick={handleCancel} disabled={actionId === cancelModal} className="glass-btn glass-btn-danger" style={{ flex: 1 }}>
                 {actionId === cancelModal ? 'جاري الإلغاء...' : 'تأكيد الإلغاء'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Reject Modal ──────────────────────────────────────────────────── */}
+      {rejectModal && (
+        <div className="glass-modal-overlay" onClick={() => setRejectModal(null)}>
+          <div className="glass-modal-panel" style={{ maxWidth: 420, padding: '28px' }} onClick={e => e.stopPropagation()}>
+            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'rgba(255,255,255,0.95)', marginBottom: '16px' }}>رفض الحجز</h3>
+            <label className="glass-label">سبب الرفض (اختياري)</label>
+            <textarea className="glass-textarea" value={rejectReason} onChange={e => setRejectReason(e.target.value)} placeholder="اكتب سبب رفض الحجز..." style={{ minHeight: '80px', marginBottom: '16px' }} />
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button onClick={() => setRejectModal(null)} className="glass-btn" style={{ flex: 1 }}>تراجع</button>
+              <button onClick={handleReject} disabled={actionId === rejectModal} className="glass-btn glass-btn-danger" style={{ flex: 1 }}>
+                {actionId === rejectModal ? 'جاري الرفض...' : 'تأكيد الرفض'}
               </button>
             </div>
           </div>

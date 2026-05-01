@@ -83,6 +83,14 @@ export default function VenuePublicPage() {
   const [lightbox, setLightbox] = useState(null)
   const [menuTab, setMenuTab] = useState('appetizers')
   const [copied, setCopied] = useState(false)
+  const [bookingModal, setBookingModal] = useState(false)
+  const [bookingForm, setBookingForm] = useState({
+    client_name: '', client_phone: '', event_date: '',
+    start_time: '18:00', num_guests: '', event_type: 'wedding', special_requests: '',
+  })
+  const [bookingLoading, setBookingLoading] = useState(false)
+  const [bookingError, setBookingError] = useState('')
+  const [bookingSuccess, setBookingSuccess] = useState(false)
 
   useEffect(() => {
     axios.get(`${BASE_URL}/venues/share/${shareToken}/`)
@@ -107,6 +115,29 @@ export default function VenuePublicPage() {
       setCopied(true)
       setTimeout(() => setCopied(false), 2500)
     })
+  }
+
+  async function handleBook(e) {
+    e.preventDefault()
+    setBookingLoading(true)
+    setBookingError('')
+    try {
+      await axios.post(`${BASE_URL}/venues/share/${shareToken}/book/`, {
+        ...bookingForm,
+        num_guests: Number(bookingForm.num_guests) || 1,
+      })
+      setBookingSuccess(true)
+    } catch (err) {
+      const msg = err.response?.data?.error?.message
+      if (typeof msg === 'object') {
+        const first = Object.values(msg)[0]
+        setBookingError(Array.isArray(first) ? first[0] : String(first))
+      } else {
+        setBookingError(msg || 'حدث خطأ، يرجى المحاولة مرة أخرى.')
+      }
+    } finally {
+      setBookingLoading(false)
+    }
   }
 
   // Theme-derived values for styles that can't use pure CSS variables
@@ -409,11 +440,84 @@ export default function VenuePublicPage() {
           }}
           onMouseEnter={e => { e.target.style.transform = 'translateY(-1px)'; e.target.style.boxShadow = '0 6px 22px rgba(124,58,237,0.55)' }}
           onMouseLeave={e => { e.target.style.transform = 'none'; e.target.style.boxShadow = '0 4px 18px rgba(124,58,237,0.45)' }}
-          onClick={() => alert('قريباً — حجز القاعة')}
+          onClick={() => { setBookingModal(true); setBookingSuccess(false); setBookingError('') }}
         >
           احجز الآن
         </button>
       </div>
+
+      {/* ── Booking Modal ── */}
+      {bookingModal && (
+        <div
+          style={{ position: 'fixed', inset: 0, zIndex: 200, background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(6px)', WebkitBackdropFilter: 'blur(6px)', display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
+          onClick={() => setBookingModal(false)}
+        >
+          <div
+            style={{ width: '100%', maxWidth: 520, background: isDark ? 'rgba(12,8,28,0.98)' : '#fff', borderRadius: '24px 24px 0 0', padding: '28px 24px 40px', boxShadow: '0 -8px 40px rgba(0,0,0,0.35)' }}
+            onClick={e => e.stopPropagation()}
+          >
+            <div style={{ width: 40, height: 4, borderRadius: 2, background: isDark ? 'rgba(255,255,255,0.18)' : '#e0e0e0', margin: '0 auto 20px' }} />
+            <h3 style={{ fontSize: 18, fontWeight: 700, color: textPrimary, marginBottom: 20, textAlign: 'center' }}>احجز القاعة</h3>
+
+            {bookingSuccess ? (
+              <div style={{ textAlign: 'center', padding: '20px 0 10px' }}>
+                <div style={{ fontSize: 48, marginBottom: 12 }}>✅</div>
+                <div style={{ fontSize: 17, fontWeight: 700, color: isDark ? '#34D399' : '#059669', marginBottom: 8 }}>تم إرسال طلب الحجز!</div>
+                <div style={{ fontSize: 14, color: textSecondary, marginBottom: 24 }}>سيتواصل معك صاحب القاعة قريباً للتأكيد.</div>
+                <button onClick={() => setBookingModal(false)} style={{ background: 'linear-gradient(135deg,#7C3AED,#6D28D9)', color: '#fff', border: 'none', borderRadius: 12, padding: '12px 32px', fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'Cairo, sans-serif' }}>
+                  حسناً
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleBook} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                {bookingError && (
+                  <div style={{ background: isDark ? 'rgba(248,113,113,0.12)' : '#fff1f2', border: `1px solid ${isDark ? 'rgba(248,113,113,0.3)' : '#fca5a5'}`, borderRadius: 10, padding: '10px 14px', color: '#ef4444', fontSize: 13 }}>
+                    {bookingError}
+                  </div>
+                )}
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: textSecondary, marginBottom: 4 }}>الاسم *</label>
+                    <input required value={bookingForm.client_name} onChange={e => setBookingForm(f => ({ ...f, client_name: e.target.value }))} style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: `1px solid ${borderColor}`, background: isDark ? 'rgba(255,255,255,0.05)' : '#f9f9f9', color: textPrimary, fontSize: 14, fontFamily: 'Cairo, sans-serif', boxSizing: 'border-box' }} placeholder="محمد أحمد" />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: textSecondary, marginBottom: 4 }}>رقم الهاتف *</label>
+                    <input required dir="ltr" value={bookingForm.client_phone} onChange={e => setBookingForm(f => ({ ...f, client_phone: e.target.value }))} style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: `1px solid ${borderColor}`, background: isDark ? 'rgba(255,255,255,0.05)' : '#f9f9f9', color: textPrimary, fontSize: 14, fontFamily: 'Cairo, sans-serif', boxSizing: 'border-box' }} placeholder="07xxxxxxxxx" />
+                  </div>
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: textSecondary, marginBottom: 4 }}>تاريخ المناسبة *</label>
+                    <input required type="date" dir="ltr" value={bookingForm.event_date} onChange={e => setBookingForm(f => ({ ...f, event_date: e.target.value }))} style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: `1px solid ${borderColor}`, background: isDark ? 'rgba(255,255,255,0.05)' : '#f9f9f9', color: textPrimary, fontSize: 14, fontFamily: 'Cairo, sans-serif', boxSizing: 'border-box' }} />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: textSecondary, marginBottom: 4 }}>عدد الضيوف *</label>
+                    <input required type="number" min={venue?.min_capacity || 1} max={venue?.max_capacity || 9999} dir="ltr" value={bookingForm.num_guests} onChange={e => setBookingForm(f => ({ ...f, num_guests: e.target.value }))} style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: `1px solid ${borderColor}`, background: isDark ? 'rgba(255,255,255,0.05)' : '#f9f9f9', color: textPrimary, fontSize: 14, fontFamily: 'Cairo, sans-serif', boxSizing: 'border-box' }} placeholder={`${venue?.min_capacity || 1} – ${venue?.max_capacity || 500}`} />
+                  </div>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: textSecondary, marginBottom: 4 }}>نوع المناسبة</label>
+                  <select value={bookingForm.event_type} onChange={e => setBookingForm(f => ({ ...f, event_type: e.target.value }))} style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: `1px solid ${borderColor}`, background: isDark ? 'rgba(255,255,255,0.05)' : '#f9f9f9', color: textPrimary, fontSize: 14, fontFamily: 'Cairo, sans-serif', boxSizing: 'border-box' }}>
+                    <option value="wedding">زفاف</option>
+                    <option value="graduation">تخرج</option>
+                    <option value="conference">مؤتمر</option>
+                    <option value="party">حفلة</option>
+                    <option value="birthday">عيد ميلاد</option>
+                    <option value="other">أخرى</option>
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: textSecondary, marginBottom: 4 }}>طلبات خاصة (اختياري)</label>
+                  <textarea value={bookingForm.special_requests} onChange={e => setBookingForm(f => ({ ...f, special_requests: e.target.value }))} placeholder="أي ملاحظات أو طلبات إضافية..." rows={2} style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: `1px solid ${borderColor}`, background: isDark ? 'rgba(255,255,255,0.05)' : '#f9f9f9', color: textPrimary, fontSize: 14, fontFamily: 'Cairo, sans-serif', resize: 'vertical', boxSizing: 'border-box' }} />
+                </div>
+                <button type="submit" disabled={bookingLoading} style={{ background: 'linear-gradient(135deg,#7C3AED,#6D28D9)', color: '#fff', border: 'none', borderRadius: 14, padding: '14px', fontSize: 16, fontWeight: 700, cursor: bookingLoading ? 'not-allowed' : 'pointer', fontFamily: 'Cairo, sans-serif', opacity: bookingLoading ? 0.7 : 1, transition: 'opacity 0.2s', marginTop: 4 }}>
+                  {bookingLoading ? 'جاري الإرسال...' : 'إرسال طلب الحجز'}
+                </button>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
 
       {lightbox !== null && (
         <Lightbox images={venue.images} startIndex={lightbox} onClose={() => setLightbox(null)} />
