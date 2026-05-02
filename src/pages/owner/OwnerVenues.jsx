@@ -7,7 +7,7 @@ import {
 } from '@heroicons/react/24/outline'
 import { getOwnerVenues, getOwnerBookings, fmtIQD, VENUE_TYPE_LABELS } from '../../lib/ownerApi'
 
-const SHARE_BASE = 'https://evento-iq.com/venue'
+const SHARE_BASE = (import.meta.env.VITE_APP_URL || window.location.origin) + '/venue'
 
 const STATUS_LABELS = { active: 'نشط', inactive: 'غير نشط', under_review: 'قيد المراجعة' }
 const STATUS_CLASS = { active: 'status-badge status-active', inactive: 'status-badge status-inactive', under_review: 'status-badge status-review' }

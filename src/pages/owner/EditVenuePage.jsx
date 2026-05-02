@@ -44,11 +44,8 @@ function InfoTab({ slug }) {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token')
-    console.log('[EditVenuePage] token:', token ? token.slice(0, 30) + '...' : 'MISSING')
     getOwnerVenueDetail(slug)
       .then(res => {
-        console.log('[EditVenuePage] venue fetch status:', res.status, res.data)
         const d = res.data?.data ?? res.data
         setForm({
           name: d.name || '',
@@ -63,7 +60,6 @@ function InfoTab({ slug }) {
         })
       })
       .catch(err => {
-        console.error('[EditVenuePage] venue fetch error:', err.response?.status, err.response?.data)
         setError(err.response?.data?.error?.message || err.response?.data?.detail || 'فشل تحميل بيانات القاعة')
       })
       .finally(() => setLoading(false))
@@ -85,14 +81,10 @@ function InfoTab({ slug }) {
         max_capacity: +form.max_capacity,
         base_price_iqd: +form.base_price_iqd,
       }
-      const patchUrl = `/owner/venues/${slug}/`
-      console.log('[EditVenue] PATCH payload:', JSON.stringify(formData))
-      console.log('[EditVenue] PATCH URL:', patchUrl)
       await updateVenue(slug, formData)
       setSaved(true)
       setTimeout(() => setSaved(false), 2500)
     } catch (err) {
-      console.error('[EditVenue] PATCH error:', err.response?.status, err.response?.data)
       setError(err.response?.data?.error?.message || err.response?.data?.detail || 'فشل الحفظ')
     } finally {
       setSaving(false)
@@ -165,20 +157,13 @@ function MediaTab({ slug }) {
   const videoRef = useRef()
 
   useEffect(() => {
-    const token = localStorage.getItem('access_token')
-    console.log('[EditVenuePage/Media] token:', token ? token.slice(0, 30) + '...' : 'MISSING')
     getOwnerVenueDetail(slug)
       .then(res => {
-        console.log('[EditVenuePage/Media] venue fetch status:', res.status)
         const d = res.data?.data ?? res.data
-        const imgs = d.images || []
-        console.log('[EditVenue] images data:', JSON.stringify(imgs))
-        setImages(imgs)
+        setImages(d.images || [])
         setVideo(d.video_url || null)
       })
-      .catch(err => {
-        console.error('[EditVenuePage/Media] venue fetch error:', err.response?.status, err.response?.data)
-      })
+      .catch(() => {})
       .finally(() => setLoading(false))
   }, [slug])
 
@@ -268,7 +253,7 @@ function MediaTab({ slug }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '10px' }}>
             {images.map(img => (
               <div key={img.id} style={{ position: 'relative', borderRadius: '12px', overflow: 'hidden', aspectRatio: '4/3', background: 'rgba(255,255,255,0.05)' }}>
-                {getImageUrl(img) && <img src={getImageUrl(img)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={(e) => { e.target.style.border = '2px solid red'; console.log('Image failed:', e.target.src) }} />}
+                {getImageUrl(img) && <img src={getImageUrl(img)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} onError={(e) => { e.target.style.display = 'none' }} />}
                 <button
                   onClick={() => handleDeletePhoto(img.id)}
                   style={{ position: 'absolute', top: 6, left: 6, background: 'rgba(0,0,0,0.7)', border: 'none', borderRadius: '50%', width: 28, height: 28, cursor: 'pointer', color: '#F87171', display: 'flex', alignItems: 'center', justifyContent: 'center' }}

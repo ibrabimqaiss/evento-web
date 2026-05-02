@@ -15,7 +15,7 @@ const MENU_CATS = [
   { key: 'drinks', label: 'المشروبات' },
 ]
 
-const SHARE_BASE = 'https://evento-iq.com/venue'
+const SHARE_BASE = (import.meta.env.VITE_APP_URL || window.location.origin) + '/venue'
 
 function MenuItemCard({ item, onDelete, onEdit }) {
   return (

@@ -96,9 +96,6 @@ export default function VenuePublicPage() {
     axios.get(`${BASE_URL}/venues/share/${shareToken}/`)
       .then(res => {
         const data = res.data?.data ?? res.data
-        console.log('[VenuePublicPage] raw:', res.data)
-        console.log('[VenuePublicPage] venue:', data)
-        console.log('[VenuePublicPage] first image:', JSON.stringify(data.images?.[0]))
         setVenue(data)
         if (data.menu_items?.length > 0) {
           const firstCat = MENU_CATS.find(c => data.menu_items.some(i => i.category === c.key))
@@ -160,7 +157,12 @@ export default function VenuePublicPage() {
     return (
       <div style={{ minHeight: '100vh', background: isDark ? '#0f0a1e' : '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <div style={{ width: 44, height: 44, borderRadius: '50%', border: `3px solid ${borderColor}`, borderTopColor: '#7C3AED', animation: 'spin 0.7s linear infinite' }} />
-        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+        <style>{`
+  @keyframes spin { to { transform: rotate(360deg) } }
+  @media (max-width: 380px) {
+    .booking-form-grid { grid-template-columns: 1fr !important; }
+  }
+`}</style>
       </div>
     )
   }
@@ -278,7 +280,7 @@ export default function VenuePublicPage() {
         {venue.images?.length > 0 && (
           <section style={{ marginTop: 32 }}>
             <h2 style={{ fontSize: 18, fontWeight: 700, color: textPrimary, marginBottom: 16 }}>معرض الصور</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 10 }}>
               {venue.images.map((img, i) => {
                 const url = getImageUrl(img)
                 return (
@@ -475,7 +477,7 @@ export default function VenuePublicPage() {
                     {bookingError}
                   </div>
                 )}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="booking-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div>
                     <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: textSecondary, marginBottom: 4 }}>الاسم *</label>
                     <input required value={bookingForm.client_name} onChange={e => setBookingForm(f => ({ ...f, client_name: e.target.value }))} style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: `1px solid ${borderColor}`, background: isDark ? 'rgba(255,255,255,0.05)' : '#f9f9f9', color: textPrimary, fontSize: 14, fontFamily: 'Cairo, sans-serif', boxSizing: 'border-box' }} placeholder="محمد أحمد" />
@@ -485,7 +487,7 @@ export default function VenuePublicPage() {
                     <input required dir="ltr" value={bookingForm.client_phone} onChange={e => setBookingForm(f => ({ ...f, client_phone: e.target.value }))} style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: `1px solid ${borderColor}`, background: isDark ? 'rgba(255,255,255,0.05)' : '#f9f9f9', color: textPrimary, fontSize: 14, fontFamily: 'Cairo, sans-serif', boxSizing: 'border-box' }} placeholder="07xxxxxxxxx" />
                   </div>
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <div className="booking-form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                   <div>
                     <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: textSecondary, marginBottom: 4 }}>تاريخ المناسبة *</label>
                     <input required type="date" dir="ltr" value={bookingForm.event_date} onChange={e => setBookingForm(f => ({ ...f, event_date: e.target.value }))} style={{ width: '100%', padding: '10px 12px', borderRadius: 10, border: `1px solid ${borderColor}`, background: isDark ? 'rgba(255,255,255,0.05)' : '#f9f9f9', color: textPrimary, fontSize: 14, fontFamily: 'Cairo, sans-serif', boxSizing: 'border-box' }} />
@@ -523,7 +525,12 @@ export default function VenuePublicPage() {
         <Lightbox images={venue.images} startIndex={lightbox} onClose={() => setLightbox(null)} />
       )}
 
-      <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
+      <style>{`
+  @keyframes spin { to { transform: rotate(360deg) } }
+  @media (max-width: 380px) {
+    .booking-form-grid { grid-template-columns: 1fr !important; }
+  }
+`}</style>
     </div>
   )
 }
