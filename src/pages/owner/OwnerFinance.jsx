@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { PlusIcon, XMarkIcon, TrashIcon, CheckIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
+import { PlusIcon, TrashIcon, CheckIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
 import {
   getFinanceSummary, getExpenses, createExpense, deleteExpense,
   fmtIQD, fmtDate,
@@ -25,11 +25,15 @@ const PERIOD_TABS = [
 ]
 
 const EXPENSE_CATS = [
-  ['salaries', 'رواتب'], ['maintenance', 'صيانة'], ['utilities', 'مرافق'],
-  ['marketing', 'تسويق'], ['insurance', 'تأمين'], ['other', 'أخرى'],
+  ['rent', 'إيجار'],
+  ['utilities', 'كهرباء وماء'],
+  ['salaries', 'رواتب'],
+  ['maintenance', 'صيانة'],
+  ['marketing', 'تسويق'],
+  ['other', 'أخرى'],
 ]
 
-const emptyExpense = { description: '', category: 'salaries', amount: '', date: new Date().toISOString().slice(0, 10) }
+const emptyExpense = { description: '', category: 'rent', amount: '', date: new Date().toISOString().slice(0, 10), is_recurring: false }
 
 const FIXED_EXP_DEFS = [
   { key: 'rent', label: 'إيجار القاعة' },
@@ -75,7 +79,7 @@ export default function OwnerFinance() {
     e.preventDefault()
     setSaving(true)
     try {
-      await createExpense({ ...form, amount: +form.amount })
+      await createExpense({ description: form.description, category: form.category, amount: +form.amount, date: form.date })
       setForm(emptyExpense)
       setShowAdd(false)
       load()
@@ -109,10 +113,73 @@ export default function OwnerFinance() {
           <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'rgba(255,255,255,0.95)', margin: 0 }}>المالية</h1>
           <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.45)', marginTop: '4px' }}>متابعة الإيرادات والمصروفات</p>
         </div>
-        <button onClick={() => exportCSV(expenses, summary)} className="glass-btn glass-btn-sm" disabled={loading}>
-          <ArrowDownTrayIcon style={{ width: 15, height: 15 }} /> تصدير CSV
-        </button>
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <button
+            onClick={() => { setForm(emptyExpense); setShowAdd(true) }}
+            className="glass-btn glass-btn-primary"
+            style={{ fontWeight: 700 }}
+          >
+            <PlusIcon style={{ width: 16, height: 16 }} /> إضافة مصروف
+          </button>
+          <button onClick={() => exportCSV(expenses, summary)} className="glass-btn glass-btn-sm" disabled={loading}>
+            <ArrowDownTrayIcon style={{ width: 15, height: 15 }} /> تصدير CSV
+          </button>
+        </div>
       </div>
+
+      {/* ── Add Expense Modal ── */}
+      {showAdd && (
+        <div className="glass-modal-overlay" onClick={() => setShowAdd(false)}>
+          <div className="glass-modal-panel" style={{ maxWidth: 480, padding: '28px' }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'rgba(255,255,255,0.95)', margin: 0 }}>إضافة مصروف جديد</h3>
+              <button onClick={() => setShowAdd(false)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: '22px', cursor: 'pointer', lineHeight: 1, padding: '0 4px' }}>×</button>
+            </div>
+            <form onSubmit={handleAddExpense} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+              <div>
+                <label className="glass-label">العنوان *</label>
+                <input className="glass-input" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="مثال: إيجار أبريل، فاتورة كهرباء..." required />
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+                <div>
+                  <label className="glass-label">المبلغ (د.ع) *</label>
+                  <input className="glass-input" type="number" min={0} value={form.amount} onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} required dir="ltr" placeholder="0" />
+                </div>
+                <div>
+                  <label className="glass-label">التاريخ *</label>
+                  <input className="glass-input" type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} dir="ltr" required />
+                </div>
+              </div>
+              <div>
+                <label className="glass-label">الفئة</label>
+                <select className="glass-select" value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}>
+                  {EXPENSE_CATS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                </select>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '12px 16px', border: '1px solid rgba(255,255,255,0.08)' }}>
+                <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.75)', fontWeight: 600 }}>متكرر شهرياً</span>
+                <button
+                  type="button"
+                  onClick={() => setForm(f => ({ ...f, is_recurring: !f.is_recurring }))}
+                  style={{
+                    width: 44, height: 24, borderRadius: 12, border: 'none', cursor: 'pointer', position: 'relative',
+                    background: form.is_recurring ? 'linear-gradient(135deg,#7C3AED,#6D28D9)' : 'rgba(255,255,255,0.12)',
+                    transition: 'background 0.2s',
+                  }}
+                >
+                  <span style={{ position: 'absolute', top: 3, width: 18, height: 18, borderRadius: '50%', background: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.3)', transition: 'left 0.2s', left: form.is_recurring ? 23 : 3 }} />
+                </button>
+              </div>
+              <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
+                <button type="button" onClick={() => setShowAdd(false)} className="glass-btn" style={{ flex: 1 }}>إلغاء</button>
+                <button type="submit" disabled={saving} className="glass-btn glass-btn-primary" style={{ flex: 1 }}>
+                  {saving ? 'جاري الحفظ...' : <><CheckIcon style={{ width: 15, height: 15 }} /> حفظ</>}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Revenue Summary */}
       <div className="glass-card-static" style={{ padding: '24px', marginBottom: '20px' }}>
@@ -209,42 +276,10 @@ export default function OwnerFinance() {
       <div className="glass-card-static">
         <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'rgba(255,255,255,0.9)', margin: 0 }}>المصاريف المتغيرة</h2>
-          <button onClick={() => setShowAdd(v => !v)} className="glass-btn glass-btn-sm glass-btn-primary">
-            {showAdd
-              ? <><XMarkIcon style={{ width: 15, height: 15 }} /> إغلاق</>
-              : <><PlusIcon style={{ width: 15, height: 15 }} /> إضافة</>
-            }
+          <button onClick={() => { setForm(emptyExpense); setShowAdd(true) }} className="glass-btn glass-btn-sm glass-btn-primary">
+            <PlusIcon style={{ width: 15, height: 15 }} /> إضافة
           </button>
         </div>
-
-        {/* Add form */}
-        {showAdd && (
-          <form onSubmit={handleAddExpense} style={{ padding: '20px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-            <div style={{ gridColumn: '1 / -1' }}>
-              <label className="glass-label">الوصف</label>
-              <input className="glass-input" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="وصف المصروف..." required />
-            </div>
-            <div>
-              <label className="glass-label">الفئة</label>
-              <select className="glass-select" value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}>
-                {EXPENSE_CATS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-              </select>
-            </div>
-            <div>
-              <label className="glass-label">المبلغ (د.ع)</label>
-              <input className="glass-input" type="number" min={0} value={form.amount} onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} required dir="ltr" />
-            </div>
-            <div>
-              <label className="glass-label">التاريخ</label>
-              <input className="glass-input" type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} dir="ltr" />
-            </div>
-            <div style={{ display: 'flex', alignItems: 'flex-end' }}>
-              <button type="submit" disabled={saving} className="glass-btn glass-btn-primary" style={{ width: '100%' }}>
-                {saving ? 'جاري الحفظ...' : <><CheckIcon style={{ width: 15, height: 15 }} /> حفظ</>}
-              </button>
-            </div>
-          </form>
-        )}
 
         {/* List */}
         {loading ? (

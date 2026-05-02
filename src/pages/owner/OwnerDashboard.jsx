@@ -5,9 +5,11 @@ import {
   BanknotesIcon,
   ClockIcon,
   BuildingOffice2Icon,
+  UsersIcon,
   PlusIcon,
   ChartBarIcon,
   ExclamationTriangleIcon,
+  ChevronLeftIcon,
 } from '@heroicons/react/24/outline'
 import {
   getDashboardStats, getOwnerBookings, getInventory,
@@ -43,12 +45,11 @@ export default function OwnerDashboard() {
 
   if (loading) return <DashboardSkeleton />
 
-  const pendingCount = stats?.pending_count ?? 0
   const cards = [
-    { Icon: CalendarDaysIcon, label: 'حجوزات اليوم', value: stats?.today_bookings ?? 0, color: 'purple' },
-    { Icon: BanknotesIcon, label: 'إيرادات الشهر', value: fmtShort(stats?.month_revenue ?? 0), color: 'green' },
-    { Icon: ClockIcon, label: 'بانتظار الموافقة', value: pendingCount, color: 'yellow', pulse: pendingCount > 0 },
-    { Icon: BuildingOffice2Icon, label: 'إجمالي القاعات', value: stats?.total_venues ?? 0, color: 'blue' },
+    { Icon: CalendarDaysIcon, label: 'إجمالي الحجوزات', value: stats?.this_month_bookings ?? 0, color: 'purple', to: '/owner/bookings' },
+    { Icon: BanknotesIcon, label: 'إجمالي الإيرادات', value: fmtShort(stats?.month_revenue ?? 0), color: 'green', to: '/owner/finance' },
+    { Icon: BuildingOffice2Icon, label: 'القاعات النشطة', value: stats?.total_venues ?? 0, color: 'blue', to: '/owner/venues' },
+    { Icon: UsersIcon, label: 'الموظفين', value: stats?.total_staff ?? 0, color: 'yellow', to: '/owner/hr' },
   ]
 
   return (
@@ -85,11 +86,7 @@ export default function OwnerDashboard() {
       {/* Stat Cards */}
       <div className="stats-grid" style={{ marginBottom: '28px' }}>
         {cards.map((c) => (
-          <div key={c.label} className={`glass-card stat-card stat-card-${c.color}${c.pulse ? ' pulse-pending' : ''}`}>
-            <div className="stat-card-icon"><c.Icon /></div>
-            <div className="stat-card-value">{c.value}</div>
-            <div className="stat-card-label">{c.label}</div>
-          </div>
+          <StatCard key={c.label} {...c} />
         ))}
       </div>
 
@@ -175,6 +172,31 @@ export default function OwnerDashboard() {
         </div>
       )}
     </div>
+  )
+}
+
+function StatCard({ Icon, label, value, color, to }) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <Link
+      to={to}
+      className={`glass-card stat-card stat-card-${color}`}
+      style={{
+        textDecoration: 'none',
+        position: 'relative',
+        cursor: 'pointer',
+        transform: hovered ? 'scale(1.025)' : 'scale(1)',
+        boxShadow: hovered ? '0 8px 32px rgba(124,58,237,0.25)' : undefined,
+        transition: 'transform 0.18s ease, box-shadow 0.18s ease',
+      }}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <div className="stat-card-icon"><Icon /></div>
+      <div className="stat-card-value">{value}</div>
+      <div className="stat-card-label">{label}</div>
+      <ChevronLeftIcon style={{ position: 'absolute', bottom: 12, left: 12, width: 15, height: 15, color: 'rgba(255,255,255,0.28)', transition: 'color 0.18s', ...(hovered && { color: 'rgba(255,255,255,0.65)' }) }} />
+    </Link>
   )
 }
 
