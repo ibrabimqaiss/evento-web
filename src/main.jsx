@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.jsx'
-import { ThemeProvider } from './lib/theme.js'
+import { ThemeProvider } from './lib/theme.jsx'
 import './index.css'
 import './styles/glass.css'
 
