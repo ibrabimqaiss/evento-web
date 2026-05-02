@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
 import {
   getInventory, createInventoryItem, updateInventoryItem, deleteInventoryItem,
@@ -62,8 +62,8 @@ export default function OwnerInventory() {
     <div className="owner-page">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'rgba(255,255,255,0.95)', margin: 0 }}>المخزون</h1>
-          <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.45)', marginTop: '4px' }}>
+          <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>المخزون</h1>
+          <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '4px' }}>
             {items.length} عنصر
             {lowStockCount > 0 && (
               <span style={{ marginRight: '8px', color: '#FBBF24' }}>• {lowStockCount} عنصر منخفض المخزون</span>
@@ -88,7 +88,7 @@ export default function OwnerInventory() {
             {[1,2,3,4,5].map(i => <div key={i} className="skeleton" style={{ height: 52, borderRadius: 8, marginBottom: 8 }} />)}
           </div>
         ) : filtered.length === 0 ? (
-          <div style={{ padding: '60px', textAlign: 'center', color: 'rgba(255,255,255,0.35)', fontSize: '15px' }}>
+          <div style={{ padding: '60px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '15px' }}>
             لا توجد عناصر
           </div>
         ) : (
@@ -149,7 +149,7 @@ export default function OwnerInventory() {
       {modal && (
         <div className="glass-modal-overlay" onClick={() => setModal(null)}>
           <div className="glass-modal-panel" style={{ maxWidth: 480, padding: '28px', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'rgba(255,255,255,0.9)', marginBottom: '20px' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '20px' }}>
               {modal === 'add' ? 'إضافة عنصر جديد' : 'تعديل العنصر'}
             </h3>
             <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { PlusIcon, TrashIcon, CheckIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
 import {
   getFinanceSummary, getExpenses, createExpense, deleteExpense,
@@ -110,8 +110,8 @@ export default function OwnerFinance() {
     <div className="owner-page">
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'rgba(255,255,255,0.95)', margin: 0 }}>المالية</h1>
-          <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.45)', marginTop: '4px' }}>متابعة الإيرادات والمصروفات</p>
+          <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>المالية</h1>
+          <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '4px' }}>متابعة الإيرادات والمصروفات</p>
         </div>
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
           <button
@@ -132,8 +132,8 @@ export default function OwnerFinance() {
         <div className="glass-modal-overlay" onClick={() => setShowAdd(false)}>
           <div className="glass-modal-panel" style={{ maxWidth: 480, padding: '28px' }} onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'rgba(255,255,255,0.95)', margin: 0 }}>إضافة مصروف جديد</h3>
-              <button onClick={() => setShowAdd(false)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: '22px', cursor: 'pointer', lineHeight: 1, padding: '0 4px' }}>×</button>
+              <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>إضافة مصروف جديد</h3>
+              <button onClick={() => setShowAdd(false)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', fontSize: '22px', cursor: 'pointer', lineHeight: 1, padding: '0 4px' }}>×</button>
             </div>
             <form onSubmit={handleAddExpense} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
               <div>
@@ -183,7 +183,7 @@ export default function OwnerFinance() {
 
       {/* Revenue Summary */}
       <div className="glass-card-static" style={{ padding: '24px', marginBottom: '20px' }}>
-        <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.45)', marginBottom: '16px' }}>إجمالي الإيرادات</div>
+        <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '16px' }}>إجمالي الإيرادات</div>
         <div className="glass-tabs" style={{ marginBottom: '20px' }}>
           {PERIOD_TABS.map(t => (
             <button key={t.key} className={`glass-tab${period === t.key ? ' active' : ''}`} onClick={() => setPeriod(t.key)}>
@@ -210,24 +210,24 @@ export default function OwnerFinance() {
             </div>
             {/* Net profit breakdown */}
             <div style={{ marginTop: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: 14, padding: '16px 20px', border: '1px solid rgba(255,255,255,0.06)' }}>
-              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginBottom: '10px', fontWeight: 600 }}>تفصيل صافي الربح</div>
+              <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '10px', fontWeight: 600 }}>تفصيل صافي الربح</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '14px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'rgba(255,255,255,0.55)' }}>الإيرادات</span>
+                  <span style={{ color: 'var(--text-secondary)' }}>الإيرادات</span>
                   <span style={{ color: '#34D399', direction: 'ltr' }}>{fmtIQD(summary.month ?? 0)}</span>
                 </div>
                 {salaryCost > 0 && (
                   <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                    <span style={{ color: 'rgba(255,255,255,0.55)' }}>- الرواتب</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>- الرواتب</span>
                     <span style={{ color: '#F87171', direction: 'ltr' }}>{fmtIQD(salaryCost)}</span>
                   </div>
                 )}
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'rgba(255,255,255,0.55)' }}>- المصروفات المتغيرة</span>
+                  <span style={{ color: 'var(--text-secondary)' }}>- المصروفات المتغيرة</span>
                   <span style={{ color: '#F87171', direction: 'ltr' }}>{fmtIQD(totalVariable)}</span>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  <span style={{ color: 'rgba(255,255,255,0.55)' }}>- المصروفات الثابتة</span>
+                  <span style={{ color: 'var(--text-secondary)' }}>- المصروفات الثابتة</span>
                   <span style={{ color: '#FBBF24', direction: 'ltr' }}>{fmtIQD(totalFixed)}</span>
                 </div>
                 <div style={{ height: 1, background: 'rgba(255,255,255,0.1)', margin: '4px 0' }} />
@@ -245,8 +245,8 @@ export default function OwnerFinance() {
       <div className="glass-card-static" style={{ marginBottom: '20px' }}>
         <div style={{ padding: '20px 24px', borderBottom: showFixed ? '1px solid rgba(255,255,255,0.06)' : 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
-            <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'rgba(255,255,255,0.9)', margin: 0 }}>المصاريف الثابتة الشهرية</h2>
-            <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.35)', margin: '2px 0 0' }}>إجمالي: {fmtIQD(totalFixed)}</p>
+            <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>المصاريف الثابتة الشهرية</h2>
+            <p style={{ fontSize: '12px', color: 'var(--text-muted)', margin: '2px 0 0' }}>إجمالي: {fmtIQD(totalFixed)}</p>
           </div>
           <button onClick={() => setShowFixed(v => !v)} className="glass-btn glass-btn-sm">
             {showFixed ? 'إخفاء' : 'تعديل'}
@@ -275,7 +275,7 @@ export default function OwnerFinance() {
       {/* Variable Expenses */}
       <div className="glass-card-static">
         <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'rgba(255,255,255,0.9)', margin: 0 }}>المصاريف المتغيرة</h2>
+          <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>المصاريف المتغيرة</h2>
           <button onClick={() => { setForm(emptyExpense); setShowAdd(true) }} className="glass-btn glass-btn-sm glass-btn-primary">
             <PlusIcon style={{ width: 15, height: 15 }} /> إضافة
           </button>
@@ -287,7 +287,7 @@ export default function OwnerFinance() {
             {[1,2,3].map(i => <div key={i} className="skeleton" style={{ height: 50, borderRadius: 8, marginBottom: 8 }} />)}
           </div>
         ) : expenses.length === 0 ? (
-          <div style={{ padding: '40px', textAlign: 'center', color: 'rgba(255,255,255,0.35)', fontSize: '14px' }}>
+          <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '14px' }}>
             لا توجد مصروفات مسجلة
           </div>
         ) : (
@@ -328,7 +328,7 @@ export default function OwnerFinance() {
 function MetricBox({ label, value, color }) {
   return (
     <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '12px', padding: '14px' }}>
-      <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginBottom: '6px' }}>{label}</div>
+      <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginBottom: '6px' }}>{label}</div>
       <div style={{ fontSize: '16px', fontWeight: 700, color }}>{value}</div>
     </div>
   )

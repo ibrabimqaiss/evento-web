@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   BuildingOffice2Icon, UsersIcon, BanknotesIcon, CalendarDaysIcon,
@@ -72,12 +72,12 @@ function CostCalculator({ venue, onClose }) {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <CalculatorIcon style={{ width: 22, height: 22, color: '#A78BFA' }} />
-            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'rgba(255,255,255,0.95)', margin: 0 }}>حاسبة التكلفة</h3>
+            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>حاسبة التكلفة</h3>
           </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: '22px', cursor: 'pointer' }}><XMarkIcon style={{ width: 20, height: 20 }} /></button>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', fontSize: '22px', cursor: 'pointer' }}><XMarkIcon style={{ width: 20, height: 20 }} /></button>
         </div>
 
-        <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', marginBottom: '16px' }}>
+        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '16px' }}>
           {venue.name_ar || venue.name} — السعر الأساسي: <span style={{ color: '#34D399', fontWeight: 700 }}>{fmtIQD(venuePrice)}</span>
         </div>
 
@@ -101,7 +101,7 @@ function CostCalculator({ venue, onClose }) {
 
         {/* Services */}
         <div style={{ marginBottom: '20px' }}>
-          <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.45)', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>الخدمات</div>
+          <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '10px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>الخدمات</div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {SERVICES.map(svc => (
               <div key={svc.key} style={{ display: 'flex', alignItems: 'center', gap: '10px', background: services[svc.key] ? 'rgba(124,58,237,0.08)' : 'rgba(255,255,255,0.03)', borderRadius: 12, padding: '10px 14px', border: `1px solid ${services[svc.key] ? 'rgba(124,58,237,0.3)' : 'rgba(255,255,255,0.06)'}`, flexWrap: 'wrap' }}>
@@ -121,14 +121,14 @@ function CostCalculator({ venue, onClose }) {
                   />
                 )}
                 {svc.unit === 'per_unit_per_hour' && services[svc.key] && (
-                  <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>{svc.unitLabel}</span>
+                  <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{svc.unitLabel}</span>
                 )}
                 <input
                   type="number" min={0} value={servicePrices[svc.key]}
                   onChange={e => setServicePrices(p => ({ ...p, [svc.key]: +e.target.value }))}
                   style={{ width: 100, background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#34D399', padding: '4px 8px', fontSize: '13px', textAlign: 'left', outline: 'none', direction: 'ltr' }}
                 />
-                <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', minWidth: 30 }}>
+                <span style={{ fontSize: '11px', color: 'var(--text-muted)', minWidth: 30 }}>
                   {svc.unit === 'per_person' ? 'د.ع/شخص' : svc.unit === 'flat' ? 'د.ع' : 'د.ع'}
                 </span>
               </div>
@@ -138,7 +138,7 @@ function CostCalculator({ venue, onClose }) {
 
         {/* Breakdown */}
         <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 14, padding: '16px', border: '1px solid rgba(255,255,255,0.08)', marginBottom: '16px' }}>
-          <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.45)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>تفصيل التكلفة</div>
+          <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>تفصيل التكلفة</div>
           {[
             { label: 'إيجار القاعة', value: venuePrice },
             ...(services.catering ? [{ label: `طعام وشراب (${form.guests} × ${fmtIQD(servicePrices.catering)})`, value: cateringTotal }] : []),
@@ -154,7 +154,7 @@ function CostCalculator({ venue, onClose }) {
             </div>
           ))}
           <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '10px', paddingTop: '10px', display: 'flex', justifyContent: 'space-between', fontSize: '16px', fontWeight: 700 }}>
-            <span style={{ color: 'rgba(255,255,255,0.9)' }}>المجموع الكلي</span>
+            <span style={{ color: 'var(--text-primary)' }}>المجموع الكلي</span>
             <span style={{ color: '#34D399', direction: 'ltr' }}>{fmtIQD(total)}</span>
           </div>
         </div>
@@ -171,8 +171,8 @@ function CostCalculator({ venue, onClose }) {
         {showQuote && (
           <div style={{ marginTop: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: 12, padding: '20px', border: '1px solid rgba(255,255,255,0.08)' }} id="quote-print">
             <div style={{ textAlign: 'center', marginBottom: '16px' }}>
-              <div style={{ fontSize: '16px', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>عرض سعر — Evento</div>
-              <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.45)', marginTop: '4px' }}>{new Date().toLocaleDateString('ar-IQ')}</div>
+              <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)' }}>عرض سعر — Evento</div>
+              <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>{new Date().toLocaleDateString('ar-IQ')}</div>
             </div>
             <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.8)', marginBottom: '12px' }}>
               <strong>القاعة:</strong> {venue.name_ar || venue.name}<br />
@@ -181,7 +181,7 @@ function CostCalculator({ venue, onClose }) {
               <strong>المدة:</strong> {form.hours} ساعة
             </div>
             <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '10px', fontSize: '13px', color: 'rgba(255,255,255,0.7)' }}>
-              <div style={{ fontWeight: 700, marginBottom: '6px', color: 'rgba(255,255,255,0.9)' }}>تفاصيل التكلفة:</div>
+              <div style={{ fontWeight: 700, marginBottom: '6px', color: 'var(--text-primary)' }}>تفاصيل التكلفة:</div>
               إيجار القاعة: {fmtIQD(venuePrice)}<br />
               {services.catering && <>طعام وشراب: {fmtIQD(cateringTotal)}<br /></>}
               {SERVICES.filter(s => s.unit === 'flat' && services[s.key]).map(s => <>{s.label}: {fmtIQD(servicePrices[s.key])}<br /></>)}
@@ -244,22 +244,22 @@ function VenueCalendarModal({ venue, onClose }) {
     <div className="glass-modal-overlay" onClick={onClose}>
       <div className="glass-modal-panel" style={{ maxWidth: 520, padding: '28px', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'rgba(255,255,255,0.95)', margin: 0 }}>
+          <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
             تقويم التوفر — {venue.name_ar || venue.name}
           </h3>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', cursor: 'pointer' }}><XMarkIcon style={{ width: 18, height: 18 }} /></button>
+          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}><XMarkIcon style={{ width: 18, height: 18 }} /></button>
         </div>
 
         {/* Month nav */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
           <button onClick={() => { if (calMonth === 0) { setCalYear(y => y-1); setCalMonth(11) } else setCalMonth(m => m-1) }} className="glass-btn glass-btn-sm" style={{ padding: '6px 12px' }}>→</button>
-          <span style={{ fontSize: '15px', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>{ARABIC_MONTHS[calMonth]} {calYear}</span>
+          <span style={{ fontSize: '15px', fontWeight: 700, color: 'var(--text-primary)' }}>{ARABIC_MONTHS[calMonth]} {calYear}</span>
           <button onClick={() => { if (calMonth === 11) { setCalYear(y => y+1); setCalMonth(0) } else setCalMonth(m => m+1) }} className="glass-btn glass-btn-sm" style={{ padding: '6px 12px' }}>←</button>
         </div>
 
         {/* Day headers */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '3px', marginBottom: '4px' }}>
-          {ARABIC_DAYS.map(d => <div key={d} style={{ textAlign: 'center', fontSize: '10px', color: 'rgba(255,255,255,0.35)', padding: '3px 0' }}>{d}</div>)}
+          {ARABIC_DAYS.map(d => <div key={d} style={{ textAlign: 'center', fontSize: '10px', color: 'var(--text-muted)', padding: '3px 0' }}>{d}</div>)}
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '3px' }}>
@@ -303,12 +303,12 @@ function VenueCalendarModal({ venue, onClose }) {
         {/* Legend */}
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '14px', paddingTop: '12px', borderTop: '1px solid rgba(255,255,255,0.06)', fontSize: '11px' }}>
           {[['#34D399', 'متاح'], ['#FBBF24', 'معلق'], ['#F87171', 'محجوز'], ['#9CA3AF', 'محجوب يدوياً']].map(([c, l]) => (
-            <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'rgba(255,255,255,0.5)' }}>
+            <div key={l} style={{ display: 'flex', alignItems: 'center', gap: 5, color: 'var(--text-secondary)' }}>
               <div style={{ width: 8, height: 8, borderRadius: 2, background: c }} />{l}
             </div>
           ))}
         </div>
-        <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.3)', marginTop: '10px' }}>اضغط على يوم لحجبه أو إلغاء حجبه يدوياً</p>
+        <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '10px' }}>اضغط على يوم لحجبه أو إلغاء حجبه يدوياً</p>
       </div>
     </div>
   )
@@ -335,8 +335,8 @@ export default function OwnerVenues() {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
         <div>
-          <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'rgba(255,255,255,0.95)', margin: 0 }}>القاعات</h1>
-          <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.45)', marginTop: '4px' }}>إدارة قاعاتك وإعداداتها</p>
+          <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>القاعات</h1>
+          <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '4px' }}>إدارة قاعاتك وإعداداتها</p>
         </div>
         <Link to="/owner/venues/create" className="glass-btn glass-btn-primary">
           <PlusIcon style={{ width: 16, height: 16 }} /> إضافة قاعة جديدة
@@ -349,9 +349,9 @@ export default function OwnerVenues() {
         </div>
       ) : venues.length === 0 ? (
         <div className="glass-card" style={{ padding: '60px 40px', textAlign: 'center' }}>
-          <BuildingOffice2Icon style={{ width: 48, height: 48, color: 'rgba(255,255,255,0.3)', marginBottom: '16px' }} />
+          <BuildingOffice2Icon style={{ width: 48, height: 48, color: 'var(--text-muted)', marginBottom: '16px' }} />
           <div style={{ fontSize: '18px', fontWeight: 600, color: 'rgba(255,255,255,0.7)', marginBottom: '8px' }}>لا توجد قاعات بعد</div>
-          <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.4)', marginBottom: '20px' }}>أضف قاعتك الأولى للبدء في استقبال الحجوزات</p>
+          <p style={{ fontSize: '14px', color: 'var(--text-muted)', marginBottom: '20px' }}>أضف قاعتك الأولى للبدء في استقبال الحجوزات</p>
           <Link to="/owner/venues/create" className="glass-btn glass-btn-primary"><PlusIcon style={{ width: 16, height: 16 }} /> إضافة قاعة جديدة</Link>
         </div>
       ) : (
@@ -388,14 +388,14 @@ function VenueCard({ venue, onCalc, onCal }) {
         background: coverImg ? `url(${coverImg}) center/cover` : 'linear-gradient(135deg, rgba(124,58,237,0.3), rgba(59,130,246,0.3))',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
       }}>
-        {!coverImg && <BuildingOffice2Icon style={{ width: 48, height: 48, color: 'rgba(255,255,255,0.35)' }} />}
+        {!coverImg && <BuildingOffice2Icon style={{ width: 48, height: 48, color: 'var(--text-muted)' }} />}
       </div>
 
       <div style={{ padding: '18px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: '16px', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>{venue.name_ar || venue.name}</div>
-            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginTop: '2px' }}>
+            <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)' }}>{venue.name_ar || venue.name}</div>
+            <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
               {VENUE_TYPE_LABELS[venue.venue_type] || venue.venue_type} · {venue.city}
             </div>
           </div>
@@ -448,7 +448,7 @@ function VenueCard({ venue, onCalc, onCal }) {
 function InfoChip({ Icon, label, value }) {
   return (
     <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: '10px', padding: '8px 10px', minWidth: 0 }}>
-      <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)', marginBottom: '3px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+      <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '3px', display: 'flex', alignItems: 'center', gap: '4px' }}>
         {Icon && <Icon style={{ width: 11, height: 11, flexShrink: 0 }} />}
         {label}
       </div>

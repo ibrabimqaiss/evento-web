@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import {
   PlusIcon, PencilIcon, UsersIcon, ListBulletIcon,
   CheckCircleIcon, ClockIcon, XCircleIcon, CheckIcon,
@@ -108,7 +108,7 @@ function DailyWorkersTab() {
         ].map(m => (
           <div key={m.label} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '14px', textAlign: 'center' }}>
             <div style={{ fontSize: '15px', fontWeight: 700, color: m.color, marginBottom: 4 }}>{m.value}</div>
-            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>{m.label}</div>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{m.label}</div>
           </div>
         ))}
       </div>
@@ -133,7 +133,7 @@ function DailyWorkersTab() {
       )}
 
       {shown.length === 0 ? (
-        <div className="glass-card-static" style={{ padding: '50px', textAlign: 'center', color: 'rgba(255,255,255,0.35)' }}>لا يوجد عمال يومية</div>
+        <div className="glass-card-static" style={{ padding: '50px', textAlign: 'center', color: 'var(--text-muted)' }}>لا يوجد عمال يومية</div>
       ) : (
         <div className="glass-card-static">
           <div className="glass-table-wrap">
@@ -213,14 +213,14 @@ function PayrollTab({ staff }) {
         ].map(m => (
           <div key={m.label} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '14px', textAlign: 'center' }}>
             <div style={{ fontSize: '15px', fontWeight: 700, color: m.color, marginBottom: 4 }}>{m.value}</div>
-            <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>{m.label}</div>
+            <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{m.label}</div>
           </div>
         ))}
       </div>
 
       <div className="glass-card-static">
         {active.length === 0 ? (
-          <div style={{ padding: '50px', textAlign: 'center', color: 'rgba(255,255,255,0.35)' }}>لا يوجد موظفون</div>
+          <div style={{ padding: '50px', textAlign: 'center', color: 'var(--text-muted)' }}>لا يوجد موظفون</div>
         ) : (
           <div className="glass-table-wrap">
             <table className="glass-table">
@@ -263,14 +263,14 @@ function PayrollTab({ staff }) {
                             dir="ltr"
                           />
                         )}
-                        {s.wage_type === 'monthly' && <span style={{ color: 'rgba(255,255,255,0.3)', fontSize: 12 }}>ثابت</span>}
+                        {s.wage_type === 'monthly' && <span style={{ color: 'var(--text-muted)', fontSize: 12 }}>ثابت</span>}
                       </td>
                       <td>
                         <span style={{ padding: '3px 10px', borderRadius: 10, fontSize: 12, fontWeight: 600, background: ps?.paid ? 'rgba(52,211,153,0.12)' : 'rgba(251,191,36,0.12)', color: ps?.paid ? '#34D399' : '#FBBF24', border: `1px solid ${ps?.paid ? 'rgba(52,211,153,0.3)' : 'rgba(251,191,36,0.3)'}` }}>
                           {ps?.paid ? 'مصروف' : 'لم يُصرف'}
                         </span>
                       </td>
-                      <td style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>{ps?.date || '—'}</td>
+                      <td style={{ color: 'var(--text-secondary)', fontSize: 13 }}>{ps?.date || '—'}</td>
                       <td>
                         {!ps?.paid ? (
                           <button onClick={() => setPayModal(s.id)} className="glass-btn glass-btn-sm glass-btn-success">
@@ -292,14 +292,14 @@ function PayrollTab({ staff }) {
       {payModal && (
         <div className="glass-modal-overlay" onClick={() => setPayModal(null)}>
           <div className="glass-modal-panel" style={{ maxWidth: 360, padding: '24px' }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'rgba(255,255,255,0.9)', marginBottom: '14px' }}>تأكيد صرف الراتب</h3>
+            <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '14px' }}>تأكيد صرف الراتب</h3>
             <div style={{ marginBottom: '14px' }}>
               {(() => {
                 const s = active.find(x => x.id === payModal)
                 return (
                   <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.7)', marginBottom: '6px' }}>
                     {s?.full_name} — {fmtIQD(getEffectiveSalary(s || {}, workedData))}
-                    <span style={{ fontSize: 12, color: 'rgba(255,255,255,0.4)', marginRight: 6 }}>({WAGE_AR[s?.wage_type] || 'شهري'})</span>
+                    <span style={{ fontSize: 12, color: 'var(--text-muted)', marginRight: 6 }}>({WAGE_AR[s?.wage_type] || 'شهري'})</span>
                   </div>
                 )
               })()}
@@ -335,7 +335,7 @@ function StaffTab({ staff, loading, typeFilter, setTypeFilter, openAdd, openEdit
   return (
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
-        <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.45)', margin: 0 }}>
+        <p style={{ fontSize: '14px', color: 'var(--text-secondary)', margin: 0 }}>
           {active.length} موظف نشط · إجمالي الرواتب: {fmtIQD(totalSalaries)}
         </p>
         <button onClick={openAdd} className="glass-btn glass-btn-primary"><PlusIcon style={{ width: 16, height: 16 }} /> إضافة موظف</button>
@@ -346,8 +346,8 @@ function StaffTab({ staff, loading, typeFilter, setTypeFilter, openAdd, openEdit
           const count = active.filter(s => s.employment_type === v).length
           return (
             <div key={v} className="glass-card-static" style={{ padding: '16px', cursor: 'pointer' }} onClick={() => setTypeFilter(v === typeFilter ? '' : v)}>
-              <div style={{ fontSize: '22px', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>{count}</div>
-              <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)' }}>{l}</div>
+              <div style={{ fontSize: '22px', fontWeight: 700, color: 'var(--text-primary)' }}>{count}</div>
+              <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{l}</div>
             </div>
           )
         })}
@@ -366,7 +366,7 @@ function StaffTab({ staff, loading, typeFilter, setTypeFilter, openAdd, openEdit
             {[1,2,3,4].map(i => <div key={i} className="skeleton" style={{ height: 56, borderRadius: 8, marginBottom: 8 }} />)}
           </div>
         ) : filtered.length === 0 ? (
-          <div style={{ padding: '60px', textAlign: 'center', color: 'rgba(255,255,255,0.35)', fontSize: '15px' }}>لا يوجد موظفون</div>
+          <div style={{ padding: '60px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '15px' }}>لا يوجد موظفون</div>
         ) : (
           <div className="glass-table-wrap">
             <table className="glass-table">
@@ -486,11 +486,11 @@ function ScheduleTab({ allStaff }) {
         <div className="glass-card-static" style={{ padding: '12px 20px', display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '22px', fontWeight: 700, color: '#A78BFA' }}>{bookings.length}</div>
-            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>فعاليات اليوم</div>
+            <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>فعاليات اليوم</div>
           </div>
           <div style={{ textAlign: 'center' }}>
             <div style={{ fontSize: '22px', fontWeight: 700, color: '#34D399' }}>{assignedToday.size}</div>
-            <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>موظفين مجدولين</div>
+            <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>موظفين مجدولين</div>
           </div>
         </div>
       </div>
@@ -501,8 +501,8 @@ function ScheduleTab({ allStaff }) {
         </div>
       ) : bookings.length === 0 ? (
         <div className="glass-card-static" style={{ padding: '60px', textAlign: 'center' }}>
-          <CalendarDaysIcon style={{ width: 36, height: 36, color: 'rgba(255,255,255,0.3)', marginBottom: '12px' }} />
-          <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '15px' }}>لا توجد فعاليات في هذا اليوم</div>
+          <CalendarDaysIcon style={{ width: 36, height: 36, color: 'var(--text-muted)', marginBottom: '12px' }} />
+          <div style={{ color: 'var(--text-muted)', fontSize: '15px' }}>لا توجد فعاليات في هذا اليوم</div>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -516,14 +516,14 @@ function ScheduleTab({ allStaff }) {
                 <div style={{ padding: '16px 20px', background: 'rgba(124,58,237,0.1)', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '8px' }}>
                     <div>
-                      <div style={{ fontWeight: 700, color: 'rgba(255,255,255,0.9)', fontSize: '15px' }}>
+                      <div style={{ fontWeight: 700, color: 'var(--text-primary)', fontSize: '15px' }}>
                         {EVENT_TYPE_AR[b.event_type] || b.event_type} — {b.customer_name || '—'}
                       </div>
-                      <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', marginTop: '3px' }}>
+                      <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginTop: '3px' }}>
                         {vname} · {b.guest_count} ضيف · {b.start_time || '—'}
                       </div>
                     </div>
-                    <span style={{ fontSize: '12px', fontWeight: 600, padding: '4px 12px', borderRadius: '10px', background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 600, padding: '4px 12px', borderRadius: '10px', background: 'rgba(255,255,255,0.07)', color: 'var(--text-secondary)', border: '1px solid rgba(255,255,255,0.1)' }}>
                       {BOOKING_STATUS_LABELS[b.status] || b.status}
                     </span>
                   </div>
@@ -531,11 +531,11 @@ function ScheduleTab({ allStaff }) {
 
                 {/* Staff assignment */}
                 <div style={{ padding: '16px 20px' }}>
-                  <div style={{ fontSize: '12px', fontWeight: 600, color: 'rgba(255,255,255,0.4)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  <div style={{ fontSize: '12px', fontWeight: 600, color: 'var(--text-muted)', marginBottom: '12px', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
                     تعيين الموظفين
                   </div>
                   {activeStaff.length === 0 ? (
-                    <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: '13px' }}>لا يوجد موظفون نشطون</div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '13px' }}>لا يوجد موظفون نشطون</div>
                   ) : (
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                       {activeStaff.map(st => {
@@ -570,7 +570,7 @@ function ScheduleTab({ allStaff }) {
                               <div style={{ fontSize: '13px', fontWeight: 600, color: isAssigned ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.55)' }}>
                                 {st.full_name}
                               </div>
-                              <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.35)' }}>
+                              <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
                                 {ROLE_AR[st.role] || st.role}
                               </div>
                             </div>
@@ -671,7 +671,7 @@ export default function OwnerHR() {
   return (
     <div className="owner-page">
       <div style={{ marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'rgba(255,255,255,0.95)', margin: 0 }}>الموارد البشرية</h1>
+        <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>الموارد البشرية</h1>
       </div>
 
       {/* Main tabs */}
@@ -697,7 +697,7 @@ export default function OwnerHR() {
       {modal && (
         <div className="glass-modal-overlay" onClick={() => setModal(null)}>
           <div className="glass-modal-panel" style={{ maxWidth: 500, padding: '28px', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'rgba(255,255,255,0.95)', marginBottom: '20px' }}>
+            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '20px' }}>
               {modal === 'add' ? 'إضافة موظف جديد' : 'تعديل بيانات الموظف'}
             </h3>
             <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>

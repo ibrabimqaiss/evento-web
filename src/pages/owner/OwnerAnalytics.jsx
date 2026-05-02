@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import {
   BarChart, Bar, AreaChart, Area, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
@@ -27,7 +27,7 @@ export default function OwnerAnalytics() {
   }, [])
 
   if (loading) return <AnalyticsSkeleton />
-  if (!data) return <div style={{ padding: '60px', textAlign: 'center', color: 'rgba(255,255,255,0.4)' }}>تعذر تحميل البيانات</div>
+  if (!data) return <div style={{ padding: '60px', textAlign: 'center', color: 'var(--text-muted)' }}>تعذر تحميل البيانات</div>
 
   const kpis = data.kpis || {}
   const monthlyRevenue = data.monthly_revenue || []
@@ -39,8 +39,8 @@ export default function OwnerAnalytics() {
   return (
     <div className="owner-page">
       <div style={{ marginBottom: '28px' }}>
-        <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'rgba(255,255,255,0.95)', margin: 0 }}>التحليلات</h1>
-        <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.45)', marginTop: '4px' }}>إحصاءات الأداء والنمو</p>
+        <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>التحليلات</h1>
+        <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '4px' }}>إحصاءات الأداء والنمو</p>
       </div>
 
       {/* KPIs */}
@@ -168,7 +168,7 @@ function KpiCard({ label, value, Icon, color }) {
         <Icon style={{ width: 24, height: 24 }} />
       </div>
       <div style={{ fontSize: '20px', fontWeight: 700, color }}>{value}</div>
-      <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)', marginTop: '4px' }}>{label}</div>
+      <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '4px' }}>{label}</div>
     </div>
   )
 }

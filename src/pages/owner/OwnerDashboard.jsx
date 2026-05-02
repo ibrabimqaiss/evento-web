@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   CalendarDaysIcon,
@@ -56,10 +56,10 @@ export default function OwnerDashboard() {
     <div className="owner-page">
       {/* Header */}
       <div style={{ marginBottom: '28px' }}>
-        <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'rgba(255,255,255,0.95)', margin: 0 }}>
+        <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>
           لوحة التحكم
         </h1>
-        <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.45)', marginTop: '4px' }}>
+        <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '4px' }}>
           {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
         </p>
       </div>
@@ -109,13 +109,13 @@ export default function OwnerDashboard() {
       {/* Recent Bookings */}
       <div className="glass-card-static">
         <div style={{ padding: '20px 24px', borderBottom: '1px solid rgba(255,255,255,0.06)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'rgba(255,255,255,0.9)', margin: 0 }}>
+          <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
             آخر الحجوزات
           </h2>
           <Link to="/owner/bookings" className="glass-btn glass-btn-sm">عرض الكل</Link>
         </div>
         {bookings.length === 0 ? (
-          <div style={{ padding: '40px', textAlign: 'center', color: 'rgba(255,255,255,0.35)', fontSize: '14px' }}>
+          <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '14px' }}>
             لا توجد حجوزات حتى الآن
           </div>
         ) : (
@@ -154,7 +154,7 @@ export default function OwnerDashboard() {
       {stats && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px', marginTop: '20px' }}>
           <div className="glass-card-static" style={{ padding: '24px' }}>
-            <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', marginBottom: '8px' }}>معدل الإشغال (هذا الشهر)</div>
+            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '8px' }}>معدل الإشغال (هذا الشهر)</div>
             <div style={{ fontSize: '36px', fontWeight: 700, color: '#A78BFA' }}>
               {stats.occupancy_rate ?? 0}%
             </div>
@@ -163,11 +163,11 @@ export default function OwnerDashboard() {
             </div>
           </div>
           <div className="glass-card-static" style={{ padding: '24px' }}>
-            <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', marginBottom: '8px' }}>حجوزات هذا الشهر</div>
+            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '8px' }}>حجوزات هذا الشهر</div>
             <div style={{ fontSize: '36px', fontWeight: 700, color: '#34D399' }}>
               {stats.this_month_bookings ?? 0}
             </div>
-            <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.35)', marginTop: '8px' }}>حجز مؤكد</div>
+            <div style={{ fontSize: '13px', color: 'var(--text-muted)', marginTop: '8px' }}>حجز مؤكد</div>
           </div>
         </div>
       )}
@@ -195,7 +195,7 @@ function StatCard({ Icon, label, value, color, to }) {
       <div className="stat-card-icon"><Icon /></div>
       <div className="stat-card-value">{value}</div>
       <div className="stat-card-label">{label}</div>
-      <ChevronLeftIcon style={{ position: 'absolute', bottom: 12, left: 12, width: 15, height: 15, color: 'rgba(255,255,255,0.28)', transition: 'color 0.18s', ...(hovered && { color: 'rgba(255,255,255,0.65)' }) }} />
+      <ChevronLeftIcon style={{ position: 'absolute', bottom: 12, left: 12, width: 15, height: 15, color: 'var(--text-tertiary)', transition: 'color 0.18s', ...(hovered && { color: 'var(--text-secondary)' }) }} />
     </Link>
   )
 }

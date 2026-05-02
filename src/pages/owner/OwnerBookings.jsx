@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+﻿import { useEffect, useState, useCallback } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import {
   ListBulletIcon, CalendarDaysIcon, CheckCircleIcon, XCircleIcon,
@@ -124,7 +124,7 @@ function AddBookingModal({ venues, initialDate, onClose, onSuccess }) {
         style={{ maxWidth: 560, padding: '28px', maxHeight: '90vh', overflowY: 'auto' }}
         onClick={e => e.stopPropagation()}
       >
-        <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'rgba(255,255,255,0.9)', marginBottom: '20px' }}>
+        <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '20px' }}>
           إضافة حجز جديد
         </h3>
 
@@ -344,8 +344,8 @@ export default function OwnerBookings() {
       {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', flexWrap: 'wrap', gap: '12px' }}>
         <div>
-          <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'rgba(255,255,255,0.95)', margin: 0 }}>الحجوزات</h1>
-          <p style={{ fontSize: '14px', color: 'rgba(255,255,255,0.45)', marginTop: '4px' }}>إدارة جميع حجوزات قاعاتك</p>
+          <h1 style={{ fontSize: '26px', fontWeight: 800, color: 'var(--text-primary)', margin: 0 }}>الحجوزات</h1>
+          <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '4px' }}>إدارة جميع حجوزات قاعاتك</p>
         </div>
 
         <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -388,7 +388,7 @@ export default function OwnerBookings() {
 
           <div className="glass-card-static">
             {loading ? <Spinner /> : bookings.length === 0 ? (
-              <div style={{ padding: '60px', textAlign: 'center', color: 'rgba(255,255,255,0.35)', fontSize: '15px' }}>لا توجد حجوزات</div>
+              <div style={{ padding: '60px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '15px' }}>لا توجد حجوزات</div>
             ) : (
               <div className="glass-table-wrap">
                 <table className="glass-table">
@@ -529,7 +529,7 @@ export default function OwnerBookings() {
                           {dayBks.slice(0, 5).map((b, i) => (
                             <div key={i} style={{ width: 8, height: 8, borderRadius: '50%', background: DOT_COLOR[b.status] || '#A78BFA' }} />
                           ))}
-                          {dayBks.length > 5 && <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)' }}>+{dayBks.length - 5}</span>}
+                          {dayBks.length > 5 && <span style={{ fontSize: 9, color: 'var(--text-muted)' }}>+{dayBks.length - 5}</span>}
                         </div>
                         {dayBks.length > 0 && (
                           <div style={{ textAlign: 'center', fontSize: 10, color: 'rgba(255,255,255,0.38)', marginTop: 4 }}>
@@ -562,7 +562,7 @@ export default function OwnerBookings() {
       {cancelModal && (
         <div className="glass-modal-overlay" onClick={() => setCancelModal(null)}>
           <div className="glass-modal-panel" style={{ maxWidth: 420, padding: '28px' }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'rgba(255,255,255,0.95)', marginBottom: '16px' }}>إلغاء الحجز</h3>
+            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '16px' }}>إلغاء الحجز</h3>
             <label className="glass-label">سبب الإلغاء (اختياري)</label>
             <textarea className="glass-textarea" value={cancelReason} onChange={e => setCancelReason(e.target.value)} placeholder="اكتب سبب إلغاء الحجز..." style={{ minHeight: '80px', marginBottom: '16px' }} />
             <div style={{ display: 'flex', gap: '10px' }}>
@@ -579,7 +579,7 @@ export default function OwnerBookings() {
       {rejectModal && (
         <div className="glass-modal-overlay" onClick={() => setRejectModal(null)}>
           <div className="glass-modal-panel" style={{ maxWidth: 420, padding: '28px' }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'rgba(255,255,255,0.95)', marginBottom: '16px' }}>رفض الحجز</h3>
+            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '16px' }}>رفض الحجز</h3>
             <label className="glass-label">سبب الرفض (اختياري)</label>
             <textarea className="glass-textarea" value={rejectReason} onChange={e => setRejectReason(e.target.value)} placeholder="اكتب سبب رفض الحجز..." style={{ minHeight: '80px', marginBottom: '16px' }} />
             <div style={{ display: 'flex', gap: '10px' }}>
@@ -602,11 +602,11 @@ export default function OwnerBookings() {
                   <UserCircleIcon style={{ width: 28, height: 28, color: '#A78BFA' }} />
                 </div>
                 <div>
-                  <div style={{ fontSize: '17px', fontWeight: 700, color: 'rgba(255,255,255,0.95)' }}>{customerModal.name}</div>
-                  <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', direction: 'ltr', textAlign: 'right' }}>{customerModal.phone}</div>
+                  <div style={{ fontSize: '17px', fontWeight: 700, color: 'var(--text-primary)' }}>{customerModal.name}</div>
+                  <div style={{ fontSize: '13px', color: 'var(--text-secondary)', direction: 'ltr', textAlign: 'right' }}>{customerModal.phone}</div>
                 </div>
               </div>
-              <button onClick={() => setCustomerModal(null)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: '22px', cursor: 'pointer' }}>×</button>
+              <button onClick={() => setCustomerModal(null)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', fontSize: '22px', cursor: 'pointer' }}>×</button>
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '20px' }}>
               {[
@@ -616,17 +616,17 @@ export default function OwnerBookings() {
               ].map(({ label, value }) => (
                 <div key={label} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '12px', textAlign: 'center' }}>
                   <div style={{ fontSize: '15px', fontWeight: 700, color: '#A78BFA', marginBottom: 4 }}>{value}</div>
-                  <div style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>{label}</div>
+                  <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{label}</div>
                 </div>
               ))}
             </div>
-            <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.45)', marginBottom: '10px' }}>آخر الحجوزات</div>
+            <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: '10px' }}>آخر الحجوزات</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '200px', overflowY: 'auto' }}>
               {customerModal.bookings.slice(0, 5).map(b => (
                 <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.03)', borderRadius: 10, padding: '10px 14px', border: '1px solid rgba(255,255,255,0.06)' }}>
                   <div>
                     <div style={{ fontSize: '13px', fontWeight: 600, color: 'rgba(255,255,255,0.8)' }}>{EVENT_TYPE_AR[b.event_type] || b.event_type}</div>
-                    <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.4)' }}>{fmtDate(b.event_date)}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{fmtDate(b.event_date)}</div>
                   </div>
                   <div style={{ textAlign: 'left' }}>
                     <div style={{ fontSize: '13px', direction: 'ltr', color: '#34D399' }}>{fmtIQD(b.quoted_price_iqd)}</div>
@@ -646,7 +646,7 @@ export default function OwnerBookings() {
         <div className="glass-modal-overlay" onClick={() => setDayModal(null)}>
           <div className="glass-modal-panel" style={{ maxWidth: 560, padding: '28px', maxHeight: '80vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'rgba(255,255,255,0.95)', margin: 0 }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
                 حجوزات {fmtDate(dayModal.dateStr)}
               </h3>
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -656,7 +656,7 @@ export default function OwnerBookings() {
                 >
                   <PlusIcon style={{ width: 13, height: 13 }} /> إضافة
                 </button>
-                <button onClick={() => setDayModal(null)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: '22px', cursor: 'pointer', lineHeight: 1, padding: '0 4px' }}>×</button>
+                <button onClick={() => setDayModal(null)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', fontSize: '22px', cursor: 'pointer', lineHeight: 1, padding: '0 4px' }}>×</button>
               </div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -668,7 +668,7 @@ export default function OwnerBookings() {
                       {BOOKING_STATUS_LABELS[b.status] || b.status}
                     </span>
                   </div>
-                  <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+                  <div style={{ fontSize: '13px', color: 'var(--text-secondary)', display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
                     <span>{getVenueName(b)}</span>
                     <span>{b.guest_count} ضيف</span>
                     <span>{EVENT_TYPE_AR[b.event_type] || b.event_type || '—'}</span>
