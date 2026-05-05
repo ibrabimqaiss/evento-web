@@ -8,6 +8,7 @@ export const getOwnerVenues = () => api.get('/owner/venues/')
 export const getOwnerVenueDetail = (slug) => api.get(`/owner/venues/${slug}/`)
 export const createVenue = (data) => api.post('/venues/create/', data)
 export const updateVenue = (slug, data) => api.patch(`/owner/venues/${slug}/`, data)
+export const deleteVenue = (slug) => api.delete(`/owner/venues/${slug}/`)
 
 // ─── Venue Media ──────────────────────────────────────────────────────────────
 const MULTIPART = { headers: { 'Content-Type': undefined } }

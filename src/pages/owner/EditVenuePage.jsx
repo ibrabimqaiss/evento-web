@@ -6,7 +6,7 @@ import {
 } from '@heroicons/react/24/outline'
 import {
   getOwnerVenueDetail,
-  updateVenue,
+  updateVenue, deleteVenue,
   uploadVenuePhoto, deleteVenuePhoto,
   uploadVenueVideo, deleteVenueVideo,
   getVenueServices, createVenueService, deleteVenueService,
@@ -679,6 +679,96 @@ function Spinner() {
   )
 }
 
+function DeleteVenueModal({ slug, onClose, onDeleted }) {
+  const [step, setStep] = useState(1)
+  const [confirm, setConfirm] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  async function handleDelete() {
+    setLoading(true)
+    setError('')
+    try {
+      await deleteVenue(slug)
+      onDeleted()
+    } catch (err) {
+      setError(err.response?.data?.error?.message || 'حدث خطأ، يرجى المحاولة مرة أخرى.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div
+      style={{ position: 'fixed', inset: 0, zIndex: 999, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
+      onClick={onClose}
+    >
+      <div
+        style={{ background: '#1a1035', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 20, padding: '32px 28px', maxWidth: 440, width: '100%' }}
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Warning icon + title */}
+        <div style={{ textAlign: 'center', marginBottom: 20 }}>
+          <div style={{ fontSize: 48, marginBottom: 12 }}>🚨</div>
+          <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: '#FCA5A5' }}>تحذير: حذف القاعة نهائياً</h3>
+        </div>
+
+        <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.65)', lineHeight: 1.7, textAlign: 'center', marginBottom: 24 }}>
+          هذا الإجراء لا يمكن التراجع عنه. سيتم حذف القاعة وجميع بياناتها بشكل نهائي بما في ذلك الصور والحجوزات والقائمة.
+        </p>
+
+        {step === 1 && (
+          <div style={{ display: 'flex', gap: 12, flexDirection: 'column' }}>
+            <button
+              onClick={() => setStep(2)}
+              style={{ padding: '12px', borderRadius: 12, background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.4)', color: '#FCA5A5', fontWeight: 700, fontSize: 15, cursor: 'pointer', fontFamily: 'Cairo, sans-serif' }}
+            >
+              متابعة الحذف
+            </button>
+            <button
+              onClick={onClose}
+              style={{ padding: '12px', borderRadius: 12, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.7)', fontWeight: 600, fontSize: 15, cursor: 'pointer', fontFamily: 'Cairo, sans-serif' }}
+            >
+              إلغاء
+            </button>
+          </div>
+        )}
+
+        {step === 2 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <label style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.7)', display: 'block' }}>
+              للتأكيد، اكتب كلمة <span style={{ color: '#FCA5A5', fontFamily: 'monospace' }}>EVENTO</span> أدناه
+            </label>
+            <input
+              dir="ltr"
+              value={confirm}
+              onChange={e => setConfirm(e.target.value)}
+              placeholder="EVENTO"
+              style={{ padding: '10px 14px', borderRadius: 10, border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.06)', color: '#fff', fontSize: 15, fontFamily: 'monospace', outline: 'none', letterSpacing: 2 }}
+            />
+            {error && <div style={{ fontSize: 13, color: '#FCA5A5' }}>{error}</div>}
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button
+                onClick={handleDelete}
+                disabled={confirm !== 'EVENTO' || loading}
+                style={{ flex: 1, padding: '12px', borderRadius: 12, background: confirm === 'EVENTO' ? '#DC2626' : 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.4)', color: confirm === 'EVENTO' ? '#fff' : 'rgba(255,255,255,0.3)', fontWeight: 700, fontSize: 15, cursor: confirm === 'EVENTO' && !loading ? 'pointer' : 'not-allowed', fontFamily: 'Cairo, sans-serif', transition: 'all 0.2s' }}
+              >
+                {loading ? 'جاري الحذف...' : 'حذف نهائياً'}
+              </button>
+              <button
+                onClick={onClose}
+                style={{ padding: '12px 20px', borderRadius: 12, background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.7)', fontWeight: 600, fontSize: 15, cursor: 'pointer', fontFamily: 'Cairo, sans-serif' }}
+              >
+                إلغاء
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
 function ErrorMsg({ msg }) {
   return (
     <div style={{ padding: '12px 16px', background: 'rgba(248,113,113,0.1)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: '10px', color: '#FCA5A5', fontSize: '13px' }}>
@@ -704,6 +794,14 @@ export default function EditVenuePage() {
   const slug = rawSlug?.replace(/^item-/, '') || rawSlug
   const navigate = useNavigate()
   const [activeTab, setActiveTab] = useState('info')
+  const [deleteModal, setDeleteModal] = useState(false)
+  const [deleteToast, setDeleteToast] = useState(false)
+
+  function handleDeleted() {
+    setDeleteModal(false)
+    setDeleteToast(true)
+    setTimeout(() => navigate('/owner/venues'), 1800)
+  }
 
   return (
     <div className="owner-page">
@@ -738,6 +836,35 @@ export default function EditVenuePage() {
         {activeTab === 'services' && <ServicesTab slug={slug} />}
         {activeTab === 'menu'     && <MenuTab slug={slug} />}
       </div>
+
+      {/* Delete zone */}
+      <div style={{ marginTop: 40, padding: '24px 28px', background: 'rgba(239,68,68,0.05)', border: '1px solid rgba(239,68,68,0.18)', borderRadius: 16 }}>
+        <div style={{ marginBottom: 12 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: '#FCA5A5', marginBottom: 4 }}>منطقة الخطر</div>
+          <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.4)' }}>حذف القاعة يزيل جميع البيانات المرتبطة بها بشكل نهائي.</div>
+        </div>
+        <button
+          onClick={() => setDeleteModal(true)}
+          style={{ padding: '10px 22px', borderRadius: 10, background: 'rgba(239,68,68,0.12)', border: '1px solid rgba(239,68,68,0.35)', color: '#FCA5A5', fontWeight: 700, fontSize: 14, cursor: 'pointer', fontFamily: 'Cairo, sans-serif', display: 'inline-flex', alignItems: 'center', gap: 8 }}
+        >
+          <TrashIcon style={{ width: 16, height: 16 }} />
+          حذف القاعة
+        </button>
+      </div>
+
+      {deleteModal && (
+        <DeleteVenueModal
+          slug={slug}
+          onClose={() => setDeleteModal(false)}
+          onDeleted={handleDeleted}
+        />
+      )}
+
+      {deleteToast && (
+        <div style={{ position: 'fixed', bottom: 32, left: '50%', transform: 'translateX(-50%)', background: '#065F46', border: '1px solid #34D399', borderRadius: 12, padding: '14px 28px', color: '#fff', fontWeight: 700, fontSize: 15, zIndex: 9999, fontFamily: 'Cairo, sans-serif' }}>
+          ✅ تم حذف القاعة بنجاح
+        </div>
+      )}
 
       <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
     </div>
