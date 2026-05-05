@@ -137,46 +137,49 @@ export default function OwnerFinance() {
   const [fixedExp, setFixedExp] = useState(loadFixedExp)
   const [showFixed, setShowFixed] = useState(false)
 
-  function load() {
+  function loadSummary() {
     setLoading(true)
-    Promise.all([getFinanceSummary(), getExpenses()])
-      .then(([sRes, eRes]) => {
-        const s = sRes.data?.data ?? sRes.data
+    getFinanceSummary()
+      .then(res => {
+        const s = res.data?.data ?? res.data
         setSummary(s && (s.month !== undefined || s.year !== undefined) ? s : DEMO_FINANCE_SUMMARY)
-        const eData = eRes.data?.data ?? eRes.data
-        setExpenses(Array.isArray(eData) ? eData : (eData?.results ?? []))
       })
       .catch(() => setSummary(DEMO_FINANCE_SUMMARY))
       .finally(() => setLoading(false))
   }
 
-  function loadTransactions(p) {
+  function load(p) {
     setTxLoading(true)
     const { from, to } = getPeriodDates(p)
-    getFinanceTransactions(from && to ? { date_from: from, date_to: to } : {})
-      .then(res => {
-        const d = res.data?.results ?? res.data?.data ?? []
-        setTransactions(Array.isArray(d) ? d : [])
-      })
-      .catch(() => setTransactions([]))
-      .finally(() => setTxLoading(false))
+    const params = from && to ? { date_from: from, date_to: to } : {}
+    Promise.all([
+      getFinanceTransactions(params),
+      getExpenses(params),
+    ]).then(([txRes, eRes]) => {
+      const d = txRes.data?.results ?? txRes.data?.data ?? []
+      setTransactions(Array.isArray(d) ? d : [])
+      const eData = eRes.data?.data ?? eRes.data
+      setExpenses(Array.isArray(eData) ? eData : (eData?.results ?? []))
+    }).catch(() => {
+      setTransactions([])
+    }).finally(() => setTxLoading(false))
   }
 
-  useEffect(() => { load() }, [])
-  useEffect(() => { loadTransactions(period) }, [period])
+  useEffect(() => { loadSummary() }, [])
+  useEffect(() => { load(period) }, [period])
 
   async function handleAddExpense(e) {
     e.preventDefault()
     setSaving(true)
     try {
       await createExpense({ description: form.description, category: form.category, amount: +form.amount, date: form.date })
-      setForm(emptyExpense); setShowAdd(false); load()
+      setForm(emptyExpense); setShowAdd(false); loadSummary(); load(period)
     } catch { /* noop */ } finally { setSaving(false) }
   }
 
   async function handleDelete(id) {
     if (!confirm('هل تريد حذف هذا المصروف؟')) return
-    await deleteExpense(id); load()
+    await deleteExpense(id); loadSummary(); load(period)
   }
 
   function updateFixed(key, val) {
@@ -370,13 +373,13 @@ export default function OwnerFinance() {
             <PlusIcon style={{ width: 15, height: 15 }} /> إضافة
           </button>
         </div>
-        {loading ? (
+        {txLoading ? (
           <div style={{ padding: '30px' }}>
             {[1,2,3].map(i => <div key={i} className="skeleton" style={{ height: 50, borderRadius: 8, marginBottom: 8 }} />)}
           </div>
         ) : expenses.length === 0 ? (
           <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-muted)', fontSize: '14px' }}>
-            لا توجد مصروفات مسجلة
+            لا توجد مصروفات في هذه الفترة
           </div>
         ) : (
           <div className="glass-table-wrap">

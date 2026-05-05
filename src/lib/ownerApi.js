@@ -46,7 +46,7 @@ export const cancelBooking = (id, reason) => api.put(`/owner/bookings/${id}/canc
 // ─── Finance ─────────────────────────────────────────────────────────────────
 export const getFinanceSummary = () => api.get('/owner/finance/summary/')
 export const getFinanceTransactions = (params = {}) => api.get('/owner/finance/transactions/', { params })
-export const getExpenses = () => api.get('/owner/finance/expenses/')
+export const getExpenses = (params = {}) => api.get('/owner/finance/expenses/', { params })
 export const createExpense = (data) => api.post('/owner/finance/expenses/', data)
 export const updateExpense = (id, data) => api.patch(`/owner/finance/expenses/${id}/`, data)
 export const deleteExpense = (id) => api.delete(`/owner/finance/expenses/${id}/`)
