@@ -515,14 +515,15 @@ img { max-width: 100%; }
 .glass-modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: 1000;
-  background: rgba(0, 0, 0, 0.75);
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 16px;
+  overflow-y: auto;
 }
 
 .glass-modal-panel {
@@ -533,10 +534,10 @@ img { max-width: 100%; }
   border-radius: 20px;
   box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
   position: relative;
-  overflow: hidden;
   width: 100%;
   max-height: 90vh;
   overflow-y: auto;
+  margin: auto;
 }
 
 .glass-modal-panel::before {
@@ -625,8 +626,8 @@ img { max-width: 100%; }
   .glass-table td, .glass-table th { padding: 8px 12px; vertical-align: middle; white-space: nowrap; }
   .glass-table tr { white-space: nowrap; }
   .quick-actions { flex-direction: column; }
-  .glass-modal-overlay { align-items: flex-end; padding: 0; }
-  .glass-modal-panel { border-radius: 20px 20px 0 0; max-height: 85vh; }
+  .glass-modal-overlay { align-items: flex-end; padding: 0; overflow-y: hidden; }
+  .glass-modal-panel { border-radius: 20px 20px 0 0; max-height: 85vh; margin: 0; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 12px; }
 }
 
