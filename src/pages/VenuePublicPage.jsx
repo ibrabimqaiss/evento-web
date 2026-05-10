@@ -30,7 +30,7 @@ const VENUE_TYPE_LABELS = {
 }
 
 function fmtIQD(n) {
-  return new Intl.NumberFormat('ar-IQ', { style: 'decimal', maximumFractionDigits: 0 }).format(n || 0) + ' د.ع'
+  return new Intl.NumberFormat('en-US', { style: 'decimal', maximumFractionDigits: 0 }).format(n || 0) + ' د.ع'
 }
 
 const getImageUrl = (img) => {

@@ -32,7 +32,7 @@ export default function VenueCard({ venue }) {
         <div className="flex items-center justify-between mt-2">
           {venue.min_price != null && (
             <span className="text-primary font-semibold text-sm">
-              يبدأ من {Number(venue.min_price).toLocaleString('ar-IQ')} د.ع
+              يبدأ من {Number(venue.min_price).toLocaleString('en-US')} د.ع
             </span>
           )}
           {venue.capacity && (

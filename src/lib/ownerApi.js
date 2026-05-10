@@ -69,7 +69,7 @@ export const getAnalytics = () => api.get('/owner/analytics/')
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 export function fmtIQD(n) {
   return (
-    new Intl.NumberFormat('ar-IQ', { style: 'decimal', maximumFractionDigits: 0 }).format(n || 0) +
+    new Intl.NumberFormat('en-US', { style: 'decimal', maximumFractionDigits: 0 }).format(n || 0) +
     ' د.ع'
   )
 }
@@ -77,7 +77,7 @@ export function fmtIQD(n) {
 export function fmtDate(dateStr) {
   if (!dateStr) return ''
   try {
-    return new Date(dateStr).toLocaleDateString('ar-IQ', {
+    return new Date(dateStr).toLocaleDateString('ar-IQ-u-nu-latn', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',

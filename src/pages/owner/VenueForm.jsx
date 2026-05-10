@@ -295,7 +295,7 @@ function Step4({ form, set }) {
           <div>{form.name_ar || form.name || '—'}</div>
           <div>{form.city} · {form.address_ar || '—'}</div>
           <div>{form.min_capacity} – {form.max_capacity} ضيف</div>
-          <div>{form.base_price_iqd?.toLocaleString('ar-IQ')} د.ع</div>
+          <div>{form.base_price_iqd?.toLocaleString('en-US')} د.ع</div>
           <div>{form.amenities.length} مرفق محدد</div>
         </div>
       </div>

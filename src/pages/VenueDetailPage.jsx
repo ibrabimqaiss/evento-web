@@ -118,7 +118,7 @@ export default function VenueDetailPage() {
               <div className="text-left shrink-0">
                 <p className="text-xs text-gray-400">يبدأ من</p>
                 <p className="text-primary font-black text-lg">
-                  {Number(venue.min_price).toLocaleString('ar-IQ')}
+                  {Number(venue.min_price).toLocaleString('en-US')}
                 </p>
                 <p className="text-xs text-gray-400">دينار عراقي</p>
               </div>
@@ -160,7 +160,7 @@ export default function VenueDetailPage() {
                     )}
                   </div>
                   <span className="text-primary font-bold text-sm shrink-0 mr-4">
-                    {Number(pkg.price).toLocaleString('ar-IQ')} د.ع
+                    {Number(pkg.price).toLocaleString('en-US')} د.ع
                   </span>
                 </div>
               ))}

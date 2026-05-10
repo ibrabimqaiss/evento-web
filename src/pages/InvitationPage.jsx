@@ -26,7 +26,7 @@ function formatArabicDate(dateStr) {
   if (!dateStr) return ''
   try {
     const dt = new Date(dateStr + 'T00:00:00')
-    return dt.toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+    return dt.toLocaleDateString('ar-IQ-u-nu-latn', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
   } catch { return dateStr }
 }
 

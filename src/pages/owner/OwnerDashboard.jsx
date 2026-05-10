@@ -19,7 +19,7 @@ import {
 function fmtShort(n) {
   if (n >= 1_000_000) return (n / 1_000_000).toFixed(1).replace(/\.0$/, '') + ' م'
   if (n >= 1_000) return Math.round(n / 1_000) + ' ألف'
-  return n.toLocaleString('ar-IQ')
+  return n.toLocaleString('en-US')
 }
 
 export default function OwnerDashboard() {
@@ -60,7 +60,7 @@ export default function OwnerDashboard() {
           لوحة التحكم
         </h1>
         <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginTop: '4px' }}>
-          {new Date().toLocaleDateString('ar-IQ', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+          {new Date().toLocaleDateString('ar-IQ-u-nu-latn', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
         </p>
       </div>
 

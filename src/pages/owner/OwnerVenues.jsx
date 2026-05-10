@@ -172,7 +172,7 @@ function CostCalculator({ venue, onClose }) {
           <div style={{ marginTop: '16px', background: 'rgba(255,255,255,0.03)', borderRadius: 12, padding: '20px', border: '1px solid rgba(255,255,255,0.08)' }} id="quote-print">
             <div style={{ textAlign: 'center', marginBottom: '16px' }}>
               <div style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)' }}>عرض سعر — Evento</div>
-              <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>{new Date().toLocaleDateString('ar-IQ')}</div>
+              <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginTop: '4px' }}>{new Date().toLocaleDateString('en-GB')}</div>
             </div>
             <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.8)', marginBottom: '12px' }}>
               <strong>القاعة:</strong> {venue.name_ar || venue.name}<br />

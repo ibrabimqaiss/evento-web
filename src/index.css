@@ -301,3 +301,17 @@ button { cursor: pointer; font-family: inherit; }
   .hero, .hero-gradient { height: 220px; }
   .h1 { font-size: 24px; }
 }
+
+/* ── Force Western (Latin) numerals in RTL Arabic layout ─────────────────── */
+:root {
+  font-feature-settings: "locl" 0;
+}
+
+* {
+  font-variant-numeric: normal;
+}
+
+td, th, .stat-value, .card-value {
+  font-variant-numeric: normal;
+  font-feature-settings: normal;
+}

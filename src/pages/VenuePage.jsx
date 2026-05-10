@@ -22,7 +22,7 @@ function setOGMeta({ title, description, image, url }) {
 
 // ─── Price formatter ──────────────────────────────────────────────────────────
 function formatIQD(amount) {
-  return Number(amount).toLocaleString('ar-IQ') + ' د.ع'
+  return Number(amount).toLocaleString('en-US') + ' د.ع'
 }
 
 // ─── Main page ────────────────────────────────────────────────────────────────
@@ -295,7 +295,7 @@ function AvailabilityCalendar({ data }) {
   const daysInMonth = new Date(year, month + 1, 0).getDate()
   const firstDay = new Date(year, month, 1).getDay() // 0=Sun
 
-  const monthName = today.toLocaleDateString('ar-IQ', { month: 'long', year: 'numeric' })
+  const monthName = today.toLocaleDateString('ar-IQ-u-nu-latn', { month: 'long', year: 'numeric' })
 
   const statusColor = (status) => {
     if (status === 'booked') return '#FEE2E2'

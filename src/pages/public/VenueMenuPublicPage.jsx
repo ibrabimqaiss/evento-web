@@ -14,7 +14,7 @@ const MENU_CATS = [
 ]
 
 function fmtIQD(n) {
-  return new Intl.NumberFormat('ar-IQ', { style: 'decimal', maximumFractionDigits: 0 }).format(n || 0) + ' د.ع'
+  return new Intl.NumberFormat('en-US', { style: 'decimal', maximumFractionDigits: 0 }).format(n || 0) + ' د.ع'
 }
 
 const getPhotoUrl = (item) => {
