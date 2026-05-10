@@ -69,7 +69,7 @@ function exportCSV(expenses, transactions, summary) {
 // ── Sub-components ─────────────────────────────────────────────────────────────
 function SummaryCard({ label, value, color, icon }) {
   return (
-    <div style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${color}22`, borderRadius: 16, padding: '18px 20px' }}>
+    <div style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${color}22`, borderRadius: 16, padding: '18px 20px', minWidth: 0 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
         <span style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 600 }}>{label}</span>
         <span style={{ fontSize: 22 }}>{icon}</span>
@@ -276,11 +276,11 @@ export default function OwnerFinance() {
 
       {/* ── 4 Summary Cards ── */}
       {loading ? (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 14, marginBottom: 24 }}>
+        <div className="finance-summary-grid" style={{ gap: 14, marginBottom: 24 }}>
           {[1,2,3,4].map(i => <div key={i} className="skeleton" style={{ height: 96, borderRadius: 16 }} />)}
         </div>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 14, marginBottom: 24 }}>
+        <div className="finance-summary-grid" style={{ gap: 14, marginBottom: 24 }}>
           <SummaryCard label="إجمالي الإيرادات" value={fmtIQD(revenue)} color="#34D399" icon="💰" />
           <SummaryCard label="إجمالي المصاريف" value={fmtIQD(totalExpenses)} color="#F87171" icon="📉" />
           <SummaryCard label="صافي الربح" value={fmtIQD(profit)} color={profit >= 0 ? '#A78BFA' : '#F87171'} icon="📊" />
@@ -289,7 +289,7 @@ export default function OwnerFinance() {
       )}
 
       {/* ── Two-column: Revenue | Expenses ── */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 24 }}>
+      <div className="finance-cols" style={{ gap: 20, marginBottom: 24 }}>
 
         {/* LEFT — Revenue */}
         <div className="glass-card-static" style={{ padding: '20px 24px' }}>
