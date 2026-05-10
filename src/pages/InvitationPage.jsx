@@ -3,7 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import {
   CalendarDaysIcon, ClockIcon, MapPinIcon, MapIcon,
   UserGroupIcon, ShieldCheckIcon, NoSymbolIcon,
-  CheckCircleIcon, XCircleIcon, LockClosedIcon,
+  CheckCircleIcon, XCircleIcon, LockClosedIcon, MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline'
 import { getPublicEvent, submitRSVP, isAuthenticated } from '../lib/api.js'
 
@@ -99,7 +99,7 @@ export default function InvitationPage() {
   if (loading) return <div className="spinner" />
   if (error || !event) return (
     <div className="page-wrap center p-6">
-      <div style={{ fontSize: 60, marginBottom: 12 }}>🔍</div>
+      <MagnifyingGlassIcon style={{ width: 60, height: 60, marginBottom: 12, opacity: 0.4 }} />
       <h2 className="h2">الدعوة غير موجودة</h2>
       <p className="small mt-4">{error}</p>
     </div>
@@ -292,7 +292,7 @@ function ThankYou({ status }) {
   const accepted = status === 'accepted'
   return (
     <div className="thankyou-box" style={{ background: accepted ? '#D1FAE5' : '#F3F4F6' }}>
-      <div style={{ fontSize: 48 }}>{accepted ? '🎉' : '😔'}</div>
+      <div style={{ marginBottom: 8 }}>{accepted ? <CheckCircleIcon style={{ width: 48, height: 48, color: '#059669' }} /> : <XCircleIcon style={{ width: 48, height: 48, color: '#6B7280' }} />}</div>
       <h3 className="h3 mt-4">شكراً على ردك!</h3>
       <p className="small mt-4">
         {accepted ? 'نتطلع إلى رؤيتك في الحفل!' : 'نأسف لعدم تمكنك من الحضور'}

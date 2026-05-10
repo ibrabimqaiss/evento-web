@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import {
   BuildingOffice2Icon, UsersIcon, BanknotesIcon, TagIcon,
-  MapPinIcon, MapIcon, CalendarDaysIcon,
+  MapPinIcon, MapIcon, CalendarDaysIcon, MagnifyingGlassIcon,
 } from '@heroicons/react/24/outline'
 import { getPublicVenue } from '../lib/api.js'
 
@@ -63,7 +63,7 @@ export default function VenuePage() {
   if (loading) return <div className="spinner" />
   if (error || !venue) return (
     <div className="page-wrap center p-6">
-      <div style={{ fontSize: 60, marginBottom: 12 }}>🔍</div>
+      <MagnifyingGlassIcon style={{ width: 60, height: 60, marginBottom: 12, opacity: 0.4 }} />
       <h2 className="h2">القاعة غير موجودة</h2>
       <p className="small mt-4">{error}</p>
     </div>

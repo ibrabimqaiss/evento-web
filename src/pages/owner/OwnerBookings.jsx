@@ -706,7 +706,7 @@ export default function OwnerBookings() {
                 })
                 .finally(() => setCalLoading(false))
             }
-            showToast('تم إضافة الحجز بنجاح ✓')
+            showToast('تم إضافة الحجز بنجاح')
           }}
         />
       )}

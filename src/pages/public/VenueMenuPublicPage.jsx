@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import axios from 'axios'
-import { ShareIcon, CheckIcon, SunIcon, MoonIcon } from '@heroicons/react/24/outline'
+import { ShareIcon, CheckIcon, SunIcon, MoonIcon, QueueListIcon } from '@heroicons/react/24/outline'
 import { useTheme } from '../../lib/theme'
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1'
@@ -81,7 +81,7 @@ export default function VenueMenuPublicPage() {
   if (error || !venue) {
     return (
       <div style={{ minHeight: '100vh', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16, fontFamily: 'Cairo, sans-serif' }}>
-        <div style={{ fontSize: 48 }}>🍽️</div>
+        <QueueListIcon style={{ width: 48, height: 48, opacity: 0.4 }} />
         <div style={{ color: textSecondary, fontSize: 18, fontWeight: 600 }}>{error || 'القاعة غير متاحة'}</div>
       </div>
     )
@@ -190,7 +190,7 @@ export default function VenueMenuPublicPage() {
                     <img src={photoUrl} alt={item.name_ar || item.name} style={{ width: '100%', height: 130, objectFit: 'cover', display: 'block' }} />
                   ) : (
                     <div style={{ width: '100%', height: 80, background: menuItemFallbackBg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <span style={{ fontSize: 24 }}>🍽️</span>
+                      <QueueListIcon style={{ width: 24, height: 24, opacity: 0.4 }} />
                     </div>
                   )}
                   <div style={{ padding: 14 }}>

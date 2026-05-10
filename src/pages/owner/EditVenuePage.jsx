@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import {
   CheckIcon, XMarkIcon, PhotoIcon, TrashIcon, PlusIcon,
   ArrowRightIcon, VideoCameraIcon, WrenchScrewdriverIcon, QueueListIcon,
+  ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline'
 import {
   getOwnerVenueDetail,
@@ -526,7 +527,7 @@ function MenuTab({ slug }) {
                   <img src={photoUrl} alt={item.name_ar || item.name} style={{ width: '100%', height: '110px', objectFit: 'cover', display: 'block' }} />
                 ) : (
                   <div style={{ width: '100%', height: '60px', background: 'rgba(124,58,237,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <span style={{ fontSize: '20px' }}>🍽️</span>
+                    <QueueListIcon style={{ width: 20, height: 20, opacity: 0.4 }} />
                   </div>
                 )}
                 <div style={{ padding: '12px' }}>
@@ -709,7 +710,7 @@ function DeleteVenueModal({ slug, onClose, onDeleted }) {
       >
         {/* Warning icon + title */}
         <div style={{ textAlign: 'center', marginBottom: 20 }}>
-          <div style={{ fontSize: 48, marginBottom: 12 }}>🚨</div>
+          <ExclamationTriangleIcon style={{ width: 48, height: 48, marginBottom: 12, color: '#FCA5A5' }} />
           <h3 style={{ margin: 0, fontSize: 18, fontWeight: 800, color: '#FCA5A5' }}>تحذير: حذف القاعة نهائياً</h3>
         </div>
 
@@ -862,7 +863,7 @@ export default function EditVenuePage() {
 
       {deleteToast && (
         <div style={{ position: 'fixed', bottom: 32, left: '50%', transform: 'translateX(-50%)', background: '#065F46', border: '1px solid #34D399', borderRadius: 12, padding: '14px 28px', color: '#fff', fontWeight: 700, fontSize: 15, zIndex: 9999, fontFamily: 'Cairo, sans-serif' }}>
-          ✅ تم حذف القاعة بنجاح
+          <CheckIcon style={{ width: 20, height: 20, display: 'inline', verticalAlign: 'middle', marginLeft: 8 }} /> تم حذف القاعة بنجاح
         </div>
       )}
 

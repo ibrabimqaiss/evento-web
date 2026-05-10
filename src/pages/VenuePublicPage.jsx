@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom'
 import axios from 'axios'
 import {
   MapPinIcon, UsersIcon, BanknotesIcon, CheckCircleIcon,
-  ShareIcon, XMarkIcon, QueueListIcon,
+  ShareIcon, XMarkIcon, QueueListIcon, BuildingLibraryIcon,
   ChevronLeftIcon, ChevronRightIcon,
 } from '@heroicons/react/24/outline'
 import { useTheme } from '../lib/theme'
@@ -171,7 +171,7 @@ export default function VenuePublicPage() {
 
   if (error || !venue) return (
     <div style={{ minHeight: '100vh', background: bg, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 16 }}>
-      <div style={{ fontSize: 48 }}>🏛️</div>
+      <BuildingLibraryIcon style={{ width: 48, height: 48, opacity: 0.4 }} />
       <div style={{ color: textS, fontSize: 18, fontWeight: 600, fontFamily: 'Cairo, sans-serif' }}>{error || 'القاعة غير متاحة'}</div>
     </div>
   )
@@ -365,7 +365,7 @@ export default function VenuePublicPage() {
                     <div key={item.id} style={{ background: cardBg, border: `1px solid ${border}`, borderRadius: 14, overflow: 'hidden', boxShadow: shadow }}>
                       {photoUrl
                         ? <img src={photoUrl} alt={item.name_ar || item.name} style={{ width: '100%', height: 110, objectFit: 'cover', display: 'block' }} />
-                        : <div style={{ height: 70, background: isDark ? 'rgba(124,58,237,0.1)' : '#f3f0ff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24 }}>🍽️</div>
+                        : <div style={{ height: 70, background: isDark ? 'rgba(124,58,237,0.1)' : '#f3f0ff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><QueueListIcon style={{ width: 24, height: 24, opacity: 0.4 }} /></div>
                       }
                       <div style={{ padding: 12 }}>
                         <div style={{ fontWeight: 700, fontSize: 13, color: textP, marginBottom: 3 }}>{item.name_ar || item.name}</div>
@@ -444,7 +444,7 @@ export default function VenuePublicPage() {
                 style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: copied ? (isDark ? 'rgba(16,185,129,0.1)' : '#f0fdf4') : (isDark ? 'rgba(255,255,255,0.04)' : '#f7f7f7'), border: `1px solid ${copied ? 'rgba(16,185,129,0.3)' : border}`, borderRadius: 12, padding: '11px', fontSize: 13, fontWeight: 600, cursor: 'pointer', color: copied ? '#059669' : textS, fontFamily: 'Cairo, sans-serif', transition: 'all 0.2s' }}
               >
                 <ShareIcon style={{ width: 15, height: 15, flexShrink: 0 }} />
-                {copied ? 'تم نسخ الرابط ✓' : 'نسخ رابط القاعة'}
+                {copied ? 'تم نسخ الرابط' : 'نسخ رابط القاعة'}
               </button>
               {hasMenu && (
                 <button
@@ -452,7 +452,7 @@ export default function VenuePublicPage() {
                   style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, background: copiedMenu ? (isDark ? 'rgba(16,185,129,0.1)' : '#f0fdf4') : (isDark ? 'rgba(255,255,255,0.04)' : '#f7f7f7'), border: `1px solid ${copiedMenu ? 'rgba(16,185,129,0.3)' : border}`, borderRadius: 12, padding: '11px', fontSize: 13, fontWeight: 600, cursor: 'pointer', color: copiedMenu ? '#059669' : textS, fontFamily: 'Cairo, sans-serif', transition: 'all 0.2s' }}
                 >
                   <QueueListIcon style={{ width: 15, height: 15, flexShrink: 0 }} />
-                  {copiedMenu ? 'تم النسخ ✓' : 'نسخ رابط القائمة'}
+                  {copiedMenu ? 'تم النسخ' : 'نسخ رابط القائمة'}
                 </button>
               )}
             </div>
@@ -500,7 +500,7 @@ export default function VenuePublicPage() {
 
             {bookingSuccess ? (
               <div style={{ textAlign: 'center', padding: '20px 0 10px' }}>
-                <div style={{ fontSize: 48, marginBottom: 12 }}>✅</div>
+                <CheckCircleIcon style={{ width: 48, height: 48, marginBottom: 12, color: '#059669' }} />
                 <div style={{ fontSize: 17, fontWeight: 700, color: '#059669', marginBottom: 8 }}>تم إرسال طلب الحجز!</div>
                 <div style={{ fontSize: 14, color: textS, marginBottom: 24 }}>سيتواصل معك صاحب القاعة قريباً للتأكيد.</div>
                 <button onClick={() => setBookingModal(false)} style={{ background: 'linear-gradient(135deg,#7C3AED,#6D28D9)', color: '#fff', border: 'none', borderRadius: 12, padding: '12px 32px', fontSize: 15, fontWeight: 700, cursor: 'pointer', fontFamily: 'Cairo, sans-serif' }}>

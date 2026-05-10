@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
-import { PlusIcon, TrashIcon, CheckIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
+import {
+  PlusIcon, TrashIcon, CheckIcon, ArrowDownTrayIcon,
+  BanknotesIcon, ChartBarIcon, CalendarDaysIcon, BuildingOfficeIcon, BriefcaseIcon,
+} from '@heroicons/react/24/outline'
 import {
   getFinanceSummary, getFinanceTransactions, getExpenses, createExpense, deleteExpense,
   fmtIQD, fmtDate,
@@ -67,12 +70,12 @@ function exportCSV(expenses, transactions, summary) {
 }
 
 // ── Sub-components ─────────────────────────────────────────────────────────────
-function SummaryCard({ label, value, color, icon }) {
+function SummaryCard({ label, value, color, Icon }) {
   return (
     <div style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${color}22`, borderRadius: 16, padding: '18px 20px', minWidth: 0 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 10 }}>
         <span style={{ fontSize: 13, color: 'var(--text-muted)', fontWeight: 600 }}>{label}</span>
-        <span style={{ fontSize: 22 }}>{icon}</span>
+        {Icon && <Icon style={{ width: 22, height: 22, color }} />}
       </div>
       <div style={{ fontSize: 22, fontWeight: 800, color, direction: 'ltr', textAlign: 'right' }}>{value}</div>
     </div>
@@ -82,8 +85,8 @@ function SummaryCard({ label, value, color, icon }) {
 function RevenueRow({ tx }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-      <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(52,211,153,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>
-        💰
+      <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(52,211,153,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <BanknotesIcon style={{ width: 18, height: 18, color: '#34D399' }} />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{tx.venue_name}</div>
@@ -97,8 +100,8 @@ function RevenueRow({ tx }) {
 function ExpenseRow({ exp, catLabel, onDelete }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-      <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(248,113,113,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 16 }}>
-        📉
+      <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(248,113,113,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <ChartBarIcon style={{ width: 18, height: 18, color: '#F87171' }} />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
         <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{exp.description}</div>
@@ -114,10 +117,12 @@ function ExpenseRow({ exp, catLabel, onDelete }) {
   )
 }
 
-function SubtotalRow({ label, value, color }) {
+function SubtotalRow({ label, value, color, Icon }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
-      <span style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 600 }}>{label}</span>
+      <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--text-secondary)', fontWeight: 600 }}>
+        {Icon && <Icon style={{ width: 16, height: 16, flexShrink: 0 }} />}{label}
+      </span>
       <span style={{ fontSize: 14, fontWeight: 700, color: color || '#F87171', direction: 'ltr' }}>{fmtIQD(value)}</span>
     </div>
   )
@@ -281,10 +286,10 @@ export default function OwnerFinance() {
         </div>
       ) : (
         <div className="finance-summary-grid" style={{ gap: 14, marginBottom: 24 }}>
-          <SummaryCard label="إجمالي الإيرادات" value={fmtIQD(revenue)} color="#34D399" icon="💰" />
-          <SummaryCard label="إجمالي المصاريف" value={fmtIQD(totalExpenses)} color="#F87171" icon="📉" />
-          <SummaryCard label="صافي الربح" value={fmtIQD(profit)} color={profit >= 0 ? '#A78BFA' : '#F87171'} icon="📊" />
-          <SummaryCard label="عدد الحجوزات" value={bookingCount} color="#60A5FA" icon="📅" />
+          <SummaryCard label="إجمالي الإيرادات" value={fmtIQD(revenue)} color="#34D399" Icon={BanknotesIcon} />
+          <SummaryCard label="إجمالي المصاريف" value={fmtIQD(totalExpenses)} color="#F87171" Icon={ChartBarIcon} />
+          <SummaryCard label="صافي الربح" value={fmtIQD(profit)} color={profit >= 0 ? '#A78BFA' : '#F87171'} Icon={ChartBarIcon} />
+          <SummaryCard label="عدد الحجوزات" value={bookingCount} color="#60A5FA" Icon={CalendarDaysIcon} />
         </div>
       )}
 
@@ -318,9 +323,9 @@ export default function OwnerFinance() {
           <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: '0 0 16px' }}>المصاريف</h2>
           <div style={{ maxHeight: 340, overflowY: 'auto', marginBottom: 12 }}>
             {/* Salary sub-total row */}
-            {salaryCost > 0 && <SubtotalRow label="🧑‍💼 الرواتب" value={salaryCost} />}
+            {salaryCost > 0 && <SubtotalRow label="الرواتب" value={salaryCost} Icon={BriefcaseIcon} />}
             {/* Fixed expenses sub-total */}
-            {totalFixed > 0 && <SubtotalRow label="🏢 المصاريف الثابتة" value={totalFixed} color="#FBBF24" />}
+            {totalFixed > 0 && <SubtotalRow label="المصاريف الثابتة" value={totalFixed} color="#FBBF24" Icon={BuildingOfficeIcon} />}
             {/* Variable expenses list */}
             {expenses.length === 0 && salaryCost === 0 && totalFixed === 0 ? (
               <div style={{ textAlign: 'center', padding: '32px 0', color: 'var(--text-muted)', fontSize: 14 }}>لا توجد مصاريف مسجلة</div>

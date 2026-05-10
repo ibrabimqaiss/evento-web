@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
-import { BuildingOffice2Icon } from '@heroicons/react/24/outline'
+import { BuildingOffice2Icon, CheckIcon } from '@heroicons/react/24/outline'
 import Navbar from '../components/Navbar'
 import { getVenueDetail, isAuthenticated } from '../lib/api'
 
@@ -175,7 +175,7 @@ export default function VenueDetailPage() {
             <div className="grid grid-cols-2 gap-2">
               {venue.amenities.map((a) => (
                 <div key={a.id ?? a} className="flex items-center gap-2 text-sm text-gray-600">
-                  <span className="text-green-500">✓</span>
+                  <CheckIcon style={{ width: 16, height: 16, flexShrink: 0 }} className="text-green-500" />
                   {a.name ?? a}
                 </div>
               ))}

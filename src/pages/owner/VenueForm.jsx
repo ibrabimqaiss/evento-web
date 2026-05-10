@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { CheckCircleIcon, ArrowDownTrayIcon } from '@heroicons/react/24/outline'
+import { CheckCircleIcon, ArrowDownTrayIcon, XMarkIcon, CheckIcon, ArrowRightIcon } from '@heroicons/react/24/outline'
 import { getOwnerVenueDetail, createVenue, updateVenue } from '../../lib/ownerApi'
 
 const VENUE_TYPES = [
@@ -138,7 +138,10 @@ export default function VenueForm() {
             onClick={() => step > 0 ? setStep(s => s - 1) : navigate('/owner/venues')}
             className="glass-btn"
           >
-            {step === 0 ? '✕ إلغاء' : '→ السابق'}
+            {step === 0
+              ? <><XMarkIcon style={{ width: 14, height: 14, display: 'inline', verticalAlign: 'middle' }} />{' '}إلغاء</>
+              : <><ArrowRightIcon style={{ width: 14, height: 14, display: 'inline', verticalAlign: 'middle' }} />{' '}السابق</>
+            }
           </button>
           {step < 3 ? (
             <button onClick={() => setStep(s => s + 1)} className="glass-btn glass-btn-primary">
@@ -241,7 +244,7 @@ function Step3({ form, toggleAmenity }) {
                 textAlign: 'right', fontFamily: 'Cairo, sans-serif',
               }}
             >
-              {active ? '✓ ' : ''}{label}
+              {active && <CheckIcon style={{ width: 13, height: 13, display: 'inline', verticalAlign: 'middle', marginLeft: 4 }} />}{label}
             </button>
           )
         })}
