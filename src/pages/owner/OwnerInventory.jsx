@@ -1,5 +1,6 @@
 ﻿import { useEffect, useState } from 'react'
 import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
+import Modal from '../../components/Modal'
 import {
   getInventory, createInventoryItem, updateInventoryItem, deleteInventoryItem,
 } from '../../lib/ownerApi'
@@ -146,55 +147,48 @@ export default function OwnerInventory() {
       </div>
 
       {/* Modal */}
-      {modal && (
-        <div className="glass-modal-overlay" onClick={() => setModal(null)}>
-          <div className="glass-modal-panel" style={{ maxWidth: 480, padding: '28px', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '20px' }}>
-              {modal === 'add' ? 'إضافة عنصر جديد' : 'تعديل العنصر'}
-            </h3>
-            <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div>
-                <label className="glass-label">اسم العنصر</label>
-                <input className="glass-input" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                <div>
-                  <label className="glass-label">الفئة</label>
-                  <select className="glass-select" value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}>
-                    {CATEGORIES.slice(1).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="glass-label">الحالة</label>
-                  <select className="glass-select" value={form.condition} onChange={e => setForm(f => ({ ...f, condition: e.target.value }))}>
-                    <option value="good">جيد</option>
-                    <option value="fair">مقبول</option>
-                    <option value="needs_repair">يحتاج صيانة</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="glass-label">الكمية</label>
-                  <input className="glass-input" type="number" min={0} value={form.quantity} onChange={e => setForm(f => ({ ...f, quantity: +e.target.value }))} />
-                </div>
-                <div>
-                  <label className="glass-label">الحد الأدنى</label>
-                  <input className="glass-input" type="number" min={0} value={form.min_quantity} onChange={e => setForm(f => ({ ...f, min_quantity: +e.target.value }))} />
-                </div>
-              </div>
-              <div>
-                <label className="glass-label">الموقع (اختياري)</label>
-                <input className="glass-input" value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))} placeholder="المستودع، الغرفة..." />
-              </div>
-              <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
-                <button type="button" onClick={() => setModal(null)} className="glass-btn" style={{ flex: 1 }}>إلغاء</button>
-                <button type="submit" disabled={saving} className="glass-btn glass-btn-primary" style={{ flex: 1 }}>
-                  {saving ? 'جاري الحفظ...' : 'حفظ'}
-                </button>
-              </div>
-            </form>
+      <Modal isOpen={!!modal} onClose={() => setModal(null)} title={modal === 'add' ? 'إضافة عنصر جديد' : 'تعديل العنصر'} maxWidth="480px">
+        <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div>
+            <label className="glass-label">اسم العنصر</label>
+            <input className="glass-input" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} required />
           </div>
-        </div>
-      )}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div>
+              <label className="glass-label">الفئة</label>
+              <select className="glass-select" value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}>
+                {CATEGORIES.slice(1).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="glass-label">الحالة</label>
+              <select className="glass-select" value={form.condition} onChange={e => setForm(f => ({ ...f, condition: e.target.value }))}>
+                <option value="good">جيد</option>
+                <option value="fair">مقبول</option>
+                <option value="needs_repair">يحتاج صيانة</option>
+              </select>
+            </div>
+            <div>
+              <label className="glass-label">الكمية</label>
+              <input className="glass-input" type="number" min={0} value={form.quantity} onChange={e => setForm(f => ({ ...f, quantity: +e.target.value }))} />
+            </div>
+            <div>
+              <label className="glass-label">الحد الأدنى</label>
+              <input className="glass-input" type="number" min={0} value={form.min_quantity} onChange={e => setForm(f => ({ ...f, min_quantity: +e.target.value }))} />
+            </div>
+          </div>
+          <div>
+            <label className="glass-label">الموقع (اختياري)</label>
+            <input className="glass-input" value={form.location} onChange={e => setForm(f => ({ ...f, location: e.target.value }))} placeholder="المستودع، الغرفة..." />
+          </div>
+          <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
+            <button type="button" onClick={() => setModal(null)} className="glass-btn" style={{ flex: 1 }}>إلغاء</button>
+            <button type="submit" disabled={saving} className="glass-btn glass-btn-primary" style={{ flex: 1 }}>
+              {saving ? 'جاري الحفظ...' : 'حفظ'}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   )
 }

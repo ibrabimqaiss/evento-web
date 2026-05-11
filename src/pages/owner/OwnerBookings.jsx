@@ -550,55 +550,34 @@ export default function OwnerBookings() {
       )}
 
       {/* ── Cancel Modal ───────────────────────────────────────────────────── */}
-      {cancelModal && (
-        <div className="glass-modal-overlay" onClick={() => setCancelModal(null)}>
-          <div className="glass-modal-panel" style={{ maxWidth: 420, padding: '28px' }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '16px' }}>إلغاء الحجز</h3>
-            <label className="glass-label">سبب الإلغاء (اختياري)</label>
-            <textarea className="glass-textarea" value={cancelReason} onChange={e => setCancelReason(e.target.value)} placeholder="اكتب سبب إلغاء الحجز..." style={{ minHeight: '80px', marginBottom: '16px' }} />
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={() => setCancelModal(null)} className="glass-btn" style={{ flex: 1 }}>تراجع</button>
-              <button onClick={handleCancel} disabled={actionId === cancelModal} className="glass-btn glass-btn-danger" style={{ flex: 1 }}>
-                {actionId === cancelModal ? 'جاري الإلغاء...' : 'تأكيد الإلغاء'}
-              </button>
-            </div>
-          </div>
+      <Modal isOpen={!!cancelModal} onClose={() => setCancelModal(null)} title="إلغاء الحجز" maxWidth="420px">
+        <label className="glass-label">سبب الإلغاء (اختياري)</label>
+        <textarea className="glass-textarea" value={cancelReason} onChange={e => setCancelReason(e.target.value)} placeholder="اكتب سبب إلغاء الحجز..." style={{ minHeight: '80px', marginBottom: '16px' }} />
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button onClick={() => setCancelModal(null)} className="glass-btn" style={{ flex: 1 }}>تراجع</button>
+          <button onClick={handleCancel} disabled={actionId === cancelModal} className="glass-btn glass-btn-danger" style={{ flex: 1 }}>
+            {actionId === cancelModal ? 'جاري الإلغاء...' : 'تأكيد الإلغاء'}
+          </button>
         </div>
-      )}
+      </Modal>
 
       {/* ── Reject Modal ──────────────────────────────────────────────────── */}
-      {rejectModal && (
-        <div className="glass-modal-overlay" onClick={() => setRejectModal(null)}>
-          <div className="glass-modal-panel" style={{ maxWidth: 420, padding: '28px' }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '16px' }}>رفض الحجز</h3>
-            <label className="glass-label">سبب الرفض (اختياري)</label>
-            <textarea className="glass-textarea" value={rejectReason} onChange={e => setRejectReason(e.target.value)} placeholder="اكتب سبب رفض الحجز..." style={{ minHeight: '80px', marginBottom: '16px' }} />
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={() => setRejectModal(null)} className="glass-btn" style={{ flex: 1 }}>تراجع</button>
-              <button onClick={handleReject} disabled={actionId === rejectModal} className="glass-btn glass-btn-danger" style={{ flex: 1 }}>
-                {actionId === rejectModal ? 'جاري الرفض...' : 'تأكيد الرفض'}
-              </button>
-            </div>
-          </div>
+      <Modal isOpen={!!rejectModal} onClose={() => setRejectModal(null)} title="رفض الحجز" maxWidth="420px">
+        <label className="glass-label">سبب الرفض (اختياري)</label>
+        <textarea className="glass-textarea" value={rejectReason} onChange={e => setRejectReason(e.target.value)} placeholder="اكتب سبب رفض الحجز..." style={{ minHeight: '80px', marginBottom: '16px' }} />
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button onClick={() => setRejectModal(null)} className="glass-btn" style={{ flex: 1 }}>تراجع</button>
+          <button onClick={handleReject} disabled={actionId === rejectModal} className="glass-btn glass-btn-danger" style={{ flex: 1 }}>
+            {actionId === rejectModal ? 'جاري الرفض...' : 'تأكيد الرفض'}
+          </button>
         </div>
-      )}
+      </Modal>
 
       {/* ── Customer Profile Modal ─────────────────────────────────────────── */}
-      {customerModal && (
-        <div className="glass-modal-overlay" onClick={() => setCustomerModal(null)}>
-          <div className="glass-modal-panel" style={{ maxWidth: 480, padding: '28px' }} onClick={e => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(124,58,237,0.2)', border: '2px solid rgba(124,58,237,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <UserCircleIcon style={{ width: 28, height: 28, color: '#A78BFA' }} />
-                </div>
-                <div>
-                  <div style={{ fontSize: '17px', fontWeight: 700, color: 'var(--text-primary)' }}>{customerModal.name}</div>
-                  <div style={{ fontSize: '13px', color: 'var(--text-secondary)', direction: 'ltr', textAlign: 'right' }}>{customerModal.phone}</div>
-                </div>
-              </div>
-              <button onClick={() => setCustomerModal(null)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', fontSize: '22px', cursor: 'pointer' }}>×</button>
-            </div>
+      <Modal isOpen={!!customerModal} onClose={() => setCustomerModal(null)} title={customerModal?.name || '—'} maxWidth="480px">
+        {customerModal && (
+          <>
+            <div style={{ fontSize: '13px', color: 'var(--text-secondary)', direction: 'ltr', marginBottom: '20px' }}>{customerModal.phone}</div>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '10px', marginBottom: '20px' }}>
               {[
                 { label: 'إجمالي الحجوزات', value: customerModal.bookings.length },
@@ -628,27 +607,21 @@ export default function OwnerBookings() {
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      )}
+          </>
+        )}
+      </Modal>
 
       {/* ── Day Detail Modal ────────────────────────────────────────────────── */}
-      {dayModal && (
-        <div className="glass-modal-overlay" onClick={() => setDayModal(null)}>
-          <div className="glass-modal-panel" style={{ maxWidth: 560, padding: '28px', maxHeight: '80vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-                حجوزات {fmtDate(dayModal.dateStr)}
-              </h3>
-              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                <button
-                  onClick={() => { setDayModal(null); setAddModal({ date: dayModal.dateStr }) }}
-                  className="glass-btn glass-btn-sm glass-btn-primary"
-                >
-                  <PlusIcon style={{ width: 13, height: 13 }} /> إضافة
-                </button>
-                <button onClick={() => setDayModal(null)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', fontSize: '22px', cursor: 'pointer', lineHeight: 1, padding: '0 4px' }}>×</button>
-              </div>
+      <Modal isOpen={!!dayModal} onClose={() => setDayModal(null)} title={dayModal ? `حجوزات ${fmtDate(dayModal.dateStr)}` : ''} maxWidth="560px">
+        {dayModal && (
+          <>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+              <button
+                onClick={() => { setDayModal(null); setAddModal({ date: dayModal.dateStr }) }}
+                className="glass-btn glass-btn-sm glass-btn-primary"
+              >
+                <PlusIcon style={{ width: 13, height: 13 }} /> إضافة
+              </button>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               {dayModal.bookings.map(b => (
@@ -670,9 +643,9 @@ export default function OwnerBookings() {
                 </div>
               ))}
             </div>
-          </div>
-        </div>
-      )}
+          </>
+        )}
+      </Modal>
 
       {/* ── Add Booking Modal ───────────────────────────────────────────────── */}
       {addModal && (

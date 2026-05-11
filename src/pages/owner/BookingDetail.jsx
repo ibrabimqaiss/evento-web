@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom'
+import Modal from '../../components/Modal'
 import {
   CheckCircleIcon, XCircleIcon, CheckBadgeIcon, CalendarDaysIcon,
   CreditCardIcon, DocumentTextIcon, TagIcon, UserCircleIcon,
@@ -398,72 +399,59 @@ export default function BookingDetail() {
       )}
 
       {/* Payment Modal */}
-      {payModal && (
-        <div className="glass-modal-overlay" onClick={() => setPayModal(false)}>
-          <div className="glass-modal-panel" style={{ maxWidth: 420, padding: '28px' }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'rgba(255,255,255,0.9)', marginBottom: '18px' }}>تسجيل دفعة</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div>
-                <label className="glass-label">المبلغ (د.ع)</label>
-                <input className="glass-input" type="number" min={1} value={payForm.amount} onChange={e => setPayForm(f => ({ ...f, amount: e.target.value }))} dir="ltr" placeholder="0" />
-              </div>
-              <div>
-                <label className="glass-label">طريقة الدفع</label>
-                <select className="glass-select" value={payForm.method} onChange={e => setPayForm(f => ({ ...f, method: e.target.value }))}>
-                  {PAYMENT_METHODS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-                </select>
-              </div>
-              <div>
-                <label className="glass-label">التاريخ</label>
-                <input className="glass-input" type="date" value={payForm.date} onChange={e => setPayForm(f => ({ ...f, date: e.target.value }))} dir="ltr" />
-              </div>
-              <div>
-                <label className="glass-label">ملاحظات (اختياري)</label>
-                <input className="glass-input" value={payForm.note} onChange={e => setPayForm(f => ({ ...f, note: e.target.value }))} placeholder="..." />
-              </div>
-              <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
-                <button onClick={() => setPayModal(false)} className="glass-btn" style={{ flex: 1 }}>إلغاء</button>
-                <button onClick={addPayment} disabled={!payForm.amount} className="glass-btn glass-btn-primary" style={{ flex: 1 }}>
-                  <CheckCircleIcon style={{ width: 15, height: 15 }} /> تأكيد الدفع
-                </button>
-              </div>
-            </div>
+      <Modal isOpen={payModal} onClose={() => setPayModal(false)} title="تسجيل دفعة" maxWidth="420px">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+          <div>
+            <label className="glass-label">المبلغ (د.ع)</label>
+            <input className="glass-input" type="number" min={1} value={payForm.amount} onChange={e => setPayForm(f => ({ ...f, amount: e.target.value }))} dir="ltr" placeholder="0" />
+          </div>
+          <div>
+            <label className="glass-label">طريقة الدفع</label>
+            <select className="glass-select" value={payForm.method} onChange={e => setPayForm(f => ({ ...f, method: e.target.value }))}>
+              {PAYMENT_METHODS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="glass-label">التاريخ</label>
+            <input className="glass-input" type="date" value={payForm.date} onChange={e => setPayForm(f => ({ ...f, date: e.target.value }))} dir="ltr" />
+          </div>
+          <div>
+            <label className="glass-label">ملاحظات (اختياري)</label>
+            <input className="glass-input" value={payForm.note} onChange={e => setPayForm(f => ({ ...f, note: e.target.value }))} placeholder="..." />
+          </div>
+          <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
+            <button onClick={() => setPayModal(false)} className="glass-btn" style={{ flex: 1 }}>إلغاء</button>
+            <button onClick={addPayment} disabled={!payForm.amount} className="glass-btn glass-btn-primary" style={{ flex: 1 }}>
+              <CheckCircleIcon style={{ width: 15, height: 15 }} /> تأكيد الدفع
+            </button>
           </div>
         </div>
-      )}
+      </Modal>
 
       {/* Cancel Modal */}
-      {cancelModal && (
-        <div className="glass-modal-overlay" onClick={() => setCancelModal(false)}>
-          <div className="glass-modal-panel" style={{ maxWidth: 420, padding: '28px' }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'rgba(255,255,255,0.9)', marginBottom: '16px' }}>إلغاء الحجز</h3>
-            <label className="glass-label">سبب الإلغاء</label>
-            <textarea className="glass-textarea" value={cancelReason} onChange={e => setCancelReason(e.target.value)} placeholder="سبب الإلغاء..." style={{ minHeight: '80px', marginBottom: '16px' }} />
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={() => setCancelModal(false)} className="glass-btn" style={{ flex: 1 }}>تراجع</button>
-              <button onClick={() => act('cancel')} disabled={actionLoading === 'cancel'} className="glass-btn glass-btn-danger" style={{ flex: 1 }}>
-                {actionLoading === 'cancel' ? 'جاري الإلغاء...' : 'تأكيد الإلغاء'}
-              </button>
-            </div>
-          </div>
+      <Modal isOpen={cancelModal} onClose={() => setCancelModal(false)} title="إلغاء الحجز" maxWidth="420px">
+        <label className="glass-label">سبب الإلغاء</label>
+        <textarea className="glass-textarea" value={cancelReason} onChange={e => setCancelReason(e.target.value)} placeholder="سبب الإلغاء..." style={{ minHeight: '80px', marginBottom: '16px' }} />
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button onClick={() => setCancelModal(false)} className="glass-btn" style={{ flex: 1 }}>تراجع</button>
+          <button onClick={() => act('cancel')} disabled={actionLoading === 'cancel'} className="glass-btn glass-btn-danger" style={{ flex: 1 }}>
+            {actionLoading === 'cancel' ? 'جاري الإلغاء...' : 'تأكيد الإلغاء'}
+          </button>
         </div>
-      )}
+      </Modal>
 
       {/* Customer Profile Modal */}
-      {customerModal && (
-        <div className="glass-modal-overlay" onClick={() => setCustomerModal(null)}>
-          <div className="glass-modal-panel" style={{ maxWidth: 500, padding: '28px', maxHeight: '85vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(124,58,237,0.2)', border: '2px solid rgba(124,58,237,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <UserCircleIcon style={{ width: 28, height: 28, color: '#A78BFA' }} />
-                </div>
-                <div>
-                  <div style={{ fontSize: '17px', fontWeight: 700, color: 'rgba(255,255,255,0.95)' }}>{customerModal.customer_name || customerModal.customer?.full_name}</div>
-                  <div style={{ fontSize: '13px', color: 'rgba(255,255,255,0.45)', direction: 'ltr' }}>{customerModal.customer_phone || customerModal.customer?.phone || '—'}</div>
-                </div>
+      <Modal isOpen={!!customerModal} onClose={() => setCustomerModal(null)} title="ملف العميل" maxWidth="500px">
+        {customerModal && (
+          <>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+              <div style={{ width: 48, height: 48, borderRadius: '50%', background: 'rgba(124,58,237,0.2)', border: '2px solid rgba(124,58,237,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <UserCircleIcon style={{ width: 28, height: 28, color: '#A78BFA' }} />
               </div>
-              <button onClick={() => setCustomerModal(null)} style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontSize: '22px', cursor: 'pointer' }}>×</button>
+              <div>
+                <div style={{ fontSize: '17px', fontWeight: 700, color: 'var(--text-primary)' }}>{customerModal.customer_name || customerModal.customer?.full_name}</div>
+                <div style={{ fontSize: '13px', color: 'var(--text-secondary)', direction: 'ltr' }}>{customerModal.customer_phone || customerModal.customer?.phone || '—'}</div>
+              </div>
             </div>
 
             {customerBookings.length > 0 && (
@@ -496,9 +484,9 @@ export default function BookingDetail() {
                 </div>
               </>
             )}
-          </div>
-        </div>
-      )}
+          </>
+        )}
+      </Modal>
 
       <div style={{ height: 40 }} />
     </div>

@@ -28,6 +28,7 @@ html.light {
   --table-header: #f0eeff;
   --table-row-hover: #f8f7ff;
   --badge-bg: rgba(124,58,237,0.1);
+  --modal-bg: #ffffff;
 }
 
 html.dark {
@@ -48,6 +49,7 @@ html.dark {
   --bg-gradient: linear-gradient(135deg, #0a0818 0%, #1a0f3a 35%, #0f1a2e 65%, #0a1628 100%);
   --text-muted: rgba(255,255,255,0.4);
   --text-tertiary: rgba(255,255,255,0.35);
+  --modal-bg: #1e1540;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -321,4 +323,23 @@ button { cursor: pointer; font-family: inherit; }
 td, th, .stat-value, .card-value {
   font-variant-numeric: normal;
   font-feature-settings: normal;
+}
+
+/* ── Light mode modal text fixes ─────────────────────────────────────────── */
+html.light [style*="var(--modal-bg"],
+html.light [style*="var(--bg-card"] {
+  color: var(--text-primary) !important;
+}
+html.light .glass-modal-panel label,
+html.light .glass-modal-panel p,
+html.light .glass-modal-panel span,
+html.light .glass-modal-panel div {
+  color: inherit;
+}
+html.light .glass-input,
+html.light .glass-select,
+html.light .glass-textarea {
+  color: var(--text-primary) !important;
+  background: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
 }

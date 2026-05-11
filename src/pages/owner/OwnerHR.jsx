@@ -5,6 +5,7 @@ import {
   BuildingOffice2Icon, CalendarDaysIcon, BanknotesIcon,
   TrashIcon, WrenchScrewdriverIcon,
 } from '@heroicons/react/24/outline'
+import Modal from '../../components/Modal'
 import {
   getStaff, createStaffMember, updateStaffMember, deleteStaffMember,
   getOwnerBookings, fmtIQD, fmtDate, BOOKING_STATUS_LABELS,
@@ -289,32 +290,27 @@ function PayrollTab({ staff }) {
         )}
       </div>
 
-      {payModal && (
-        <div className="glass-modal-overlay" onClick={() => setPayModal(null)}>
-          <div className="glass-modal-panel" style={{ maxWidth: 360, padding: '24px' }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '14px' }}>تأكيد صرف الراتب</h3>
-            <div style={{ marginBottom: '14px' }}>
-              {(() => {
-                const s = active.find(x => x.id === payModal)
-                return (
-                  <div style={{ fontSize: '14px', color: 'rgba(255,255,255,0.7)', marginBottom: '6px' }}>
-                    {s?.full_name} — {fmtIQD(getEffectiveSalary(s || {}, workedData))}
-                    <span style={{ fontSize: 12, color: 'var(--text-muted)', marginRight: 6 }}>({WAGE_AR[s?.wage_type] || 'شهري'})</span>
-                  </div>
-                )
-              })()}
-              <label className="glass-label">تاريخ الصرف</label>
-              <input className="glass-input" type="date" value={payDate} onChange={e => setPayDate(e.target.value)} dir="ltr" />
-            </div>
-            <div style={{ display: 'flex', gap: '10px' }}>
-              <button onClick={() => setPayModal(null)} className="glass-btn" style={{ flex: 1 }}>إلغاء</button>
-              <button onClick={() => markPaid(payModal)} className="glass-btn glass-btn-primary" style={{ flex: 1 }}>
-                <CheckIcon style={{ width: 14, height: 14 }} /> تأكيد الصرف
-              </button>
-            </div>
-          </div>
+      <Modal isOpen={!!payModal} onClose={() => setPayModal(null)} title="تأكيد صرف الراتب" maxWidth="360px">
+        <div style={{ marginBottom: '14px' }}>
+          {(() => {
+            const s = active.find(x => x.id === payModal)
+            return (
+              <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+                {s?.full_name} — {fmtIQD(getEffectiveSalary(s || {}, workedData))}
+                <span style={{ fontSize: 12, color: 'var(--text-muted)', marginRight: 6 }}>({WAGE_AR[s?.wage_type] || 'شهري'})</span>
+              </div>
+            )
+          })()}
+          <label className="glass-label">تاريخ الصرف</label>
+          <input className="glass-input" type="date" value={payDate} onChange={e => setPayDate(e.target.value)} dir="ltr" />
         </div>
-      )}
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button onClick={() => setPayModal(null)} className="glass-btn" style={{ flex: 1 }}>إلغاء</button>
+          <button onClick={() => markPaid(payModal)} className="glass-btn glass-btn-primary" style={{ flex: 1 }}>
+            <CheckIcon style={{ width: 14, height: 14 }} /> تأكيد الصرف
+          </button>
+        </div>
+      </Modal>
     </div>
   )
 }
@@ -694,77 +690,70 @@ export default function OwnerHR() {
       {hrTab === 'payroll' && <PayrollTab staff={staff} />}
 
       {/* Staff modal */}
-      {modal && (
-        <div className="glass-modal-overlay" onClick={() => setModal(null)}>
-          <div className="glass-modal-panel" style={{ maxWidth: 500, padding: '28px', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
-            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '20px' }}>
-              {modal === 'add' ? 'إضافة موظف جديد' : 'تعديل بيانات الموظف'}
-            </h3>
-            <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                <div style={{ gridColumn: '1 / -1' }}>
-                  <label className="glass-label">الاسم الكامل</label>
-                  <input className="glass-input" value={form.full_name} onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))} required />
-                </div>
-                <div>
-                  <label className="glass-label">الدور الوظيفي</label>
-                  <select className="glass-select" value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))}>
-                    {ROLES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="glass-label">نوع التوظيف</label>
-                  <select className="glass-select" value={form.employment_type} onChange={e => setForm(f => ({ ...f, employment_type: e.target.value }))}>
-                    {EMP_TYPES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label className="glass-label">نوع الأجر</label>
-                  <select className="glass-select" value={form.wage_type || 'monthly'} onChange={e => setForm(f => ({ ...f, wage_type: e.target.value }))}>
-                    {WAGE_TYPES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-                  </select>
-                </div>
-                {(!form.wage_type || form.wage_type === 'monthly') && (
-                  <div>
-                    <label className="glass-label">الراتب الشهري (د.ع)</label>
-                    <input className="glass-input" type="number" min={0} value={form.salary} onChange={e => setForm(f => ({ ...f, salary: e.target.value }))} dir="ltr" />
-                  </div>
-                )}
-                {form.wage_type === 'daily' && (
-                  <div>
-                    <label className="glass-label">الأجر اليومي (د.ع)</label>
-                    <input className="glass-input" type="number" min={0} value={form.daily_rate} onChange={e => setForm(f => ({ ...f, daily_rate: e.target.value }))} dir="ltr" />
-                  </div>
-                )}
-                {form.wage_type === 'hourly' && (
-                  <div>
-                    <label className="glass-label">الأجر بالساعة (د.ع)</label>
-                    <input className="glass-input" type="number" min={0} value={form.hourly_rate} onChange={e => setForm(f => ({ ...f, hourly_rate: e.target.value }))} dir="ltr" />
-                  </div>
-                )}
-                <div>
-                  <label className="glass-label">رقم الهاتف</label>
-                  <input className="glass-input" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} dir="ltr" />
-                </div>
-                <div>
-                  <label className="glass-label">تاريخ الانضمام</label>
-                  <input className="glass-input" type="date" value={form.join_date} onChange={e => setForm(f => ({ ...f, join_date: e.target.value }))} dir="ltr" />
-                </div>
-              </div>
+      <Modal isOpen={!!modal} onClose={() => setModal(null)} title={modal === 'add' ? 'إضافة موظف جديد' : 'تعديل بيانات الموظف'} maxWidth="500px">
+        <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div style={{ gridColumn: '1 / -1' }}>
+              <label className="glass-label">الاسم الكامل</label>
+              <input className="glass-input" value={form.full_name} onChange={e => setForm(f => ({ ...f, full_name: e.target.value }))} required />
+            </div>
+            <div>
+              <label className="glass-label">الدور الوظيفي</label>
+              <select className="glass-select" value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value }))}>
+                {ROLES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="glass-label">نوع التوظيف</label>
+              <select className="glass-select" value={form.employment_type} onChange={e => setForm(f => ({ ...f, employment_type: e.target.value }))}>
+                {EMP_TYPES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="glass-label">نوع الأجر</label>
+              <select className="glass-select" value={form.wage_type || 'monthly'} onChange={e => setForm(f => ({ ...f, wage_type: e.target.value }))}>
+                {WAGE_TYPES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+              </select>
+            </div>
+            {(!form.wage_type || form.wage_type === 'monthly') && (
               <div>
-                <label className="glass-label">ملاحظات (اختياري)</label>
-                <textarea className="glass-textarea" value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} style={{ minHeight: '70px' }} />
+                <label className="glass-label">الراتب الشهري (د.ع)</label>
+                <input className="glass-input" type="number" min={0} value={form.salary} onChange={e => setForm(f => ({ ...f, salary: e.target.value }))} dir="ltr" />
               </div>
-              <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
-                <button type="button" onClick={() => setModal(null)} className="glass-btn" style={{ flex: 1 }}>إلغاء</button>
-                <button type="submit" disabled={saving} className="glass-btn glass-btn-primary" style={{ flex: 1 }}>
-                  {saving ? 'جاري الحفظ...' : <><CheckIcon style={{ width: 14, height: 14 }} /> حفظ</>}
-                </button>
+            )}
+            {form.wage_type === 'daily' && (
+              <div>
+                <label className="glass-label">الأجر اليومي (د.ع)</label>
+                <input className="glass-input" type="number" min={0} value={form.daily_rate} onChange={e => setForm(f => ({ ...f, daily_rate: e.target.value }))} dir="ltr" />
               </div>
-            </form>
+            )}
+            {form.wage_type === 'hourly' && (
+              <div>
+                <label className="glass-label">الأجر بالساعة (د.ع)</label>
+                <input className="glass-input" type="number" min={0} value={form.hourly_rate} onChange={e => setForm(f => ({ ...f, hourly_rate: e.target.value }))} dir="ltr" />
+              </div>
+            )}
+            <div>
+              <label className="glass-label">رقم الهاتف</label>
+              <input className="glass-input" value={form.phone} onChange={e => setForm(f => ({ ...f, phone: e.target.value }))} dir="ltr" />
+            </div>
+            <div>
+              <label className="glass-label">تاريخ الانضمام</label>
+              <input className="glass-input" type="date" value={form.join_date} onChange={e => setForm(f => ({ ...f, join_date: e.target.value }))} dir="ltr" />
+            </div>
           </div>
-        </div>
-      )}
+          <div>
+            <label className="glass-label">ملاحظات (اختياري)</label>
+            <textarea className="glass-textarea" value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} style={{ minHeight: '70px' }} />
+          </div>
+          <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
+            <button type="button" onClick={() => setModal(null)} className="glass-btn" style={{ flex: 1 }}>إلغاء</button>
+            <button type="submit" disabled={saving} className="glass-btn glass-btn-primary" style={{ flex: 1 }}>
+              {saving ? 'جاري الحفظ...' : <><CheckIcon style={{ width: 14, height: 14 }} /> حفظ</>}
+            </button>
+          </div>
+        </form>
+      </Modal>
     </div>
   )
 }

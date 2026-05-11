@@ -26,7 +26,7 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = '52
       position: 'fixed',
       top: 0, left: 0, right: 0, bottom: 0,
       zIndex: 999999,
-      backgroundColor: 'rgba(0,0,0,0.65)',
+      backgroundColor: 'rgba(0,0,0,0.7)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -34,8 +34,8 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = '52
       overflowY: 'auto',
     }} onClick={onClose}>
       <div style={{
-        background: 'var(--bg-card, #1a1035)',
-        border: '1px solid var(--border, rgba(255,255,255,0.1))',
+        background: 'var(--modal-bg, #1e1540)',
+        border: '1px solid var(--border, rgba(255,255,255,0.12))',
         borderRadius: '20px',
         width: '100%',
         maxWidth,
@@ -43,7 +43,7 @@ export default function Modal({ isOpen, onClose, title, children, maxWidth = '52
         overflowY: 'auto',
         padding: '28px 24px',
         position: 'relative',
-        boxShadow: '0 25px 80px rgba(0,0,0,0.5)',
+        boxShadow: '0 25px 80px rgba(0,0,0,0.6)',
         margin: 'auto',
       }} onClick={e => e.stopPropagation()}>
         <div style={{

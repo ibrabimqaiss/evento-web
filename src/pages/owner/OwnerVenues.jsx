@@ -5,6 +5,7 @@ import {
   PlusIcon, PencilIcon, StarIcon, CalculatorIcon, XMarkIcon,
   CheckCircleIcon, PrinterIcon, QueueListIcon, LinkIcon,
 } from '@heroicons/react/24/outline'
+import Modal from '../../components/Modal'
 import { getOwnerVenues, getOwnerBookings, fmtIQD, VENUE_TYPE_LABELS } from '../../lib/ownerApi'
 
 const SHARE_BASE = (import.meta.env.VITE_APP_URL || window.location.origin) + '/venue'
@@ -67,15 +68,8 @@ function CostCalculator({ venue, onClose }) {
   }
 
   return (
-    <div className="glass-modal-overlay" onClick={onClose}>
-      <div className="glass-modal-panel" style={{ maxWidth: 560, padding: '28px', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <CalculatorIcon style={{ width: 22, height: 22, color: '#A78BFA' }} />
-            <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>حاسبة التكلفة</h3>
-          </div>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', fontSize: '22px', cursor: 'pointer' }}><XMarkIcon style={{ width: 20, height: 20 }} /></button>
-        </div>
+    <Modal isOpen={true} onClose={onClose} title="حاسبة التكلفة" maxWidth="560px">
+      <div>
 
         <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '16px' }}>
           {venue.name_ar || venue.name} — السعر الأساسي: <span style={{ color: '#34D399', fontWeight: 700 }}>{fmtIQD(venuePrice)}</span>
@@ -197,7 +191,7 @@ function CostCalculator({ venue, onClose }) {
           </div>
         )}
       </div>
-    </div>
+    </Modal>
   )
 }
 
@@ -241,14 +235,8 @@ function VenueCalendarModal({ venue, onClose }) {
   const todayStr = today.toISOString().slice(0, 10)
 
   return (
-    <div className="glass-modal-overlay" onClick={onClose}>
-      <div className="glass-modal-panel" style={{ maxWidth: 520, padding: '28px', maxHeight: '90vh', overflowY: 'auto' }} onClick={e => e.stopPropagation()}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-          <h3 style={{ fontSize: '16px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-            تقويم التوفر — {venue.name_ar || venue.name}
-          </h3>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}><XMarkIcon style={{ width: 18, height: 18 }} /></button>
-        </div>
+    <Modal isOpen={true} onClose={onClose} title={`تقويم التوفر — ${venue.name_ar || venue.name}`} maxWidth="520px">
+      <div>
 
         {/* Month nav */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
@@ -310,7 +298,7 @@ function VenueCalendarModal({ venue, onClose }) {
         </div>
         <p style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '10px' }}>اضغط على يوم لحجبه أو إلغاء حجبه يدوياً</p>
       </div>
-    </div>
+    </Modal>
   )
 }
 

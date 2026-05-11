@@ -5,6 +5,7 @@ import {
   ArrowRightIcon, VideoCameraIcon, WrenchScrewdriverIcon, QueueListIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/react/24/outline'
+import Modal from '../../components/Modal'
 import {
   getOwnerVenueDetail,
   updateVenue, deleteVenue,
@@ -622,52 +623,41 @@ function MenuModal({ slug, activeTab, item, onSave, onClose }) {
   }
 
   return (
-    <div className="glass-modal-overlay" onClick={onClose}>
-      <div className="glass-modal-panel" onClick={e => e.stopPropagation()} style={{ maxWidth: 460, padding: '24px', maxHeight: '90vh', overflowY: 'auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h3 style={{ margin: 0, fontSize: '17px', fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>
-            {isEdit ? 'تعديل الصنف' : 'إضافة صنف جديد'}
-          </h3>
-          <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'rgba(255,255,255,0.5)' }}>
-            <XMarkIcon style={{ width: 20, height: 20 }} />
-          </button>
+    <Modal isOpen={true} onClose={onClose} title={isEdit ? 'تعديل الصنف' : 'إضافة صنف جديد'} maxWidth="460px">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <div>
+          <label className="glass-label">اسم الصنف *</label>
+          <input className="glass-input" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="مثال: شوربة عدس" />
         </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <div>
-            <label className="glass-label">اسم الصنف *</label>
-            <input className="glass-input" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} placeholder="مثال: شوربة عدس" />
-          </div>
-          <div>
-            <label className="glass-label">السعر (د.ع) *</label>
-            <input className="glass-input" type="number" min="0" value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} dir="ltr" />
-          </div>
-          <div>
-            <label className="glass-label">الوصف</label>
-            <input className="glass-input" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
-          </div>
-          <div>
-            <label className="glass-label">صورة الصنف</label>
-            <button className="glass-btn glass-btn-sm" style={{ width: '100%', justifyContent: 'center' }} onClick={() => photoRef.current?.click()}>
-              <PhotoIcon style={{ width: 13, height: 13 }} /> {form.photo ? form.photo.name : 'اختر صورة'}
-            </button>
-            <input ref={photoRef} type="file" accept="image/*" hidden onChange={e => setForm(f => ({ ...f, photo: e.target.files[0] || null }))} />
-            {!form.photo && item?.photo_url && (
-              <img src={item.photo_url} alt="" style={{ width: '100%', height: '80px', objectFit: 'cover', borderRadius: '8px', marginTop: '8px' }} />
-            )}
-          </div>
+        <div>
+          <label className="glass-label">السعر (د.ع) *</label>
+          <input className="glass-input" type="number" min="0" value={form.price} onChange={e => setForm(f => ({ ...f, price: e.target.value }))} dir="ltr" />
         </div>
-
-        {error && <ErrorMsg msg={error} />}
-
-        <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
-          <button className="glass-btn" onClick={onClose} style={{ flex: 1 }}>إلغاء</button>
-          <button className="glass-btn glass-btn-primary" onClick={save} disabled={saving || !form.name.trim() || !form.price} style={{ flex: 1 }}>
-            {saving ? 'جاري الحفظ...' : <><CheckIcon style={{ width: 14, height: 14 }} /> حفظ</>}
+        <div>
+          <label className="glass-label">الوصف</label>
+          <input className="glass-input" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} />
+        </div>
+        <div>
+          <label className="glass-label">صورة الصنف</label>
+          <button className="glass-btn glass-btn-sm" style={{ width: '100%', justifyContent: 'center' }} onClick={() => photoRef.current?.click()}>
+            <PhotoIcon style={{ width: 13, height: 13 }} /> {form.photo ? form.photo.name : 'اختر صورة'}
           </button>
+          <input ref={photoRef} type="file" accept="image/*" hidden onChange={e => setForm(f => ({ ...f, photo: e.target.files[0] || null }))} />
+          {!form.photo && item?.photo_url && (
+            <img src={item.photo_url} alt="" style={{ width: '100%', height: '80px', objectFit: 'cover', borderRadius: '8px', marginTop: '8px' }} />
+          )}
         </div>
       </div>
-    </div>
+
+      {error && <ErrorMsg msg={error} />}
+
+      <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+        <button className="glass-btn" onClick={onClose} style={{ flex: 1 }}>إلغاء</button>
+        <button className="glass-btn glass-btn-primary" onClick={save} disabled={saving || !form.name.trim() || !form.price} style={{ flex: 1 }}>
+          {saving ? 'جاري الحفظ...' : <><CheckIcon style={{ width: 14, height: 14 }} /> حفظ</>}
+        </button>
+      </div>
+    </Modal>
   )
 }
 

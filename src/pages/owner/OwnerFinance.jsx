@@ -3,6 +3,7 @@ import {
   PlusIcon, TrashIcon, CheckIcon, ArrowDownTrayIcon,
   BanknotesIcon, ChartBarIcon, CalendarDaysIcon, BuildingOfficeIcon, BriefcaseIcon,
 } from '@heroicons/react/24/outline'
+import Modal from '../../components/Modal'
 import {
   getFinanceSummary, getFinanceTransactions, getExpenses, createExpense, deleteExpense,
   fmtIQD, fmtDate,
@@ -221,54 +222,46 @@ export default function OwnerFinance() {
       </div>
 
       {/* ── Add Expense Modal ── */}
-      {showAdd && (
-        <div className="glass-modal-overlay" onClick={() => setShowAdd(false)}>
-          <div className="glass-modal-panel" style={{ maxWidth: 480, padding: '28px' }} onClick={e => e.stopPropagation()}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>إضافة مصروف جديد</h3>
-              <button onClick={() => setShowAdd(false)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', fontSize: '22px', cursor: 'pointer', lineHeight: 1, padding: '0 4px' }}>×</button>
-            </div>
-            <form onSubmit={handleAddExpense} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-              <div>
-                <label className="glass-label">العنوان *</label>
-                <input className="glass-input" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="مثال: إيجار أبريل، فاتورة كهرباء..." required />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                <div>
-                  <label className="glass-label">المبلغ (د.ع) *</label>
-                  <input className="glass-input" type="number" min={0} value={form.amount} onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} required dir="ltr" placeholder="0" />
-                </div>
-                <div>
-                  <label className="glass-label">التاريخ *</label>
-                  <input className="glass-input" type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} dir="ltr" required />
-                </div>
-              </div>
-              <div>
-                <label className="glass-label">الفئة</label>
-                <select className="glass-select" value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}>
-                  {EXPENSE_CATS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-                </select>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '12px 16px', border: '1px solid rgba(255,255,255,0.08)' }}>
-                <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.75)', fontWeight: 600 }}>متكرر شهرياً</span>
-                <button
-                  type="button"
-                  onClick={() => setForm(f => ({ ...f, is_recurring: !f.is_recurring }))}
-                  style={{ width: 44, height: 24, borderRadius: 12, border: 'none', cursor: 'pointer', position: 'relative', background: form.is_recurring ? 'linear-gradient(135deg,#7C3AED,#6D28D9)' : 'rgba(255,255,255,0.12)', transition: 'background 0.2s' }}
-                >
-                  <span style={{ position: 'absolute', top: 3, width: 18, height: 18, borderRadius: '50%', background: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.3)', transition: 'left 0.2s', left: form.is_recurring ? 23 : 3 }} />
-                </button>
-              </div>
-              <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
-                <button type="button" onClick={() => setShowAdd(false)} className="glass-btn" style={{ flex: 1 }}>إلغاء</button>
-                <button type="submit" disabled={saving} className="glass-btn glass-btn-primary" style={{ flex: 1 }}>
-                  {saving ? 'جاري الحفظ...' : <><CheckIcon style={{ width: 15, height: 15 }} /> حفظ</>}
-                </button>
-              </div>
-            </form>
+      <Modal isOpen={showAdd} onClose={() => setShowAdd(false)} title="إضافة مصروف جديد" maxWidth="480px">
+        <form onSubmit={handleAddExpense} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div>
+            <label className="glass-label">العنوان *</label>
+            <input className="glass-input" value={form.description} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} placeholder="مثال: إيجار أبريل، فاتورة كهرباء..." required />
           </div>
-        </div>
-      )}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+            <div>
+              <label className="glass-label">المبلغ (د.ع) *</label>
+              <input className="glass-input" type="number" min={0} value={form.amount} onChange={e => setForm(f => ({ ...f, amount: e.target.value }))} required dir="ltr" placeholder="0" />
+            </div>
+            <div>
+              <label className="glass-label">التاريخ *</label>
+              <input className="glass-input" type="date" value={form.date} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} dir="ltr" required />
+            </div>
+          </div>
+          <div>
+            <label className="glass-label">الفئة</label>
+            <select className="glass-select" value={form.category} onChange={e => setForm(f => ({ ...f, category: e.target.value }))}>
+              {EXPENSE_CATS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+            </select>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.04)', borderRadius: 12, padding: '12px 16px', border: '1px solid rgba(255,255,255,0.08)' }}>
+            <span style={{ fontSize: '14px', color: 'var(--text-secondary)', fontWeight: 600 }}>متكرر شهرياً</span>
+            <button
+              type="button"
+              onClick={() => setForm(f => ({ ...f, is_recurring: !f.is_recurring }))}
+              style={{ width: 44, height: 24, borderRadius: 12, border: 'none', cursor: 'pointer', position: 'relative', background: form.is_recurring ? 'linear-gradient(135deg,#7C3AED,#6D28D9)' : 'rgba(255,255,255,0.12)', transition: 'background 0.2s' }}
+            >
+              <span style={{ position: 'absolute', top: 3, width: 18, height: 18, borderRadius: '50%', background: '#fff', boxShadow: '0 1px 4px rgba(0,0,0,0.3)', transition: 'left 0.2s', left: form.is_recurring ? 23 : 3 }} />
+            </button>
+          </div>
+          <div style={{ display: 'flex', gap: '10px', marginTop: '4px' }}>
+            <button type="button" onClick={() => setShowAdd(false)} className="glass-btn" style={{ flex: 1 }}>إلغاء</button>
+            <button type="submit" disabled={saving} className="glass-btn glass-btn-primary" style={{ flex: 1 }}>
+              {saving ? 'جاري الحفظ...' : <><CheckIcon style={{ width: 15, height: 15 }} /> حفظ</>}
+            </button>
+          </div>
+        </form>
+      </Modal>
 
       {/* ── Period Tabs ── */}
       <div className="glass-tabs" style={{ marginBottom: '20px' }}>
