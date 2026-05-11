@@ -190,17 +190,18 @@ export default function OwnerAnalytics() {
           <h2 style={{ fontSize: '16px', fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: '20px' }}>الإشغال حسب القاعة</h2>
           <div style={{ width: '100%', overflowX: 'auto', minHeight: 200 }}>
             <ResponsiveContainer width="100%" height={Math.max(200, occupancyData.length * 40)}>
-              <BarChart data={occupancyData} layout="vertical" margin={{ top: 5, right: 20, left: isMobile ? 10 : 80, bottom: 5 }}>
+              <BarChart data={occupancyData} layout="vertical" margin={{ top: 5, right: 20, left: 10, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis type="number" tickFormatter={v => `${v}%`} tick={{ fontSize: 11, fill: 'rgba(255,255,255,0.5)' }} />
                 <YAxis
                   dataKey="venue_name"
                   type="category"
                   tick={{ fontSize: isMobile ? 10 : 12, fill: 'rgba(255,255,255,0.6)' }}
-                  width={isMobile ? 90 : 80}
+                  tickFormatter={name => name?.length > 12 ? name.slice(0, 12) + '...' : name}
+                  width={150}
                 />
                 <Tooltip formatter={(v) => [`${v}%`, 'معدل الإشغال']} contentStyle={{ background: 'rgba(10,8,24,0.9)', border: '1px solid rgba(255,255,255,0.16)', borderRadius: 12 }} />
-                <Bar dataKey="occupancy_rate" fill="#34D399" radius={[0, 4, 4, 0]} />
+                <Bar dataKey="occupancy_rate" fill="#34D399" radius={[0, 4, 4, 0]} barSize={24} />
               </BarChart>
             </ResponsiveContainer>
           </div>

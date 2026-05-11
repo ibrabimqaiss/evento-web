@@ -9,6 +9,7 @@ import {
   rejectBooking, createOwnerBooking, fmtDate, fmtIQD,
   BOOKING_STATUS_LABELS, BOOKING_STATUS_CLASS,
 } from '../../lib/ownerApi'
+import Modal from '../../components/Modal'
 
 const TABS = [
   { label: 'الكل', value: '' },
@@ -118,16 +119,7 @@ function AddBookingModal({ venues, initialDate, onClose, onSuccess }) {
   function set(key, val) { setForm(f => ({ ...f, [key]: val })) }
 
   return (
-    <div className="glass-modal-overlay" onClick={onClose}>
-      <div
-        className="glass-modal-panel"
-        style={{ maxWidth: 560, padding: '28px', maxHeight: '90vh', overflowY: 'auto' }}
-        onClick={e => e.stopPropagation()}
-      >
-        <h3 style={{ fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '20px' }}>
-          إضافة حجز جديد
-        </h3>
-
+    <Modal isOpen={true} onClose={onClose} title="إضافة حجز جديد" maxWidth="560px">
         {error && (
           <div style={{ background: 'rgba(248,113,113,0.12)', border: '1px solid rgba(248,113,113,0.3)', borderRadius: 10, padding: '10px 14px', marginBottom: '16px', color: '#F87171', fontSize: '13px' }}>
             {error}
@@ -199,8 +191,7 @@ function AddBookingModal({ venues, initialDate, onClose, onSuccess }) {
             </button>
           </div>
         </form>
-      </div>
-    </div>
+    </Modal>
   )
 }
 

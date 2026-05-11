@@ -647,9 +647,24 @@ img { max-width: 100%; }
 /* ── Light Mode Overrides ───────────────────────────────────────────────────── */
 html.light .glass-card,
 html.light .glass-card-static {
-  background: rgba(255, 255, 255, 0.92);
-  border-color: rgba(124, 58, 237, 0.12);
+  background: var(--glass-bg);
+  color: var(--text-primary);
+  border-color: var(--glass-border);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.07), inset 0 1px 0 rgba(255, 255, 255, 1);
+}
+
+/* Force heading and body text to be readable in light mode */
+html.light .glass-card h1, html.light .glass-card h2, html.light .glass-card h3, html.light .glass-card h4,
+html.light .glass-card-static h1, html.light .glass-card-static h2, html.light .glass-card-static h3, html.light .glass-card-static h4,
+html.light .owner-page h1, html.light .owner-page h2, html.light .owner-page h3, html.light .owner-page h4 {
+  color: var(--text-primary) !important;
+}
+
+html.light .glass-modal-overlay h1, html.light .glass-modal-overlay h2,
+html.light .glass-modal-overlay h3, html.light .glass-modal-overlay h4,
+html.light .glass-modal-panel h1, html.light .glass-modal-panel h2,
+html.light .glass-modal-panel h3, html.light .glass-modal-panel h4 {
+  color: var(--text-primary) !important;
 }
 
 html.light .glass-card:hover {

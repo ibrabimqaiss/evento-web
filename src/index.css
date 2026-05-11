@@ -13,14 +13,21 @@ html.light {
   --text-tertiary: rgba(26,26,46,0.35);
   --accent: #7C3AED;
   --accent-hover: #6D28D9;
-  --border: #e5e0ff;
-  --glass-bg: rgba(255,255,255,0.85);
+  --border: rgba(124,58,237,0.15);
+  --glass-bg: rgba(255,255,255,0.9);
   --glass-bg-hover: rgba(124,58,237,0.06);
-  --glass-border: rgba(124,58,237,0.15);
+  --glass-border: rgba(124,58,237,0.2);
   --glass-border-strong: rgba(124,58,237,0.25);
   --glass-shadow: 0 4px 24px rgba(124,58,237,0.08);
   --shadow: 0 4px 24px rgba(124,58,237,0.08);
   --bg-gradient: linear-gradient(135deg, #f8f4ff 0%, #f3f0ff 40%, #ede9fe 70%, #f8f4ff 100%);
+  --sidebar-bg: rgba(255,255,255,0.95);
+  --card-bg: #ffffff;
+  --input-bg: #f8f7ff;
+  --input-border: rgba(124,58,237,0.2);
+  --table-header: #f0eeff;
+  --table-row-hover: #f8f7ff;
+  --badge-bg: rgba(124,58,237,0.1);
 }
 
 html.dark {
